@@ -35,6 +35,11 @@ describe('approved bundled MiroFish artifact', () => {
   });
   it('has genuine verified profiles and preserves default response feasibility', () => {
     const artifact = validateArtifact(artifactData);
+    expect(artifact.model).toBe('gpt-6.1-terra');
+    expect(artifact.api).toBe('responses');
+    expect(artifact.reasoningEffort).toBe('low');
+    expect(artifact.generationOutcome).toBe('target');
+    expect(artifact.candidates).toHaveLength(3);
     expect(artifact.profiles.filter(profile => profile.outcome === 'llm')).toHaveLength(3);
     const result = summarize(runDefaultWitness(createScenario(DEFAULT_CONFIG, artifact)));
     expect(result.assistanceCompleted).toBe(6);

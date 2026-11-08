@@ -141,8 +141,8 @@ def main() -> int:
         print(f"{phase}: {'completed' if results[phase] == 0 else 'failed or timed out'}; private evidence retained")
     profile_file = work / "profiles-evidence.json"
     social_file = work / "social-evidence.json"
-    profile = json.loads(profile_file.read_text()) if profile_file.exists() else {"model":args.model,"profiles":[]}
-    social = json.loads(social_file.read_text()) if social_file.exists() else {"detail":"Social preparation failed or timed out; see private evidence."}
+    profile = json.loads(profile_file.read_text(encoding='utf-8')) if profile_file.exists() else {"model":args.model,"profiles":[]}
+    social = json.loads(social_file.read_text(encoding='utf-8')) if social_file.exists() else {"detail":"Social preparation failed or timed out; see private evidence."}
     artifact = build_artifact(contract, profile, social)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     # Exclusive creation makes concurrent invocations unable to replace a completed artifact.

@@ -295,13 +295,27 @@ def profiles(work: Path, guard: CallGuard):
         (work / "profiles-evidence.json").write_text(json.dumps({"model":os.environ["LLM_MODEL_NAME"], "profiles":evidence, "usage":usage}, indent=2), encoding="utf-8")
 
 
+def create_social_model(settings: dict, factory=None):
+    if factory is None:
+        from camel.models import ModelFactory
+        factory = ModelFactory.create
+    model = factory(model_platform='openai', model_type=TERRA_MODEL,
+        api_key=os.environ['OPENAI_API_KEY'], url='https://api.openai.com/v1',
+        model_config_dict={'max_tokens':settings['contextWindowTokens'], 'reasoning_effort':settings['reasoningEffort']},
+        timeout=settings['timeoutSeconds'], max_retries=settings['sdkRetries'])
+    # Pinned CAMEL resets this value in its base constructor. Constrain the
+    # actual SDK clients as well; CallGuard independently verifies them at I/O.
+    model._max_retries = settings['sdkRetries']
+    model._client.max_retries = settings['sdkRetries']
+    model._async_client.max_retries = settings['sdkRetries']
+    return model
+
+
 def social(work: Path, guard: CallGuard):
     path = ROOT / "vendor/MiroFish/backend/scripts/run_reddit_simulation.py"
     spec = importlib.util.spec_from_file_location("pinned_reddit_runner", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    from camel.models import ModelFactory
-    from camel.types import ModelPlatformType
     manifest = json.loads((work / 'preparation-manifest.json').read_text())
     contract = json.loads((work / 'contract.json').read_text())
     if manifest != preparation_manifest(contract, os.environ['LLM_MODEL_NAME']):
@@ -314,10 +328,7 @@ def social(work: Path, guard: CallGuard):
     runner = module.RedditSimulationRunner(str(config_path), wait_for_commands=settings['waitForCommands'])
     # Actual upstream runner and LLMAction behavior, with a minimal action menu and bounded backend configuration.
     runner.AVAILABLE_ACTIONS = [getattr(module.ActionType, action) for action in settings['actions']]
-    runner._create_model = lambda: ModelFactory.create(model_platform=ModelPlatformType.OPENAI, model_type=TERRA_MODEL,
-        api_key=os.environ["OPENAI_API_KEY"], url="https://api.openai.com/v1",
-        model_config_dict={"max_tokens": settings['contextWindowTokens'], "reasoning_effort": settings['reasoningEffort']},
-        timeout=settings['timeoutSeconds'], max_retries=settings['sdkRetries'])
+    runner._create_model = lambda: create_social_model(settings)
     original_select = runner._get_active_agents_for_round
     selected_counts = []
     def select(*args, **kwargs):

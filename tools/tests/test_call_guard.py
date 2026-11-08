@@ -35,6 +35,24 @@ class RaisingEndpoint:
 
 
 class CallGuardTests(unittest.TestCase):
+    def test_social_backend_constrains_actual_sdk_clients_after_upstream_constructor(self):
+        settings = {'contextWindowTokens':32768, 'reasoningEffort':'low', 'timeoutSeconds':30, 'sdkRetries':0}
+        # Pinned CAMEL's OpenAIModel calls BaseModelBackend without forwarding
+        # max_retries; that overwrites the requested zero with its default 3.
+        async_client = AsyncOpenAI(api_key='offline-fixture', max_retries=3)
+        self.addCleanup(lambda: asyncio.run(async_client.close()))
+        with OpenAI(api_key='offline-fixture', max_retries=3) as sync:
+            backend = SimpleNamespace(_client=sync, _async_client=async_client, _max_retries=3)
+            factory = MagicMock(return_value=backend)
+            with patch.dict(os.environ, {'OPENAI_API_KEY':'offline-fixture'}):
+                actual = mirofish_worker.create_social_model(settings, factory)
+            self.assertIs(actual, backend)
+            self.assertEqual(actual._client.max_retries, 0)
+            self.assertEqual(actual._async_client.max_retries, 0)
+            self.assertEqual(actual._max_retries, 0)
+            mirofish_worker.CallGuard._validate_client(actual._client.chat.completions)
+            mirofish_worker.CallGuard._validate_client(actual._async_client.chat.completions)
+
     def setUp(self):
         self.assertTrue(callable(getattr(mirofish_worker.CallGuard, "create", None)),
                         "CallGuard does not yet reserve and execute Responses requests")
