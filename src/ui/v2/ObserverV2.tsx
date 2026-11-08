@@ -47,8 +47,8 @@ export function unitStatusTextV2(status:string):string {
 export function waitingReasonTextV2(reason:string|null):string {
   if(!reason)return 'Help has not been completed.';
   if(reason==='Whole-household transport is unsupported.')return 'No vehicle can carry this whole household with the required accessible places.';
-  if(reason==='Need has not been observed.')return 'No report or home check revealed this need.';
-  if(reason==='Awaiting an available compatible assignment.')return 'Waiting for a suitable available team.';
+  if(reason==='Need has not been observed.')return 'Teams did not know about this need.';
+  if(reason==='Awaiting an available compatible assignment.')return 'Waiting for a team that can help.';
   if(reason==='No legal route remains from the current safe node.'||reason==='The route has no legal continuation at the actual cursor.')return 'No usable route remains from the team’s current location.';
   if(reason==='The occupied edge became unsafe; recovery is unsupported.')return 'The team is stranded on a road that became unsafe. This simulation cannot recover stranded teams.';
   if(reason.includes('is closed; reservations and cargo are retained.'))return reason.includes('destination shelter')?'The destination shelter is closed. Places stay reserved and passengers and supplies stay with the team.':'The supply base is closed. Supplies stay reserved or with the team.';
