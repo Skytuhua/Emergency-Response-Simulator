@@ -47,6 +47,8 @@ The master plan defines acceptance. See `docs/evidence/build-status.md` for exec
 
 Preparation is separate from the browser. See [UPSTREAM.md](UPSTREAM.md) for the pinned source, installation, actual integration outcome, and evidence. No test fixture is a substitute for verified LLM generation or an autonomous OASIS action.
 
+The bundled artifact uses actual OpenAI `gpt-6.1-terra`, low reasoning through Responses: three verified profiles and three accepted autonomous requests. Original `gpt-4.1-mini` output and its saved run remain separately named and replayable. Total preparation estimate is $0.0282294 against the authorized $10 cap. Python adapter tests require `python -m pip install openai==1.109.1`; they make no provider calls.
+
 The UI reports the loaded artifact's integration level. If no approved compatible artifact exists, deterministic reporting keeps the offline exercise usable and MiroFish remains explicitly blocked. A compatible artifact changes validated report timing, never physical needs or response capacities.
 
 ## Scope and attribution

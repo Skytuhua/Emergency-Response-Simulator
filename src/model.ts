@@ -24,6 +24,7 @@ export interface ReportCandidate {
 }
 export interface AgentArtifact {
   version: 1; template: 'storm-v1'; sourceCommit: string; model: string;
+  api?: 'responses'; reasoningEffort?: 'low';
   generationOutcome: 'target' | 'profiles-only' | 'blocked' | 'synthetic-test';
   preparationVersion: string; timingMapVersion: string;
   inputHash: string; actorContextDigest: string; actorContexts: ActorContext[];

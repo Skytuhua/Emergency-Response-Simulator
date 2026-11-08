@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import artifactData from '../public/data/mirofish-v1.json';
 import preparationManifest from '../fixtures/preparation-manifest-v1.json';
+import terraManifest from '../fixtures/preparation-manifest-terra-low-v1.json';
 import savedDefault from '../public/data/default-run.json';
-import { PREPARATION_INPUT_HASH, validateArtifact } from '../src/artifact';
+import legacyArtifact from '../public/data/mirofish-4.1-mini-v1.json';
+import savedLegacy from '../public/data/default-run-4.1-mini-v1.json';
+import { PREPARATION_INPUT_HASH, TERRA_PREPARATION_INPUT_HASH, validateArtifact } from '../src/artifact';
 import { DEFAULT_CONFIG, createScenario } from '../src/scenario';
 import { initialize, advanceMinute } from '../src/sim/engine';
 import { observe } from '../src/sim/observe';
@@ -11,6 +15,14 @@ import { runDefaultWitness, summarize } from '../src/sim/results';
 import { parseRunFile, replay } from '../src/run-file';
 
 describe('approved bundled MiroFish artifact', () => {
+  it('retains the original artifact bytes and replays the original saved run', () => {
+    expect(createHash('sha256').update(readFileSync('public/data/mirofish-4.1-mini-v1.json', 'utf8').replace(/\r\n/g, '\n')).digest('hex')).toBe('d661847725cb4cb7f25c7ef13077cd7f8025c52d76a2ca878020cc052995f5e3');
+    expect(validateArtifact(legacyArtifact).model).toBe('gpt-4.1-mini');
+    const restored = replay(parseRunFile(JSON.stringify(savedLegacy)));
+    expect(restored.scenario.artifact?.model).toBe('gpt-4.1-mini');
+    expect(summarize(restored).assistanceCompleted).toBe(6);
+    expect(summarize(restored).timelyUrgentCount).toBe(3);
+  });
   it('ships a replay-validated recovery run with all six needs completed', () => {
     const summary = summarize(replay(parseRunFile(JSON.stringify(savedDefault))));
     expect(summary.assistanceCompleted).toBe(6);
@@ -19,9 +31,15 @@ describe('approved bundled MiroFish artifact', () => {
   it('pins the complete actual preparation contract, including prompts and social settings', () => {
     const sorted = (v: unknown): unknown => Array.isArray(v) ? v.map(sorted) : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).sort(([a], [b]) => a.localeCompare(b)).map(([k, value]) => [k, sorted(value)])) : v;
     expect(createHash('sha256').update(JSON.stringify(sorted(preparationManifest))).digest('hex')).toBe(PREPARATION_INPUT_HASH);
+    expect(createHash('sha256').update(JSON.stringify(sorted(terraManifest))).digest('hex')).toBe(TERRA_PREPARATION_INPUT_HASH);
   });
   it('has genuine verified profiles and preserves default response feasibility', () => {
     const artifact = validateArtifact(artifactData);
+    expect(artifact.model).toBe('gpt-6.1-terra');
+    expect(artifact.api).toBe('responses');
+    expect(artifact.reasoningEffort).toBe('low');
+    expect(artifact.generationOutcome).toBe('target');
+    expect(artifact.candidates).toHaveLength(3);
     expect(artifact.profiles.filter(profile => profile.outcome === 'llm')).toHaveLength(3);
     const result = summarize(runDefaultWitness(createScenario(DEFAULT_CONFIG, artifact)));
     expect(result.assistanceCompleted).toBe(6);

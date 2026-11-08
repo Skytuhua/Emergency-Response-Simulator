@@ -10,7 +10,23 @@ function example(): AgentArtifact {
     profiles: ACTOR_CONTEXTS.map(a => ({householdId:a.householdId,displayName:a.householdId,persona:'Synthetic test fixture, not evidence.',instruction:manifest.entities.find(entity => entity.uuid === a.householdId)!.instruction,outcome:'llm'})),
     candidates: [], episode:{rounds:0,activeAgents:0,autonomousActions:0,seededActions:0}, provenance:[] };
 }
+
+function terraExample() {
+  return { ...example(), model: 'gpt-6.1-terra', api: 'responses', reasoningEffort: 'low',
+    inputHash: '4b5c2eb1432d0146f1e5962df091f993a0a633b25778c605eabdd61c4970e00a' };
+}
 describe('prepared artifact boundary', () => {
+  it('accepts the exact Terra-low preparation contract while retaining legacy artifacts', () => {
+    expect(validateArtifact(terraExample()).model).toBe('gpt-6.1-terra');
+    expect(validateArtifact(example()).model).toBe('gpt-4.1-mini');
+  });
+  it('rejects a relabelled legacy artifact and unsupported Terra reasoning or transport', () => {
+    expect(() => validateArtifact({ ...example(), model: 'gpt-6.1-terra' })).toThrow();
+    for (const changes of [{ reasoningEffort: 'medium' }, { api: 'chat-completions' }, { reasoningEffort: undefined }, { api: undefined }]) {
+      expect(() => validateArtifact({ ...terraExample(), ...changes })).toThrow();
+    }
+    expect(() => validateArtifact({ ...example(), api: 'responses', reasoningEffort: 'low' })).toThrow();
+  });
   it('rejects model and instruction tampering despite a copied complete-input hash', () => {
     expect(() => validateArtifact({ ...example(), model: 'unsupported-model' })).toThrow();
     const artifact = example(); artifact.profiles[0].instruction += ' altered';

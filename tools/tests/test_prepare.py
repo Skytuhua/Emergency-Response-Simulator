@@ -6,11 +6,27 @@ import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from normalize_mirofish import normalize_action, canonical_hash, load_contract, verified_model_persona, preparation_manifest
+from normalize_mirofish import build_artifact, normalize_action, canonical_hash, load_contract, verified_model_persona, preparation_manifest
 from prepare_mirofish import verify_resume_manifest
 
 
 class NormalizationTests(unittest.TestCase):
+    def test_terra_contract_pins_transport_reasoning_and_separate_limits(self):
+        manifest = preparation_manifest(load_contract(), 'gpt-6.1-terra')
+        for settings in (manifest['profiles'], manifest['social']):
+            self.assertEqual(settings['api'], 'responses')
+            self.assertEqual(settings['reasoningEffort'], 'low')
+            self.assertEqual(settings['maxOutputTokens'], 4096)
+            self.assertFalse(settings['temperatureForwarded'])
+            self.assertNotIn('maxTokens', settings)
+        self.assertEqual(manifest['social']['contextWindowTokens'], 32768)
+        fixture = Path(__file__).resolve().parents[2] / 'fixtures/preparation-manifest-terra-low-v1.json'
+        self.assertEqual(manifest, json.loads(fixture.read_text(encoding='utf-8')))
+
+    def test_unsupported_preparation_model_fails_without_substitution(self):
+        with self.assertRaises(ValueError):
+            preparation_manifest(load_contract(), 't3-model-label')
+
     def test_resume_cannot_relabel_existing_profiles_with_changed_inputs(self):
         expected = preparation_manifest(load_contract(), 'gpt-4.1-mini')
         with tempfile.TemporaryDirectory() as directory:
@@ -66,6 +82,13 @@ class NormalizationTests(unittest.TestCase):
         self.assertEqual(candidate["attemptMinute"], 5)
         self.assertEqual(candidate["sourceText"], self.action["content"])
         self.assertEqual(candidate["factRefs"], self.actor["factRefs"])
+
+    def test_partial_profiles_cannot_emit_requests_in_a_profiles_only_artifact(self):
+        for profiles in [[], [{'householdId':'H02', 'outcome':'llm'}]]:
+            artifact = build_artifact(self.contract, {'model':'gpt-6.1-terra', 'profiles':profiles},
+                                      {'rounds':1, 'activeAgents':3, 'actions':[self.action]})
+            self.assertEqual(artifact['candidates'], [])
+            self.assertEqual(artifact['generationOutcome'], 'profiles-only' if profiles else 'blocked')
 
     def test_manual_seed_and_failed_action_are_never_candidates(self):
         for field in ["autonomous", "successful"]:

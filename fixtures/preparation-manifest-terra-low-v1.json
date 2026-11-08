@@ -1,0 +1,228 @@
+{
+  "version": 1,
+  "sourceCommit": "7657031ac01184afe2cb220f5ee3545573b5e843",
+  "contract": {
+    "version": 1,
+    "template": "storm-v1",
+    "preparationVersion": "catastrophe-preparation-v1",
+    "timingMapVersion": "round0-minute5-v1",
+    "publicFacts": [
+      "storm.power-outage"
+    ],
+    "actorContexts": [
+      {
+        "householdId": "H02",
+        "nodeId": "g0-1",
+        "size": 2,
+        "accessible": false,
+        "needId": "N-H02",
+        "needKind": "delivery",
+        "onset": 0,
+        "deadline": 30,
+        "factRefs": [
+          "H02.size",
+          "H02.accessible",
+          "H02.need",
+          "H02.deadline",
+          "H02.home",
+          "storm.power-outage"
+        ]
+      },
+      {
+        "householdId": "H09",
+        "nodeId": "g0-6",
+        "size": 3,
+        "accessible": false,
+        "needId": "N-H09",
+        "needKind": "relocation",
+        "onset": 0,
+        "deadline": 30,
+        "factRefs": [
+          "H09.size",
+          "H09.accessible",
+          "H09.need",
+          "H09.deadline",
+          "H09.home",
+          "storm.power-outage"
+        ]
+      },
+      {
+        "householdId": "H19",
+        "nodeId": "g3-4",
+        "size": 2,
+        "accessible": true,
+        "needId": "N-H19",
+        "needKind": "relocation",
+        "onset": 0,
+        "deadline": 30,
+        "factRefs": [
+          "H19.size",
+          "H19.accessible",
+          "H19.need",
+          "H19.deadline",
+          "H19.home",
+          "storm.power-outage"
+        ]
+      }
+    ]
+  },
+  "locale": "en",
+  "entities": [
+    {
+      "uuid": "H02",
+      "name": "Riverdale resident H02",
+      "labels": [
+        "Entity",
+        "Person"
+      ],
+      "summary": "Fictional resident of a town experiencing storm-related power outage. Only supplied household facts are authoritative.",
+      "attributes": {
+        "householdId": "H02",
+        "nodeId": "g0-1",
+        "size": 2,
+        "accessible": false,
+        "needId": "N-H02",
+        "needKind": "delivery",
+        "onset": 0,
+        "deadline": 30,
+        "factRefs": [
+          "H02.size",
+          "H02.accessible",
+          "H02.need",
+          "H02.deadline",
+          "H02.home",
+          "storm.power-outage"
+        ]
+      },
+      "instruction": "Fictional storm exercise. Your household facts are fixed: {\"accessible\": false, \"deadline\": 30, \"factRefs\": [\"H02.size\", \"H02.accessible\", \"H02.need\", \"H02.deadline\", \"H02.home\", \"storm.power-outage\"], \"householdId\": \"H02\", \"needId\": \"N-H02\", \"needKind\": \"delivery\", \"nodeId\": \"g0-1\", \"onset\": 0, \"size\": 2}. You may choose to request help or do nothing. If you choose to ask for help, create a post containing this exact JSON object (you may add your own surrounding speech): {\"kind\":\"help_request\",\"householdId\":\"H02\",\"needId\":\"N-H02\",\"factRefs\":[\"H02.size\",\"H02.accessible\",\"H02.need\",\"H02.deadline\",\"H02.home\",\"storm.power-outage\"]}. These references authorize including the fixed facts in an exercise request. Do not invent new physical facts or another household's request."
+    },
+    {
+      "uuid": "H09",
+      "name": "Riverdale resident H09",
+      "labels": [
+        "Entity",
+        "Person"
+      ],
+      "summary": "Fictional resident of a town experiencing storm-related power outage. Only supplied household facts are authoritative.",
+      "attributes": {
+        "householdId": "H09",
+        "nodeId": "g0-6",
+        "size": 3,
+        "accessible": false,
+        "needId": "N-H09",
+        "needKind": "relocation",
+        "onset": 0,
+        "deadline": 30,
+        "factRefs": [
+          "H09.size",
+          "H09.accessible",
+          "H09.need",
+          "H09.deadline",
+          "H09.home",
+          "storm.power-outage"
+        ]
+      },
+      "instruction": "Fictional storm exercise. Your household facts are fixed: {\"accessible\": false, \"deadline\": 30, \"factRefs\": [\"H09.size\", \"H09.accessible\", \"H09.need\", \"H09.deadline\", \"H09.home\", \"storm.power-outage\"], \"householdId\": \"H09\", \"needId\": \"N-H09\", \"needKind\": \"relocation\", \"nodeId\": \"g0-6\", \"onset\": 0, \"size\": 3}. You may choose to request help or do nothing. If you choose to ask for help, create a post containing this exact JSON object (you may add your own surrounding speech): {\"kind\":\"help_request\",\"householdId\":\"H09\",\"needId\":\"N-H09\",\"factRefs\":[\"H09.size\",\"H09.accessible\",\"H09.need\",\"H09.deadline\",\"H09.home\",\"storm.power-outage\"]}. These references authorize including the fixed facts in an exercise request. Do not invent new physical facts or another household's request."
+    },
+    {
+      "uuid": "H19",
+      "name": "Riverdale resident H19",
+      "labels": [
+        "Entity",
+        "Person"
+      ],
+      "summary": "Fictional resident of a town experiencing storm-related power outage. Only supplied household facts are authoritative.",
+      "attributes": {
+        "householdId": "H19",
+        "nodeId": "g3-4",
+        "size": 2,
+        "accessible": true,
+        "needId": "N-H19",
+        "needKind": "relocation",
+        "onset": 0,
+        "deadline": 30,
+        "factRefs": [
+          "H19.size",
+          "H19.accessible",
+          "H19.need",
+          "H19.deadline",
+          "H19.home",
+          "storm.power-outage"
+        ]
+      },
+      "instruction": "Fictional storm exercise. Your household facts are fixed: {\"accessible\": true, \"deadline\": 30, \"factRefs\": [\"H19.size\", \"H19.accessible\", \"H19.need\", \"H19.deadline\", \"H19.home\", \"storm.power-outage\"], \"householdId\": \"H19\", \"needId\": \"N-H19\", \"needKind\": \"relocation\", \"nodeId\": \"g3-4\", \"onset\": 0, \"size\": 2}. You may choose to request help or do nothing. If you choose to ask for help, create a post containing this exact JSON object (you may add your own surrounding speech): {\"kind\":\"help_request\",\"householdId\":\"H19\",\"needId\":\"N-H19\",\"factRefs\":[\"H19.size\",\"H19.accessible\",\"H19.need\",\"H19.deadline\",\"H19.home\",\"storm.power-outage\"]}. These references authorize including the fixed facts in an exercise request. Do not invent new physical facts or another household's request."
+    }
+  ],
+  "profiles": {
+    "model": "gpt-6.1-terra",
+    "baseUrl": "https://api.openai.com/v1",
+    "useLlm": true,
+    "zep": false,
+    "sdkRetries": 0,
+    "timeoutSeconds": 30,
+    "upstreamAttemptTemperatures": [
+      0.7,
+      0.6,
+      0.5
+    ],
+    "api": "responses",
+    "reasoningEffort": "low",
+    "maxOutputTokens": 4096,
+    "serviceTier": "default",
+    "adapterVersion": "terra-responses-v1",
+    "temperatureForwarded": false
+  },
+  "social": {
+    "model": "gpt-6.1-terra",
+    "temperature": 0.4,
+    "sdkRetries": 0,
+    "timeoutSeconds": 30,
+    "rounds": 1,
+    "waitForCommands": false,
+    "actions": [
+      "CREATE_POST",
+      "DO_NOTHING"
+    ],
+    "time_config": {
+      "total_simulation_hours": 1,
+      "minutes_per_round": 60,
+      "agents_per_hour_min": 3,
+      "agents_per_hour_max": 3,
+      "peak_activity_multiplier": 1,
+      "off_peak_activity_multiplier": 1
+    },
+    "agent_configs": [
+      {
+        "agent_id": 0,
+        "active_hours": [
+          0
+        ],
+        "activity_level": 1
+      },
+      {
+        "agent_id": 1,
+        "active_hours": [
+          0
+        ],
+        "activity_level": 1
+      },
+      {
+        "agent_id": 2,
+        "active_hours": [
+          0
+        ],
+        "activity_level": 1
+      }
+    ],
+    "event_config": {
+      "initial_posts": []
+    },
+    "api": "responses",
+    "reasoningEffort": "low",
+    "maxOutputTokens": 4096,
+    "serviceTier": "default",
+    "adapterVersion": "terra-responses-v1",
+    "temperatureForwarded": false,
+    "contextWindowTokens": 32768
+  }
+}
