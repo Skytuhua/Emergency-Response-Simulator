@@ -1,4 +1,4 @@
-﻿# Catastrophe Response Simulator
+﻿# Emergency Response Simulator
 
 Observe an automatic storm response across **3,061 simulated Dallas homes and 5,306 residents over six hours**. Residents try to report needs, teams respond using information they receive, and help counts after delivery or arrival at shelter.
 

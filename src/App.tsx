@@ -161,7 +161,7 @@ export function LegacyApp({initialState=null,onExpanded,compatibilityOnly=false}
   };
 
   return <div className="app-shell">
-    <header className="app-header"><div className="brand"><span className="brand-mark"><ShieldCheck /></span><strong>Response Simulator</strong></div>
+    <header className="app-header"><div className="brand"><span className="brand-mark"><ShieldCheck /></span><strong>Emergency Response Simulator</strong></div>
       <nav aria-label="Main navigation">{([{ id: 'create', label: 'Conditions', Icon: ClipboardList }, { id: 'respond', label: 'Simulation', Icon: Map }, { id: 'results', label: 'Results', Icon: BarChart3 }] as const).filter(item=>!compatibilityOnly||item.id!=='create').map(({ id, label, Icon }) => <button key={id} onClick={() => navigate(id)} aria-current={screen === id ? 'page' : undefined} disabled={id === 'respond' ? !state || state.finalized : id === 'results' ? !state?.finalized : false}><Icon />{label}</button>)}</nav>
       <span className="training-label">{compatibilityOnly?'Imported earlier run':'Fictional training'}</span>
       {onExpanded&&<Button variant="ghost" onClick={()=>{pause();if(state)setConfirmation('expanded');else onExpanded();}}>Dallas simulation</Button>}

@@ -33,6 +33,7 @@ afterEach(() => { cleanup(); vi.useRealTimers(); vi.unstubAllGlobals(); });
 describe('expanded app playback and plain-language controls', () => {
   it('uses loaded population counts and runs exactly one timer; details pause without resuming', async () => {
     await load();
+    expect(screen.getByText('Emergency Response Simulator')).toBeTruthy();
     expect(screen.getByText(/Dallas · 16 simulated residents/)).toBeTruthy();
     act(() => { vi.advanceTimersByTime(2000); });
     expect(advanceSessionV2).toHaveBeenCalledTimes(2);

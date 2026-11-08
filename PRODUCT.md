@@ -1,4 +1,4 @@
-# Catastrophe Response Simulator
+# Emergency Response Simulator
 
 Independent local disaster-response training prototype for a response coordinator. The supplied master plan is the approved implementation scope. All people and geography are fictional. Create a 60-minute storm/outage exercise, discover silent needs, dispatch constrained resources, and compare computed results with a transparent policy.
 

@@ -27,6 +27,7 @@ const advance = (count: number) => { for (let i=0;i<count;i++) fireEvent.click(s
 describe('automatic observation lifecycle', () => {
   it('starts automatic coordination and exactly one playback clock without user dispatch', async () => {
     await start();
+    expect(screen.getByText('Emergency Response Simulator')).toBeTruthy();
     expect(screen.getByRole('button', {name:'Pause simulation'})).toBeTruthy();
     expect(document.querySelectorAll('.map-unit').length).toBeGreaterThan(0);
     expect(screen.queryByRole('button', {name:/Check home|Send supplies|Send a ride/})).toBeNull();
