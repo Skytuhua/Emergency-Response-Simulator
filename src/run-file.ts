@@ -83,7 +83,7 @@ function execute(file: RunFile, runId: string): SimState {
 function validate(input: unknown): RunFile {
   const object = record(input, 'Run file'); keys(object, TOP_KEYS);
   canonical(object);
-  if (object.kind !== 'catastrophe-response-run') throw new Error('This is not a catastrophe response run file.');
+  if (object.kind !== 'catastrophe-response-run') throw new Error('This is not an emergency response run file.');
   if (object.version !== 1) throw new Error('Unsupported run-file version.');
   const sourceRunId = identifier(object.sourceRunId, 'Source run ID');
   const config = parseConfig(object.config);
