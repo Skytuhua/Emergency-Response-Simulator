@@ -3,6 +3,7 @@
 This project uses the following upstream work; no affiliation or endorsement is implied.
 
 - **OpenStreetMap contributors**, Open Database License 1.0. The Dallas street database is a separately licensed derived database; its ODbL terms and attribution remain in [fixtures/maps/LICENSE.md](fixtures/maps/LICENSE.md). Source custody, filtering and routing assumptions are documented in [docs/DALLAS-MAP.md](docs/DALLAS-MAP.md). Map geometry is real; households and incidents are synthetic.
+- **Leaflet 1.9.4**, Vladimir Agafonkin and contributors, BSD 2-Clause License. The full notice is retained in [docs/LEAFLET-LICENSE.txt](docs/LEAFLET-LICENSE.txt). Interactive basemap use and the OpenStreetMap tile policy are documented in [docs/INTERACTIVE-MAP.md](docs/INTERACTIVE-MAP.md).
 
 - **MiroFish**, MiroFish Team, GNU Affero General Public License version 3. Source pinned at `7657031ac01184afe2cb220f5ee3545573b5e843`. License: [retained full text](docs/MIROFISH-AGPL-3.0.txt). Source and local adaptation details: [UPSTREAM.md](UPSTREAM.md). Corresponding upstream source: https://github.com/666ghj/MiroFish/archive/7657031ac01184afe2cb220f5ee3545573b5e843.tar.gz . Preserve these notices and provide appropriate corresponding source when distributing the integration; do not assume a process boundary removes obligations.
 - **OASIS / CAMEL**, CAMEL-AI.org, Apache License 2.0. Reused through pinned `camel-oasis==0.2.5` and `camel-ai==0.2.78`; source and notices remain in the installed packages. https://github.com/camel-ai/oasis and https://github.com/camel-ai/camel .
