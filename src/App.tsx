@@ -88,9 +88,11 @@ export default function App() {
     return () => { document.removeEventListener('visibilitychange', visibility); window.removeEventListener('keydown', keyboard); };
   }, []);
 
-  const start = () => {
+  const start = (override?: ScenarioConfig) => {
     try {
-      const next = initialize(createScenario(config, artifact), freshRunId());
+      const chosen = override ?? config;
+      const next = initialize(createScenario(chosen, artifact), freshRunId());
+      if (override) setConfig({ ...override });
       generation.current++; pause(); clearSelections(); install(next); setScreen('respond');
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Check the exercise settings.'); }
   };
@@ -168,7 +170,7 @@ export default function App() {
         onExport={exportCurrent} onImport={importClick} onFinish={requestFinish} onEdit={requestEdit} onDismiss={() => setNotice(null)} />}
       {screen === 'results' && state?.finalized && <Results key={state.runId} state={state} onExport={exportCurrent} onReplay={replayCurrent} onRestart={restart} onEdit={requestEdit} />}
     </main>
-    {confirmation && <SecondaryPanel title={confirmation === 'edit' ? 'New exercise' : 'Finish exercise'} className="confirmation-panel" onClose={() => setConfirmation(null)}>
+    {confirmation && <SecondaryPanel title={confirmation === 'edit' ? 'New exercise' : 'Finish exercise'} variant="confirmation" fallbackFocusId="panel-exercise" onClose={() => setConfirmation(null)}>
       <p>{confirmation === 'edit' ? 'Discard this run and return to setup?' : 'Advance to minute 60 without more assignments?'}</p>
       <div className="confirmation-actions"><Button variant="outline" onClick={() => setConfirmation(null)}>Cancel</Button><Button onClick={confirmation === 'edit' ? edit : finish}>{confirmation === 'edit' ? 'Start over' : 'Finish now'}</Button></div>
     </SecondaryPanel>}

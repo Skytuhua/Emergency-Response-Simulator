@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import App from '../src/App';
 
-vi.mock('../src/ui/Creator', () => ({ Creator: ({ onStart }: { onStart: () => void }) => <button onClick={onStart}>Start exercise</button> }));
+vi.mock('../src/ui/Creator', () => ({ Creator: ({ onStart }: { onStart: () => void }) => <button onClick={() => onStart()}>Start exercise</button> }));
 beforeEach(() => {
   vi.useFakeTimers();
   vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} });

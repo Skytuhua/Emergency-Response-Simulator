@@ -25,10 +25,11 @@ const send = async (id, unit, action, shelter) => {
 };
 try {
   await page.goto(origin, { waitUntil: 'networkidle' });
-  await page.getByLabel('Communications outage').selectOption('none');
-  await at(5); await page.getByLabel('Communications outage').selectOption('southeast');
+  await page.getByRole('button', { name: 'Customize the scenario', exact: true }).click();
+  await page.getByLabel('Where can?t people call for help?').selectOption('none');
+  await at(5); await page.getByLabel('Where can?t people call for help?').selectOption('southeast');
   await at(8); await page.getByRole('button', { name: 'Continue', exact: true }).click();
-  await page.getByLabel('Transport vans').selectOption('1'); await page.getByLabel('Transport vans').selectOption('2');
+  await page.getByLabel('Vans to take people to shelter').selectOption('1'); await page.getByLabel('Vans to take people to shelter').selectOption('2');
   await at(13); await page.getByRole('button', { name: 'Continue', exact: true }).click();
   await at(18); await page.getByRole('button', { name: 'Start exercise', exact: true }).click();
   await at(25); await send('H19', 'C1', 'Check home & run');
