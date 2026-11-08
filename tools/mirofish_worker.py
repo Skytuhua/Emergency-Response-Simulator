@@ -60,6 +60,7 @@ def cumulative_spend(private: Path) -> Decimal:
     preserved without being charged twice. New calls can only use Terra.
     """
     total = AUDITED_PRIOR_USD
+    charged_by_work = {}
     for work in private.iterdir():
         if not work.is_dir():
             continue
@@ -68,7 +69,37 @@ def cumulative_spend(private: Path) -> Decimal:
             continue
         data = json.loads(manifest.read_text(encoding="utf-8"))
         if data.get("profiles", {}).get("model") == TERRA_MODEL:
-            total += _charged(_load_calls(work))
+            charged_by_work[work.name] = _charged(_load_calls(work))
+            total += charged_by_work[work.name]
+    # V2 admits a whole cohort before any calls. Old and new preparers see the
+    # same outstanding allowance; already charged calls are not counted twice.
+    leases_path = private / "terra-v2-cohorts.json"
+    if leases_path.exists():
+        leases = json.loads(leases_path.read_text(encoding="utf-8"))
+        if (not isinstance(leases, dict) or leases.get("version") != 1
+                or leases.get("canonicalRoot") != str(private.resolve())
+                or not isinstance(leases.get("cohorts"), list)):
+            raise ValueError("Invalid shared v2 preparation cohort ledger")
+        seen = set()
+        for lease in leases["cohorts"]:
+            name = lease.get("work") if isinstance(lease, dict) else None
+            if (not isinstance(name, str) or not name or name in seen
+                    or Path(name).name != name or name in {".", ".."}
+                    or lease.get("status") not in {"active", "completed"}
+                    or name not in charged_by_work):
+                raise ValueError("Invalid registered v2 cohort")
+            seen.add(name)
+            allowance = _money(lease.get("allowanceUsd"))
+            if lease["status"] == "active":
+                total += max(Decimal(0), allowance - charged_by_work[name])
+        opportunities = leases.get("opportunities")
+        if not isinstance(opportunities, dict):
+            raise ValueError("Invalid shared logical opportunity ledger")
+        for identity, row in opportunities.items():
+            if (not isinstance(identity, str) or not isinstance(row, dict) or row.get("work") not in seen
+                    or type(row.get("limit")) is not int or row["limit"] not in {1, 2}
+                    or type(row.get("attempts")) is not int or not 0 <= row["attempts"] <= row["limit"]):
+                raise ValueError("Invalid shared logical opportunity counters")
     return total
 
 
@@ -142,16 +173,23 @@ class CallGuard:
                        + MAX_OUTPUT_TOKENS * OUTPUT_USD_PER_MILLION) / 1_000_000
             if _charged(self.calls) + ceiling > self.budget:
                 raise RuntimeError("Configured preparation run budget reached")
-            if cumulative_spend(self.work.parent) + ceiling > TOTAL_BUDGET_USD:
+            if cumulative_spend(self.work.parent) + self._budget_growth(ceiling) > TOTAL_BUDGET_USD:
                 raise RuntimeError("Cumulative $10 preparation budget reached")
+            metadata = self._reservation_metadata()
             self.calls.append({"model": TERRA_MODEL, "api": "responses", "reasoningEffort": "low",
                 "requestHash": canonical_hash(prepared), "requestBytes": request_bytes,
                 "maxOutputTokens": MAX_OUTPUT_TOKENS, "reservedUsd": float(ceiling),
                 "chargedUsd": float(ceiling), "status": "started", "accounting": "reserved",
                 "reservedInputUsdPerMillion": float(RESERVED_INPUT_USD_PER_MILLION),
-                "estimatedInputUsdPerMillion": 1, "outputUsdPerMillion": 5})
+                "estimatedInputUsdPerMillion": 1, "outputUsdPerMillion": 5, **metadata})
             self.save()
             return index, prepared
+
+    def _budget_growth(self, ceiling: Decimal) -> Decimal:
+        return ceiling
+
+    def _reservation_metadata(self) -> dict:
+        return {}
 
     def finish(self, index: int, response=None):
         with budget_lock(self.work.parent):

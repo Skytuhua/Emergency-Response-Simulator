@@ -1,1 +1,3 @@
-fixtures/maps/*.json text eol=lf
+# Admitted data receipts include exact byte hashes; preserve them on Windows.
+fixtures/v2/**/*.json -text
+public/data/dallas-v2-scenario.json -text
