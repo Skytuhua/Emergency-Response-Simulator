@@ -1,0 +1,33 @@
+{
+  "name": "emergency-response-simulator",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc -b && vite build",
+    "typecheck": "tsc --noEmit",
+    "demo": "vite preview --host 127.0.0.1 --port 4173 --strictPort",
+    "test": "vitest run",
+    "test:engine": "vitest run tests/engine.test.ts tests/scenario.test.ts",
+    "test:results": "vitest run tests/results.test.ts",
+    "test:run-file": "vitest run tests/run-file.test.ts",
+    "test:pack": "vitest run tests/artifact.test.ts tests/bundled-artifact.test.ts",
+    "test:browser": "node tools/browser-check.mjs",
+    "demo:record": "node tools/record-demo.mjs"
+  },
+  "dependencies": {
+    "leaflet": "1.9.4",
+    "react": "^19.2.0", "react-dom": "^19.2.0", "lucide-react": "^0.468.0",
+    "@radix-ui/react-slot": "^1.2.3", "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1", "tailwind-merge": "^3.3.1",
+    "tailwindcss": "^4.1.17", "@tailwindcss/vite": "^4.1.17"
+  },
+  "devDependencies": {
+    "@types/leaflet": "1.9.21",
+    "typescript": "~5.9.3", "vite": "^7.2.2", "@vitejs/plugin-react": "^5.1.0",
+    "@types/react": "^19.2.0", "@types/react-dom": "^19.2.0", "@types/node": "^24.10.0",
+    "vitest": "^4.0.8", "jsdom": "^27.2.0", "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1", "@playwright/test": "^1.56.1"
+  }
+}

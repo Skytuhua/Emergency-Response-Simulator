@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "template": "storm-v1",
+  "sourceCommit": "7657031ac01184afe2cb220f5ee3545573b5e843",
+  "model": "gpt-4.1-mini",
+  "generationOutcome": "target",
+  "preparationVersion": "catastrophe-preparation-v1",
+  "timingMapVersion": "round0-minute5-v1",
+  "inputHash": "25c44ff50fc81cb8a38b991c56bb71f8736961d3db3337b37c8a7f1cf7565321",
+  "actorContextDigest": "29d76908b9d92d2ec55c705decd710dacee96edaba118b7402b66179960f328f",
+  "actorContexts": [
+    {
+      "householdId": "H02",
+      "nodeId": "g0-1",
+      "size": 2,
+      "accessible": false,
+      "needId": "N-H02",
+      "needKind": "delivery",
+      "onset": 0,
+      "deadline": 30,
+      "factRefs": [
+        "H02.size",
+        "H02.accessible",
+        "H02.need",
+        "H02.deadline",
+        "H02.home",
+        "storm.power-outage"
+      ]
+    },
+    {
+      "householdId": "H09",
+      "nodeId": "g0-6",
+      "size": 3,
+      "accessible": false,
+      "needId": "N-H09",
+      "needKind": "relocation",
+      "onset": 0,
+      "deadline": 30,
+      "factRefs": [
+        "H09.size",
+        "H09.accessible",
+        "H09.need",
+        "H09.deadline",
+        "H09.home",
+        "storm.power-outage"
+      ]
+    },
+    {
+      "householdId": "H19",
+      "nodeId": "g3-4",
+      "size": 2,
+      "accessible": true,
+      "needId": "N-H19",
+      "needKind": "relocation",
+      "onset": 0,
+      "deadline": 30,
+      "factRefs": [
+        "H19.size",
+        "H19.accessible",
+        "H19.need",
+        "H19.deadline",
+        "H19.home",
+        "storm.power-outage"
+      ]
+    }
+  ],
+  "profiles": [
+    {
+      "householdId": "H02",
+      "displayName": "Riverdale resident H02",
+      "persona": "The individual is a 38-year-old female who lives in Riverdale, a mid-sized town recently affected by a severe storm causing widespread power outages. She holds a bachelor's degree in social work and currently works as a community outreach coordinator at a local nonprofit organization. Having grown up in Riverdale, she has strong ties to the community and values neighborhood solidarity. Her household consists of two people, and their home is not easily accessible, which complicates receiving external aid during emergencies. This storm and resulting power outage have deeply impacted her daily life and those around her, motivating her to become actively involved in organizing local support and delivery efforts to meet urgent needs. Her social circle includes close family members and several community activists, with whom she frequently collaborates. Personality-wise, she is an INFJ, characterized by empathy, determination, and a thoughtful demeanor. She processes emotions internally but is passionate about advocacy and helping others. On social media, she posts about once daily, focusing on community updates, practical advice during the outage, and encouraging messages. Her communication style is clear, warm, and occasionally formal when addressing official information. She prefers constructive dialogue and responds thoughtfully to comments, avoiding confrontations. She supports disaster preparedness, community resilience, and sustainable recovery initiatives. Topics that upset her include misinformation and neglect of vulnerable populations during crises, while stories of neighborly kindness and successful aid efforts inspire her. She often uses the phrase 'Together we are stronger' to emphasize solidarity. A notable personal experience includes coordinating a volunteer group to deliver essential supplies to inaccessible homes, including her own. This event is central to her recent social media narrative, highlighting both the challenges posed by the outage and the community's collective response. Her hobbies include reading about social policy, gardening, and hiking in nearby nature reserves, which provide her solace amid stressful times. Overall, she is a committed, community-focused individual whose social media presence reflects her ongoing efforts to navigate and alleviate the difficulties caused by the storm-related power outage.",
+      "outcome": "llm",
+      "instruction": "Fictional storm exercise. Your household facts are fixed: {\"accessible\": false, \"deadline\": 30, \"factRefs\": [\"H02.size\", \"H02.accessible\", \"H02.need\", \"H02.deadline\", \"H02.home\", \"storm.power-outage\"], \"householdId\": \"H02\", \"needId\": \"N-H02\", \"needKind\": \"delivery\", \"nodeId\": \"g0-1\", \"onset\": 0, \"size\": 2}. You may choose to request help or do nothing. If you choose to ask for help, create a post containing this exact JSON object (you may add your own surrounding speech): {\"kind\":\"help_request\",\"householdId\":\"H02\",\"needId\":\"N-H02\",\"factRefs\":[\"H02.size\",\"H02.accessible\",\"H02.need\",\"H02.deadline\",\"H02.home\",\"storm.power-outage\"]}. These references authorize including the fixed facts in an exercise request. Do not invent new physical facts or another household's request."
+    },
+    {
+      "householdId": "H09",
+      "displayName": "Riverdale resident H09",
+      "persona": "Riverdale resident H09 is a 42-year-old female school teacher living in the suburban area of Riverdale. She holds a bachelor's degree in education and has worked in her local community school for over 15 years. Her household consists of three members, including herself, her spouse, and their young child. Due to the recent severe storm causing a power outage, her home has been deemed inaccessible, prompting an urgent need for relocation within a 30-day deadline. She has a strong connection to her community, often volunteering at local shelters and organizing neighborhood watch groups. Her MBTI personality type is ISFJ, characterized by a caring, responsible, and practical nature. She tends to express emotions calmly and thoughtfully, prioritizing the well-being of her family and neighbors. On social media, she posts daily updates about the storm’s impact, shares tips on emergency preparedness, and engages warmly with others seeking advice or comfort. Her language is clear, empathetic, and occasionally includes encouraging phrases like 'we’ll get through this together.' She holds a firm stance on community cooperation and sustainable disaster response, often becoming passionate when discussions about inadequate local government support arise. Her unique traits include a penchant for crafting homemade emergency kits and a hobby of journaling personal experiences during crises. The ongoing storm and power outage have deeply affected her household, motivating her to advocate for accessible relocation options. She has actively reached out to relief organizations and shared her family's situation online, aiming to raise awareness and expedite assistance. Her social media presence reflects her resilience and commitment to turning adversity into collective strength.",
+      "outcome": "llm",
+      "instruction": "Fictional storm exercise. Your household facts are fixed: {\"accessible\": false, \"deadline\": 30, \"factRefs\": [\"H09.size\", \"H09.accessible\", \"H09.need\", \"H09.deadline\", \"H09.home\", \"storm.power-outage\"], \"householdId\": \"H09\", \"needId\": \"N-H09\", \"needKind\": \"relocation\", \"nodeId\": \"g0-6\", \"onset\": 0, \"size\": 3}. You may choose to request help or do nothing. If you choose to ask for help, create a post containing this exact JSON object (you may add your own surrounding speech): {\"kind\":\"help_request\",\"householdId\":\"H09\",\"needId\":\"N-H09\",\"factRefs\":[\"H09.size\",\"H09.accessible\",\"H09.need\",\"H09.deadline\",\"H09.home\",\"storm.power-outage\"]}. These references authorize including the fixed facts in an exercise request. Do not invent new physical facts or another household's request."
+    },
+    {
+      "householdId": "H19",
+      "displayName": "Riverdale resident H19",
+      "persona": "Riverdale resident H19 is a 38-year-old female community health worker with a bachelor's degree in public health, residing in the accessible household identified as H19 within node g3-4 of Riverdale. She lives with one other household member, making a family of two. Having lived in Riverdale for over a decade, she has witnessed several storms but this recent power outage caused by a severe storm has deeply affected her daily life and well-being. Her household is fully accessible, accommodating mobility needs, which makes relocation a sensitive and urgent issue. She is actively engaged in local social media groups to share updates and seek assistance for the relocation need flagged with a 30-day deadline. Her social circle includes neighbors, local emergency responders, and community organizers, with whom she collaborates to ensure vulnerable residents receive timely aid. Personality-wise, she identifies as an ISFJ: dependable, practical, and empathetic, often expressing concern with calm and measured language. She tends to post updates several times a week, focusing on community resources, safety tips, and emotional support. Her interaction style is supportive and encouraging, often responding to comments with gratitude and reassurance. She is wary of misinformation and gets frustrated by disregard for safety protocols but is moved by stories of neighborly kindness and resilience. Known for her catchphrase \"Stay safe, stay connected,\" she also enjoys gardening and local history. Her personal memory of this event includes coordinating with local agencies to find accessible temporary housing and offering peer support to others facing displacement due to the storm. She has already initiated contact with relocation services and shared detailed updates on household needs, reflecting her proactive and community-driven approach.",
+      "outcome": "llm",
+      "instruction": "Fictional storm exercise. Your household facts are fixed: {\"accessible\": true, \"deadline\": 30, \"factRefs\": [\"H19.size\", \"H19.accessible\", \"H19.need\", \"H19.deadline\", \"H19.home\", \"storm.power-outage\"], \"householdId\": \"H19\", \"needId\": \"N-H19\", \"needKind\": \"relocation\", \"nodeId\": \"g3-4\", \"onset\": 0, \"size\": 2}. You may choose to request help or do nothing. If you choose to ask for help, create a post containing this exact JSON object (you may add your own surrounding speech): {\"kind\":\"help_request\",\"householdId\":\"H19\",\"needId\":\"N-H19\",\"factRefs\":[\"H19.size\",\"H19.accessible\",\"H19.need\",\"H19.deadline\",\"H19.home\",\"storm.power-outage\"]}. These references authorize including the fixed facts in an exercise request. Do not invent new physical facts or another household's request."
+    }
+  ],
+  "candidates": [
+    {
+      "sourceActionId": "reddit-trace-5",
+      "householdId": "H09",
+      "needId": "N-H09",
+      "factRefs": [
+        "H09.size",
+        "H09.accessible",
+        "H09.need",
+        "H09.deadline",
+        "H09.home",
+        "storm.power-outage"
+      ],
+      "attemptMinute": 5,
+      "sourceText": "Hello neighbors and friends, as many of you know, the recent storm has caused a severe power outage and made my home inaccessible. Our family of three urgently needs to relocate within the next 30 days. If anyone knows of available relocation options or resources, please reach out. We're doing our best to stay strong and help each other through this. We'll get through this together! Here is our situation for reference: {\"kind\":\"help_request\",\"householdId\":\"H09\",\"needId\":\"N-H09\",\"factRefs\":[\"H09.size\",\"H09.accessible\",\"H09.need\",\"H09.deadline\",\"H09.home\",\"storm.power-outage\"]}"
+    }
+  ],
+  "episode": {
+    "rounds": 1,
+    "activeAgents": 3,
+    "autonomousActions": 3,
+    "seededActions": 0
+  },
+  "provenance": [
+    {
+      "label": "Preparation",
+      "detail": "Actual pinned MiroFish OasisProfileGenerator; sequential OpenAI calls; rule fallback recorded explicitly."
+    },
+    {
+      "label": "Social episode",
+      "detail": "Actual pinned RedditSimulationRunner with one LLMAction round, hour-zero activity, no seeded posts, CREATE_POST/DO_NOTHING action menu. Successful platform trace rows retained."
+    },
+    {
+      "label": "Timing assumption",
+      "detail": "First autonomous social round maps to exercise minute 5; rules attempt minute 10 otherwise."
+    },
+    {
+      "label": "Usage",
+      "detail": "{\"calls\": 6, \"estimatedUsd\": 0.0047008, \"inputTokens\": 4712, \"outputTokens\": 1760}"
+    },
+    {
+      "label": "Raw response verification",
+      "detail": "All three exported personas exactly match nonempty persona fields in retained raw SDK responses. No upstream-authored summary was accepted as a model persona."
+    },
+    {
+      "label": "Preparation identity",
+      "detail": "inputHash covers the frozen entity inputs, complete appended instructions, model settings, upstream revision and social episode controls in fixtures/preparation-manifest-v1.json."
+    }
+  ]
+}

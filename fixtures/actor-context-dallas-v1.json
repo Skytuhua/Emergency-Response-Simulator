@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "template": "storm-dallas-v1",
+  "preparationVersion": "catastrophe-preparation-dallas-v1",
+  "timingMapVersion": "round0-minute5-v1",
+  "publicFacts": [
+    "storm.power-outage"
+  ],
+  "actorContexts": [
+    {
+      "householdId": "H02",
+      "nodeId": "osm-n81982111",
+      "size": 2,
+      "accessible": false,
+      "needId": "N-H02",
+      "needKind": "delivery",
+      "onset": 0,
+      "deadline": 30,
+      "factRefs": [
+        "H02.size",
+        "H02.accessible",
+        "H02.need",
+        "H02.deadline",
+        "H02.home",
+        "storm.power-outage"
+      ]
+    },
+    {
+      "householdId": "H09",
+      "nodeId": "osm-n82064216",
+      "size": 3,
+      "accessible": false,
+      "needId": "N-H09",
+      "needKind": "relocation",
+      "onset": 0,
+      "deadline": 30,
+      "factRefs": [
+        "H09.size",
+        "H09.accessible",
+        "H09.need",
+        "H09.deadline",
+        "H09.home",
+        "storm.power-outage"
+      ]
+    },
+    {
+      "householdId": "H19",
+      "nodeId": "osm-n81953006",
+      "size": 2,
+      "accessible": true,
+      "needId": "N-H19",
+      "needKind": "relocation",
+      "onset": 0,
+      "deadline": 30,
+      "factRefs": [
+        "H19.size",
+        "H19.accessible",
+        "H19.need",
+        "H19.deadline",
+        "H19.home",
+        "storm.power-outage"
+      ]
+    }
+  ],
+  "mapDatasetHash": "ba2017a31c639b4f26060bdd41ca575a536c3ae7080a8fa8a8ec9340c01e8ed6"
+}

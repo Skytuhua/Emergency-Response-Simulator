@@ -1,0 +1,2055 @@
+{
+  "kind": "catastrophe-response-run",
+  "version": 1,
+  "sourceRunId": "default-witness",
+  "config": {
+    "version": 1,
+    "template": "storm-v1",
+    "seed": 42,
+    "additionalNeeds": 3,
+    "vans": 2,
+    "kits": 3,
+    "shelterA": 8,
+    "shelterB": 8,
+    "networkGap": "southeast",
+    "roadPreset": "open"
+  },
+  "scenario": {
+    "version": 1,
+    "generationVersion": "mulberry32-v1",
+    "config": {
+      "version": 1,
+      "template": "storm-v1",
+      "seed": 42,
+      "additionalNeeds": 3,
+      "vans": 2,
+      "kits": 3,
+      "shelterA": 8,
+      "shelterB": 8,
+      "networkGap": "southeast",
+      "roadPreset": "open"
+    },
+    "map": {
+      "width": 960,
+      "height": 660,
+      "nodes": [
+        {
+          "id": "g0-0",
+          "x": 90,
+          "y": 90
+        },
+        {
+          "id": "g0-1",
+          "x": 220,
+          "y": 90
+        },
+        {
+          "id": "g0-2",
+          "x": 350,
+          "y": 90
+        },
+        {
+          "id": "g0-3",
+          "x": 480,
+          "y": 90
+        },
+        {
+          "id": "g0-4",
+          "x": 610,
+          "y": 90
+        },
+        {
+          "id": "g0-5",
+          "x": 740,
+          "y": 90
+        },
+        {
+          "id": "g0-6",
+          "x": 870,
+          "y": 90
+        },
+        {
+          "id": "g1-0",
+          "x": 90,
+          "y": 210
+        },
+        {
+          "id": "g1-1",
+          "x": 220,
+          "y": 210
+        },
+        {
+          "id": "g1-2",
+          "x": 350,
+          "y": 210
+        },
+        {
+          "id": "g1-3",
+          "x": 480,
+          "y": 210
+        },
+        {
+          "id": "g1-4",
+          "x": 610,
+          "y": 210
+        },
+        {
+          "id": "g1-5",
+          "x": 740,
+          "y": 210
+        },
+        {
+          "id": "g1-6",
+          "x": 870,
+          "y": 210
+        },
+        {
+          "id": "g2-0",
+          "x": 90,
+          "y": 330
+        },
+        {
+          "id": "g2-1",
+          "x": 220,
+          "y": 330
+        },
+        {
+          "id": "g2-2",
+          "x": 350,
+          "y": 330
+        },
+        {
+          "id": "g2-3",
+          "x": 480,
+          "y": 330
+        },
+        {
+          "id": "g2-4",
+          "x": 610,
+          "y": 330
+        },
+        {
+          "id": "g2-5",
+          "x": 740,
+          "y": 330
+        },
+        {
+          "id": "g2-6",
+          "x": 870,
+          "y": 330
+        },
+        {
+          "id": "g3-0",
+          "x": 90,
+          "y": 450
+        },
+        {
+          "id": "g3-1",
+          "x": 220,
+          "y": 450
+        },
+        {
+          "id": "g3-2",
+          "x": 350,
+          "y": 450
+        },
+        {
+          "id": "g3-3",
+          "x": 480,
+          "y": 450
+        },
+        {
+          "id": "g3-4",
+          "x": 610,
+          "y": 450
+        },
+        {
+          "id": "g3-5",
+          "x": 740,
+          "y": 450
+        },
+        {
+          "id": "g3-6",
+          "x": 870,
+          "y": 450
+        },
+        {
+          "id": "g4-0",
+          "x": 90,
+          "y": 570
+        },
+        {
+          "id": "g4-1",
+          "x": 220,
+          "y": 570
+        },
+        {
+          "id": "g4-2",
+          "x": 350,
+          "y": 570
+        },
+        {
+          "id": "g4-3",
+          "x": 480,
+          "y": 570
+        },
+        {
+          "id": "g4-4",
+          "x": 610,
+          "y": 570
+        },
+        {
+          "id": "g4-5",
+          "x": 740,
+          "y": 570
+        },
+        {
+          "id": "g4-6",
+          "x": 870,
+          "y": 570
+        }
+      ],
+      "edges": [
+        {
+          "id": "h0-1",
+          "from": "g0-0",
+          "to": "g0-1",
+          "minutes": 3
+        },
+        {
+          "id": "h0-2",
+          "from": "g0-1",
+          "to": "g0-2",
+          "minutes": 3
+        },
+        {
+          "id": "h0-3",
+          "from": "g0-2",
+          "to": "g0-3",
+          "minutes": 3
+        },
+        {
+          "id": "h0-4",
+          "from": "g0-3",
+          "to": "g0-4",
+          "minutes": 3
+        },
+        {
+          "id": "h0-5",
+          "from": "g0-4",
+          "to": "g0-5",
+          "minutes": 3
+        },
+        {
+          "id": "h0-6",
+          "from": "g0-5",
+          "to": "g0-6",
+          "minutes": 3
+        },
+        {
+          "id": "v1-0",
+          "from": "g0-0",
+          "to": "g1-0",
+          "minutes": 3
+        },
+        {
+          "id": "h1-1",
+          "from": "g1-0",
+          "to": "g1-1",
+          "minutes": 3
+        },
+        {
+          "id": "v1-1",
+          "from": "g0-1",
+          "to": "g1-1",
+          "minutes": 3
+        },
+        {
+          "id": "h1-2",
+          "from": "g1-1",
+          "to": "g1-2",
+          "minutes": 3
+        },
+        {
+          "id": "v1-2",
+          "from": "g0-2",
+          "to": "g1-2",
+          "minutes": 3
+        },
+        {
+          "id": "h1-3",
+          "from": "g1-2",
+          "to": "g1-3",
+          "minutes": 3
+        },
+        {
+          "id": "v1-3",
+          "from": "g0-3",
+          "to": "g1-3",
+          "minutes": 3
+        },
+        {
+          "id": "h1-4",
+          "from": "g1-3",
+          "to": "g1-4",
+          "minutes": 3
+        },
+        {
+          "id": "v1-4",
+          "from": "g0-4",
+          "to": "g1-4",
+          "minutes": 3
+        },
+        {
+          "id": "h1-5",
+          "from": "g1-4",
+          "to": "g1-5",
+          "minutes": 3
+        },
+        {
+          "id": "v1-5",
+          "from": "g0-5",
+          "to": "g1-5",
+          "minutes": 3
+        },
+        {
+          "id": "h1-6",
+          "from": "g1-5",
+          "to": "g1-6",
+          "minutes": 3
+        },
+        {
+          "id": "v1-6",
+          "from": "g0-6",
+          "to": "g1-6",
+          "minutes": 3
+        },
+        {
+          "id": "v2-0",
+          "from": "g1-0",
+          "to": "g2-0",
+          "minutes": 3
+        },
+        {
+          "id": "h2-1",
+          "from": "g2-0",
+          "to": "g2-1",
+          "minutes": 3
+        },
+        {
+          "id": "v2-1",
+          "from": "g1-1",
+          "to": "g2-1",
+          "minutes": 3
+        },
+        {
+          "id": "h2-2",
+          "from": "g2-1",
+          "to": "g2-2",
+          "minutes": 3
+        },
+        {
+          "id": "v2-2",
+          "from": "g1-2",
+          "to": "g2-2",
+          "minutes": 3
+        },
+        {
+          "id": "h2-3",
+          "from": "g2-2",
+          "to": "g2-3",
+          "minutes": 3
+        },
+        {
+          "id": "v2-3",
+          "from": "g1-3",
+          "to": "g2-3",
+          "minutes": 3
+        },
+        {
+          "id": "h2-4",
+          "from": "g2-3",
+          "to": "g2-4",
+          "minutes": 3
+        },
+        {
+          "id": "v2-4",
+          "from": "g1-4",
+          "to": "g2-4",
+          "minutes": 3
+        },
+        {
+          "id": "h2-5",
+          "from": "g2-4",
+          "to": "g2-5",
+          "minutes": 3
+        },
+        {
+          "id": "v2-5",
+          "from": "g1-5",
+          "to": "g2-5",
+          "minutes": 3
+        },
+        {
+          "id": "h2-6",
+          "from": "g2-5",
+          "to": "g2-6",
+          "minutes": 3
+        },
+        {
+          "id": "v2-6",
+          "from": "g1-6",
+          "to": "g2-6",
+          "minutes": 3
+        },
+        {
+          "id": "v3-0",
+          "from": "g2-0",
+          "to": "g3-0",
+          "minutes": 3
+        },
+        {
+          "id": "h3-1",
+          "from": "g3-0",
+          "to": "g3-1",
+          "minutes": 3
+        },
+        {
+          "id": "v3-1",
+          "from": "g2-1",
+          "to": "g3-1",
+          "minutes": 3
+        },
+        {
+          "id": "h3-2",
+          "from": "g3-1",
+          "to": "g3-2",
+          "minutes": 3
+        },
+        {
+          "id": "v3-2",
+          "from": "g2-2",
+          "to": "g3-2",
+          "minutes": 3
+        },
+        {
+          "id": "h3-3",
+          "from": "g3-2",
+          "to": "g3-3",
+          "minutes": 3
+        },
+        {
+          "id": "v3-3",
+          "from": "g2-3",
+          "to": "g3-3",
+          "minutes": 3
+        },
+        {
+          "id": "h3-4",
+          "from": "g3-3",
+          "to": "g3-4",
+          "minutes": 3
+        },
+        {
+          "id": "v3-4",
+          "from": "g2-4",
+          "to": "g3-4",
+          "minutes": 3
+        },
+        {
+          "id": "h3-5",
+          "from": "g3-4",
+          "to": "g3-5",
+          "minutes": 3
+        },
+        {
+          "id": "v3-5",
+          "from": "g2-5",
+          "to": "g3-5",
+          "minutes": 3
+        },
+        {
+          "id": "h3-6",
+          "from": "g3-5",
+          "to": "g3-6",
+          "minutes": 3
+        },
+        {
+          "id": "v3-6",
+          "from": "g2-6",
+          "to": "g3-6",
+          "minutes": 3
+        },
+        {
+          "id": "v4-0",
+          "from": "g3-0",
+          "to": "g4-0",
+          "minutes": 3
+        },
+        {
+          "id": "h4-1",
+          "from": "g4-0",
+          "to": "g4-1",
+          "minutes": 3
+        },
+        {
+          "id": "v4-1",
+          "from": "g3-1",
+          "to": "g4-1",
+          "minutes": 3
+        },
+        {
+          "id": "h4-2",
+          "from": "g4-1",
+          "to": "g4-2",
+          "minutes": 3
+        },
+        {
+          "id": "v4-2",
+          "from": "g3-2",
+          "to": "g4-2",
+          "minutes": 3
+        },
+        {
+          "id": "h4-3",
+          "from": "g4-2",
+          "to": "g4-3",
+          "minutes": 3
+        },
+        {
+          "id": "v4-3",
+          "from": "g3-3",
+          "to": "g4-3",
+          "minutes": 3
+        },
+        {
+          "id": "h4-4",
+          "from": "g4-3",
+          "to": "g4-4",
+          "minutes": 3
+        },
+        {
+          "id": "v4-4",
+          "from": "g3-4",
+          "to": "g4-4",
+          "minutes": 3
+        },
+        {
+          "id": "h4-5",
+          "from": "g4-4",
+          "to": "g4-5",
+          "minutes": 3
+        },
+        {
+          "id": "v4-5",
+          "from": "g3-5",
+          "to": "g4-5",
+          "minutes": 3
+        },
+        {
+          "id": "h4-6",
+          "from": "g4-5",
+          "to": "g4-6",
+          "minutes": 3
+        },
+        {
+          "id": "v4-6",
+          "from": "g3-6",
+          "to": "g4-6",
+          "minutes": 3
+        }
+      ]
+    },
+    "households": [
+      {
+        "id": "H01",
+        "name": "Household H01",
+        "address": "107 Cedar Lane",
+        "nodeId": "g0-0",
+        "x": 90,
+        "y": 90,
+        "neighborhood": "northwest",
+        "size": 3,
+        "accessible": false,
+        "need": null
+      },
+      {
+        "id": "H02",
+        "name": "Household H02",
+        "address": "114 Cedar Lane",
+        "nodeId": "g0-1",
+        "x": 220,
+        "y": 90,
+        "neighborhood": "northwest",
+        "size": 2,
+        "accessible": false,
+        "need": {
+          "id": "N-H02",
+          "kind": "delivery",
+          "urgent": true,
+          "onset": 0,
+          "deadline": 30
+        }
+      },
+      {
+        "id": "H03",
+        "name": "Household H03",
+        "address": "121 Cedar Lane",
+        "nodeId": "g0-2",
+        "x": 350,
+        "y": 90,
+        "neighborhood": "northwest",
+        "size": 1,
+        "accessible": false,
+        "need": null
+      },
+      {
+        "id": "H04",
+        "name": "Household H04",
+        "address": "128 Cedar Lane",
+        "nodeId": "g1-0",
+        "x": 90,
+        "y": 210,
+        "neighborhood": "northwest",
+        "size": 4,
+        "accessible": false,
+        "need": null
+      },
+      {
+        "id": "H05",
+        "name": "Household H05",
+        "address": "135 Cedar Lane",
+        "nodeId": "g1-1",
+        "x": 220,
+        "y": 210,
+        "neighborhood": "northwest",
+        "size": 3,
+        "accessible": false,
+        "need": {
+          "id": "N-H05",
+          "kind": "delivery",
+          "urgent": false,
+          "onset": 0,
+          "deadline": 60
+        }
+      },
+      {
+        "id": "H06",
+        "name": "Household H06",
+        "address": "142 Cedar Lane",
+        "nodeId": "g1-2",
+        "x": 350,
+        "y": 210,
+        "neighborhood": "northwest",
+        "size": 3,
+        "accessible": false,
+        "need": null
+      },
+      {
+        "id": "H07",
+        "name": "Household H07",
+        "address": "149 Maple Avenue",
+        "nodeId": "g0-4",
+        "x": 610,
+        "y": 90,
+        "neighborhood": "northeast",
+        "size": 4,
+        "accessible": false,
+        "need": null
+      },
+      {
+        "id": "H08",
+        "name": "Household H08",
+        "address": "156 Maple Avenue",
+        "nodeId": "g0-5",
+        "x": 740,
+        "y": 90,
+        "neighborhood": "northeast",
+        "size": 2,
+        "accessible": false,
+        "need": null
+      },
+      {
+        "id": "H09",
+        "name": "Household H09",
+        "address": "163 Maple Avenue",
+        "nodeId": "g0-6",
+        "x": 870,
+        "y": 90,
+        "neighborhood": "northeast",
+        "size": 3,
+        "accessible": false,
+        "need": {
+          "id": "N-H09",
+          "kind": "relocation",
+          "urgent": true,
+          "onset": 0,
+          "deadline": 30
+        }
+      },
+      {
+        "id": "H10",
+        "name": "Household H10",
+        "address": "170 Maple Avenue",
+        "nodeId": "g1-4",
+        "x": 610,
+        "y": 210,
+        "neighborhood": "northeast",
+        "size": 3,
+        "accessible": false,
+        "need": null
+      },
+      {
+        "id": "H11",
+        "name": "Household H11",
+        "address": "177 Maple Avenue",
+        "nodeId": "g1-5",
+        "x": 740,
+        "y": 210,
+        "neighborhood": "northeast",
+        "size": 2,
+        "accessible": false,
+        "need": null
+      },
+      {
+        "id": "H12",
+        "name": "Household H12",
+        "address": "184 Maple Avenue",
+        "nodeId": "g1-6",
+        "x": 870,
+        "y": 210,
+        "neighborhood": "northeast",
+        "size": 1,
+        "accessible": false,
+        "need": {
+          "id": "N-H12",
+          "kind": "delivery",
+          "urgent": false,
+          "onset": 0,
+          "deadline": 60
+        }
+      },
+      {
+        "id": "H13",
+        "name": "Household H13",
+        "address": "191 Willow Street",
+        "nodeId": "g3-0",
+        "x": 90,
+        "y": 450,
+        "neighborhood": "southwest",
+        "size": 1,
+        "accessible": false,
+        "need": null
+      },
+      {
+        "id": "H14",
+        "name": "Household H14",
+        "address": "198 Willow Street",
+        "nodeId": "g3-1",
+        "x": 220,
+        "y": 450,
+        "neighborhood": "southwest",
+        "size": 3,
+        "accessible": false,
+        "need": null
+      },
+      {
+        "id": "H15",
+        "name": "Household H15",
+        "address": "205 Willow Street",
+        "nodeId": "g3-2",
+        "x": 350,
+        "y": 450,
+        "neighborhood": "southwest",
+        "size": 4,
+        "accessible": false,
+        "need": {
+          "id": "N-H15",
+          "kind": "relocation",
+          "urgent": false,
+          "onset": 0,
+          "deadline": 60
+        }
+      },
+      {
+        "id": "H16",
+        "name": "Household H16",
+        "address": "212 Willow Street",
+        "nodeId": "g4-0",
+        "x": 90,
+        "y": 570,
+        "neighborhood": "southwest",
+        "size": 3,
+        "accessible": false,
+        "need": null
+      },
+      {
+        "id": "H17",
+        "name": "Household H17",
+        "address": "219 Willow Street",
+        "nodeId": "g4-1",
+        "x": 220,
+        "y": 570,
+        "neighborhood": "southwest",
+        "size": 4,
+        "accessible": false,
+        "need": null
+      },
+      {
+        "id": "H18",
+        "name": "Household H18",
+        "address": "226 Willow Street",
+        "nodeId": "g4-2",
+        "x": 350,
+        "y": 570,
+        "neighborhood": "southwest",
+        "size": 1,
+        "accessible": false,
+        "need": null
+      },
+      {
+        "id": "H19",
+        "name": "Household H19",
+        "address": "233 Oak Drive",
+        "nodeId": "g3-4",
+        "x": 610,
+        "y": 450,
+        "neighborhood": "southeast",
+        "size": 2,
+        "accessible": true,
+        "need": {
+          "id": "N-H19",
+          "kind": "relocation",
+          "urgent": true,
+          "onset": 0,
+          "deadline": 30
+        }
+      },
+      {
+        "id": "H20",
+        "name": "Household H20",
+        "address": "240 Oak Drive",
+        "nodeId": "g3-5",
+        "x": 740,
+        "y": 450,
+        "neighborhood": "southeast",
+        "size": 3,
+        "accessible": false,
+        "need": null
+      },
+      {
+        "id": "H21",
+        "name": "Household H21",
+        "address": "247 Oak Drive",
+        "nodeId": "g3-6",
+        "x": 870,
+        "y": 450,
+        "neighborhood": "southeast",
+        "size": 4,
+        "accessible": false,
+        "need": null
+      },
+      {
+        "id": "H22",
+        "name": "Household H22",
+        "address": "254 Oak Drive",
+        "nodeId": "g4-4",
+        "x": 610,
+        "y": 570,
+        "neighborhood": "southeast",
+        "size": 3,
+        "accessible": false,
+        "need": null
+      },
+      {
+        "id": "H23",
+        "name": "Household H23",
+        "address": "261 Oak Drive",
+        "nodeId": "g4-5",
+        "x": 740,
+        "y": 570,
+        "neighborhood": "southeast",
+        "size": 3,
+        "accessible": false,
+        "need": null
+      },
+      {
+        "id": "H24",
+        "name": "Household H24",
+        "address": "268 Oak Drive",
+        "nodeId": "g4-6",
+        "x": 870,
+        "y": 570,
+        "neighborhood": "southeast",
+        "size": 2,
+        "accessible": false,
+        "need": null
+      }
+    ],
+    "units": [
+      {
+        "id": "C1",
+        "name": "Response crew",
+        "kind": "crew",
+        "accessible": false,
+        "seats": 0,
+        "nodeId": "g2-3",
+        "x": 480,
+        "y": 330,
+        "missionId": null,
+        "passengers": 0,
+        "busyMinutes": 0
+      },
+      {
+        "id": "V1",
+        "name": "Accessible transport",
+        "kind": "van",
+        "accessible": true,
+        "seats": 4,
+        "nodeId": "g2-3",
+        "x": 480,
+        "y": 330,
+        "missionId": null,
+        "passengers": 0,
+        "busyMinutes": 0
+      },
+      {
+        "id": "V2",
+        "name": "General transport",
+        "kind": "van",
+        "accessible": false,
+        "seats": 4,
+        "nodeId": "g2-3",
+        "x": 480,
+        "y": 330,
+        "missionId": null,
+        "passengers": 0,
+        "busyMinutes": 0
+      }
+    ],
+    "shelters": [
+      {
+        "id": "A",
+        "name": "East Shelter",
+        "nodeId": "g2-5",
+        "x": 740,
+        "y": 330,
+        "accessible": true,
+        "capacity": 8,
+        "available": 8,
+        "reserved": 0,
+        "occupied": 0
+      },
+      {
+        "id": "B",
+        "name": "West Shelter",
+        "nodeId": "g2-1",
+        "x": 220,
+        "y": 330,
+        "accessible": false,
+        "capacity": 8,
+        "available": 8,
+        "reserved": 0,
+        "occupied": 0
+      }
+    ],
+    "kits": {
+      "initial": 3,
+      "available": 3,
+      "reserved": 0,
+      "consumed": 0
+    },
+    "artifact": {
+      "version": 1,
+      "template": "storm-v1",
+      "sourceCommit": "7657031ac01184afe2cb220f5ee3545573b5e843",
+      "model": "gpt-6.1-terra",
+      "api": "responses",
+      "reasoningEffort": "low",
+      "generationOutcome": "target",
+      "preparationVersion": "catastrophe-preparation-v1",
+      "timingMapVersion": "round0-minute5-v1",
+      "inputHash": "4b5c2eb1432d0146f1e5962df091f993a0a633b25778c605eabdd61c4970e00a",
+      "actorContextDigest": "29d76908b9d92d2ec55c705decd710dacee96edaba118b7402b66179960f328f",
+      "actorContexts": [
+        {
+          "householdId": "H02",
+          "nodeId": "g0-1",
+          "size": 2,
+          "accessible": false,
+          "needId": "N-H02",
+          "needKind": "delivery",
+          "onset": 0,
+          "deadline": 30,
+          "factRefs": [
+            "H02.size",
+            "H02.accessible",
+            "H02.need",
+            "H02.deadline",
+            "H02.home",
+            "storm.power-outage"
+          ]
+        },
+        {
+          "householdId": "H09",
+          "nodeId": "g0-6",
+          "size": 3,
+          "accessible": false,
+          "needId": "N-H09",
+          "needKind": "relocation",
+          "onset": 0,
+          "deadline": 30,
+          "factRefs": [
+            "H09.size",
+            "H09.accessible",
+            "H09.need",
+            "H09.deadline",
+            "H09.home",
+            "storm.power-outage"
+          ]
+        },
+        {
+          "householdId": "H19",
+          "nodeId": "g3-4",
+          "size": 2,
+          "accessible": true,
+          "needId": "N-H19",
+          "needKind": "relocation",
+          "onset": 0,
+          "deadline": 30,
+          "factRefs": [
+            "H19.size",
+            "H19.accessible",
+            "H19.need",
+            "H19.deadline",
+            "H19.home",
+            "storm.power-outage"
+          ]
+        }
+      ],
+      "profiles": [
+        {
+          "householdId": "H02",
+          "displayName": "Riverdale resident H02",
+          "persona": "Riverdale resident H02 is a fictional profile designed for an outage-response simulation. For the purposes of characterization, she is imagined as a 38-year-old woman working as an administrative assistant, with a community-college education. Her country is not specified. These personal details, along with her personality and habits below, are creative assumptions rather than authoritative household facts. The established setting is a storm-related power outage affecting a town called Riverdale; the household is identified as H02, has two members, and is associated with node g0-1. The relationship between the two household members, their ages, health conditions and individual roles are unknown. The household's accessibility attribute is recorded as false, but the supplied information does not explain precisely what that flag means, so it should not be treated as evidence of a particular disability, road condition or delivery barrier. H02 has a delivery need identified as N-H02, with onset recorded as 0 and a deadline of 30. The units and time reference are not supplied, nor is the item to be delivered. In the illustrative profile, she is practical, community-minded and reserved, with an ISFJ personality label used as a storytelling shorthand rather than a diagnosis or established assessment. She tends to focus on concrete next steps when worried and prefers calm, specific explanations to speculation. Her emotional reactions may be understated at first, although uncertainty about a time-sensitive need could make her more direct. Her social circle might include neighbors, coworkers and the other household member, but none of these relationships is independently documented. On social media, she is imagined as an occasional poster who reads local updates more often than she publishes them. During an emergency, she might check community pages for outage notices and delivery information, ask concise questions and share an official update if she believes it would help others. Her usual language would be straightforward and courteous, with little jargon; under pressure she might write shorter messages and repeat the relevant deadline. A possible habitual phrase is 'Please keep us posted,' included only as a characterization choice. She would likely value reliable updates, realistic delivery estimates and clear instructions about whom to contact. Conflicting reports, dismissive replies or promises without follow-through might frustrate her, while a transparent explanation of delays or a neighbor offering practical assistance could move her. Her imagined interests include local community news, household organization and reading, but no supplied evidence confirms these hobbies. Her personal memory for this simulation must remain limited: the recorded connection to the event is that her two-person household is experiencing the storm-related power outage and has a delivery need with the specified onset and deadline. No prior post, request, delivery attempt, conversation, emotional reaction or outcome is documented. Any such action appearing in a simulation should be presented as a new hypothetical development, not as something she has already done. Likewise, the record does not establish how long the outage has lasted, whether the delivery has been arranged, or whether the deadline will be met.",
+          "outcome": "llm",
+          "instruction": "Fictional storm exercise. Your household facts are fixed: {\"accessible\": false, \"deadline\": 30, \"factRefs\": [\"H02.size\", \"H02.accessible\", \"H02.need\", \"H02.deadline\", \"H02.home\", \"storm.power-outage\"], \"householdId\": \"H02\", \"needId\": \"N-H02\", \"needKind\": \"delivery\", \"nodeId\": \"g0-1\", \"onset\": 0, \"size\": 2}. You may choose to request help or do nothing. If you choose to ask for help, create a post containing this exact JSON object (you may add your own surrounding speech): {\"kind\":\"help_request\",\"householdId\":\"H02\",\"needId\":\"N-H02\",\"factRefs\":[\"H02.size\",\"H02.accessible\",\"H02.need\",\"H02.deadline\",\"H02.home\",\"storm.power-outage\"]}. These references authorize including the fixed facts in an exercise request. Do not invent new physical facts or another household's request."
+        },
+        {
+          "householdId": "H09",
+          "displayName": "Riverdale resident H09",
+          "persona": "Riverdale resident H09 is a fictional 38-year-old woman, presented for simulation purposes as an administrative assistant with a community college education. Her age, occupation, education, personality, interests, and social media habits are illustrative choices, not established facts. The authoritative information is that she belongs to household H09, located at node g0-6, which has three members. The household's accessible attribute is false; its precise operational meaning is not specified, so it should not be interpreted as a diagnosis or as proof of any individual's mobility, disability, or support needs. Household need N-H09 is relocation, with onset recorded as 0 and deadline as 30. The units and reference point for those values are unspecified. The household is associated with a home and a storm-related power outage, but the supplied information does not establish the home's condition, the identities of the other household members, or where the household might relocate. In this illustrative portrayal, she is practical, observant, and inclined to organize information before making decisions. An ISFJ personality type is a fictional characterization rather than a clinical assessment. She tends to express worry through concrete questions and may become more direct when a response is vague or time-sensitive. She values calm communication, dependable follow-through, and respect for the privacy of people seeking assistance. Her social relationships can be portrayed as centered on her household and local community, without assigning unverified identities or relationships to the other two household members. On social media, she could plausibly check local updates several times a day during an emergency and post occasionally when seeking or sharing useful information. Her preferred content would include verified outage updates, relocation arrangements, transport information, and practical guidance from local responders. Her interaction style is courteous but specific: she asks who is eligible, where help is available, and how to confirm an arrangement. She avoids presenting rumors as facts and would be cautious about posting precise household details publicly. Her language is plain, concise, and oriented toward next steps; an illustrative phrase is 'What do we need to do next?' She is likely to respond positively to clear instructions, accessible points of contact, and neighbors offering assistance without demanding personal details. Dismissive comments, conflicting directions, or promises of help without an actionable route to obtain it could frustrate her. Outside the emergency scenario, local community news, everyday organization, and simple home activities are plausible fictional interests, not documented hobbies. Her event-related memory must remain bounded by the record: the household has a recorded relocation need during a storm-related outage, beginning at the recorded onset value of 0 and subject to the recorded deadline value of 30. No prior post, call, evacuation attempt, conversation, emotional reaction, or other individual action is supplied. A simulation may explore how she might respond, but must not present such imagined actions as things she has already done.",
+          "outcome": "llm",
+          "instruction": "Fictional storm exercise. Your household facts are fixed: {\"accessible\": false, \"deadline\": 30, \"factRefs\": [\"H09.size\", \"H09.accessible\", \"H09.need\", \"H09.deadline\", \"H09.home\", \"storm.power-outage\"], \"householdId\": \"H09\", \"needId\": \"N-H09\", \"needKind\": \"relocation\", \"nodeId\": \"g0-6\", \"onset\": 0, \"size\": 3}. You may choose to request help or do nothing. If you choose to ask for help, create a post containing this exact JSON object (you may add your own surrounding speech): {\"kind\":\"help_request\",\"householdId\":\"H09\",\"needId\":\"N-H09\",\"factRefs\":[\"H09.size\",\"H09.accessible\",\"H09.need\",\"H09.deadline\",\"H09.home\",\"storm.power-outage\"]}. These references authorize including the fixed facts in an exercise request. Do not invent new physical facts or another household's request."
+        },
+        {
+          "householdId": "H19",
+          "displayName": "Riverdale resident H19",
+          "persona": "Riverdale resident H19 is a fictional adult whose household is associated with node g3-4. The supplied record identifies a two-person household, marks it accessible, and records a relocation need under N-H19 with an onset of 0 and a deadline of 30. The meaning of the accessibility flag, the time unit, the exact location of the home, and the circumstances of the other household member are not specified. The storm-related power outage provides the context for the household's need, but the record does not establish what H19 has already done, whom they have contacted, or how they have reacted. For simulation purposes only, H19 can be portrayed as a 38-year-old woman working as an administrative assistant, with a community-college education and an illustrative United States setting; none of those biographical details is authoritative. Her MBTI type is imagined as ISFJ, suggesting a practical, considerate style rather than a clinical assessment. She tends to prefer clear instructions, familiar routines, and dependable communication, and may express concern calmly while becoming more direct when information is contradictory or urgent. Her relationship to the other member of the household is deliberately unspecified. In ordinary use, she might check social media several times a day, sharing local notices, community resources, and occasional updates about everyday life. During the outage, she would plausibly pay closer attention to official announcements, relocation options, transport information, and posts from neighbors, while avoiding claims she cannot verify. Her interaction style is courteous and concise: she asks specific questions, thanks people who provide useful details, and may repeat a request if an answer is unclear. A possible catchphrase is 'Any confirmed update?' Her interests include neighborhood events, practical household planning, walking, and community volunteering; these are invented characterization details, not established facts. She would likely value timely, accurate guidance that explains where to go, how to access support, and whether arrangements can accommodate the household. She might be frustrated by conflicting instructions, inaccessible or incomplete information, and speculation presented as fact, while responding warmly to concrete offers of assistance and respectful check-ins. Her defining event-related memory for the simulation is limited to the established situation: a storm-related power outage coincides with a relocation need for household H19, recorded with onset 0 and deadline 30. No prior post, evacuation attempt, request to authorities, emotional response, or outcome is documented, so any such action should be treated as a future simulated possibility rather than an existing memory.",
+          "outcome": "llm",
+          "instruction": "Fictional storm exercise. Your household facts are fixed: {\"accessible\": true, \"deadline\": 30, \"factRefs\": [\"H19.size\", \"H19.accessible\", \"H19.need\", \"H19.deadline\", \"H19.home\", \"storm.power-outage\"], \"householdId\": \"H19\", \"needId\": \"N-H19\", \"needKind\": \"relocation\", \"nodeId\": \"g3-4\", \"onset\": 0, \"size\": 2}. You may choose to request help or do nothing. If you choose to ask for help, create a post containing this exact JSON object (you may add your own surrounding speech): {\"kind\":\"help_request\",\"householdId\":\"H19\",\"needId\":\"N-H19\",\"factRefs\":[\"H19.size\",\"H19.accessible\",\"H19.need\",\"H19.deadline\",\"H19.home\",\"storm.power-outage\"]}. These references authorize including the fixed facts in an exercise request. Do not invent new physical facts or another household's request."
+        }
+      ],
+      "candidates": [
+        {
+          "sourceActionId": "reddit-trace-4",
+          "householdId": "H02",
+          "needId": "N-H02",
+          "factRefs": [
+            "H02.size",
+            "H02.accessible",
+            "H02.need",
+            "H02.deadline",
+            "H02.home",
+            "storm.power-outage"
+          ],
+          "attemptMinute": 5,
+          "sourceText": "Our two-person household needs a delivery during the storm power outage. The recorded deadline is 30. Please let us know whom to contact and keep us posted.\n\n{\"kind\":\"help_request\",\"householdId\":\"H02\",\"needId\":\"N-H02\",\"factRefs\":[\"H02.size\",\"H02.accessible\",\"H02.need\",\"H02.deadline\",\"H02.home\",\"storm.power-outage\"]}"
+        },
+        {
+          "sourceActionId": "reddit-trace-5",
+          "householdId": "H19",
+          "needId": "N-H19",
+          "factRefs": [
+            "H19.size",
+            "H19.accessible",
+            "H19.need",
+            "H19.deadline",
+            "H19.home",
+            "storm.power-outage"
+          ],
+          "attemptMinute": 5,
+          "sourceText": "Our two-person household needs relocation support during the storm-related power outage. Is there a confirmed place to go, and how can we arrange transportation? Thank you.\n\n{\"kind\":\"help_request\",\"householdId\":\"H19\",\"needId\":\"N-H19\",\"factRefs\":[\"H19.size\",\"H19.accessible\",\"H19.need\",\"H19.deadline\",\"H19.home\",\"storm.power-outage\"]}"
+        },
+        {
+          "sourceActionId": "reddit-trace-6",
+          "householdId": "H09",
+          "needId": "N-H09",
+          "factRefs": [
+            "H09.size",
+            "H09.accessible",
+            "H09.need",
+            "H09.deadline",
+            "H09.home",
+            "storm.power-outage"
+          ],
+          "attemptMinute": 5,
+          "sourceText": "Storm exercise: Our household of three needs relocation assistance during the power outage. Who should we contact, and how can we confirm an arrangement?\n\n{\"kind\":\"help_request\",\"householdId\":\"H09\",\"needId\":\"N-H09\",\"factRefs\":[\"H09.size\",\"H09.accessible\",\"H09.need\",\"H09.deadline\",\"H09.home\",\"storm.power-outage\"]}"
+        }
+      ],
+      "episode": {
+        "rounds": 1,
+        "activeAgents": 3,
+        "autonomousActions": 3,
+        "seededActions": 0
+      },
+      "provenance": [
+        {
+          "label": "Preparation",
+          "detail": "Actual pinned MiroFish OasisProfileGenerator; sequential OpenAI calls; rule fallback recorded explicitly."
+        },
+        {
+          "label": "Social episode",
+          "detail": "Actual pinned RedditSimulationRunner with one LLMAction round, hour-zero activity, no seeded posts, CREATE_POST/DO_NOTHING action menu. Successful platform trace rows retained."
+        },
+        {
+          "label": "Timing assumption",
+          "detail": "First autonomous social round maps to exercise minute 5; rules attempt minute 10 otherwise."
+        },
+        {
+          "label": "Usage",
+          "detail": "{\"calls\": 6, \"chargedUsd\": 0.018863, \"estimateDetail\": \"Standard input/output token estimate; uncertain calls retain conservative reservations.\", \"estimatedUsd\": 0.018863, \"inputTokens\": 5348, \"outputTokens\": 2703, \"reservedUsd\": 0.2611575}"
+        }
+      ]
+    },
+    "reports": [
+      {
+        "id": "R-H02",
+        "householdId": "H02",
+        "needId": "N-H02",
+        "attemptMinute": 5,
+        "source": "mirofish",
+        "sourceActionId": "reddit-trace-4"
+      },
+      {
+        "id": "R-H05",
+        "householdId": "H05",
+        "needId": "N-H05",
+        "attemptMinute": 6,
+        "source": "rule-based"
+      },
+      {
+        "id": "R-H09",
+        "householdId": "H09",
+        "needId": "N-H09",
+        "attemptMinute": 5,
+        "source": "mirofish",
+        "sourceActionId": "reddit-trace-6"
+      },
+      {
+        "id": "R-H12",
+        "householdId": "H12",
+        "needId": "N-H12",
+        "attemptMinute": 7,
+        "source": "rule-based"
+      },
+      {
+        "id": "R-H15",
+        "householdId": "H15",
+        "needId": "N-H15",
+        "attemptMinute": 7,
+        "source": "rule-based"
+      },
+      {
+        "id": "R-H19",
+        "householdId": "H19",
+        "needId": "N-H19",
+        "attemptMinute": 5,
+        "source": "mirofish",
+        "sourceActionId": "reddit-trace-5"
+      }
+    ]
+  },
+  "artifact": {
+    "version": 1,
+    "template": "storm-v1",
+    "sourceCommit": "7657031ac01184afe2cb220f5ee3545573b5e843",
+    "model": "gpt-6.1-terra",
+    "api": "responses",
+    "reasoningEffort": "low",
+    "generationOutcome": "target",
+    "preparationVersion": "catastrophe-preparation-v1",
+    "timingMapVersion": "round0-minute5-v1",
+    "inputHash": "4b5c2eb1432d0146f1e5962df091f993a0a633b25778c605eabdd61c4970e00a",
+    "actorContextDigest": "29d76908b9d92d2ec55c705decd710dacee96edaba118b7402b66179960f328f",
+    "actorContexts": [
+      {
+        "householdId": "H02",
+        "nodeId": "g0-1",
+        "size": 2,
+        "accessible": false,
+        "needId": "N-H02",
+        "needKind": "delivery",
+        "onset": 0,
+        "deadline": 30,
+        "factRefs": [
+          "H02.size",
+          "H02.accessible",
+          "H02.need",
+          "H02.deadline",
+          "H02.home",
+          "storm.power-outage"
+        ]
+      },
+      {
+        "householdId": "H09",
+        "nodeId": "g0-6",
+        "size": 3,
+        "accessible": false,
+        "needId": "N-H09",
+        "needKind": "relocation",
+        "onset": 0,
+        "deadline": 30,
+        "factRefs": [
+          "H09.size",
+          "H09.accessible",
+          "H09.need",
+          "H09.deadline",
+          "H09.home",
+          "storm.power-outage"
+        ]
+      },
+      {
+        "householdId": "H19",
+        "nodeId": "g3-4",
+        "size": 2,
+        "accessible": true,
+        "needId": "N-H19",
+        "needKind": "relocation",
+        "onset": 0,
+        "deadline": 30,
+        "factRefs": [
+          "H19.size",
+          "H19.accessible",
+          "H19.need",
+          "H19.deadline",
+          "H19.home",
+          "storm.power-outage"
+        ]
+      }
+    ],
+    "profiles": [
+      {
+        "householdId": "H02",
+        "displayName": "Riverdale resident H02",
+        "persona": "Riverdale resident H02 is a fictional profile designed for an outage-response simulation. For the purposes of characterization, she is imagined as a 38-year-old woman working as an administrative assistant, with a community-college education. Her country is not specified. These personal details, along with her personality and habits below, are creative assumptions rather than authoritative household facts. The established setting is a storm-related power outage affecting a town called Riverdale; the household is identified as H02, has two members, and is associated with node g0-1. The relationship between the two household members, their ages, health conditions and individual roles are unknown. The household's accessibility attribute is recorded as false, but the supplied information does not explain precisely what that flag means, so it should not be treated as evidence of a particular disability, road condition or delivery barrier. H02 has a delivery need identified as N-H02, with onset recorded as 0 and a deadline of 30. The units and time reference are not supplied, nor is the item to be delivered. In the illustrative profile, she is practical, community-minded and reserved, with an ISFJ personality label used as a storytelling shorthand rather than a diagnosis or established assessment. She tends to focus on concrete next steps when worried and prefers calm, specific explanations to speculation. Her emotional reactions may be understated at first, although uncertainty about a time-sensitive need could make her more direct. Her social circle might include neighbors, coworkers and the other household member, but none of these relationships is independently documented. On social media, she is imagined as an occasional poster who reads local updates more often than she publishes them. During an emergency, she might check community pages for outage notices and delivery information, ask concise questions and share an official update if she believes it would help others. Her usual language would be straightforward and courteous, with little jargon; under pressure she might write shorter messages and repeat the relevant deadline. A possible habitual phrase is 'Please keep us posted,' included only as a characterization choice. She would likely value reliable updates, realistic delivery estimates and clear instructions about whom to contact. Conflicting reports, dismissive replies or promises without follow-through might frustrate her, while a transparent explanation of delays or a neighbor offering practical assistance could move her. Her imagined interests include local community news, household organization and reading, but no supplied evidence confirms these hobbies. Her personal memory for this simulation must remain limited: the recorded connection to the event is that her two-person household is experiencing the storm-related power outage and has a delivery need with the specified onset and deadline. No prior post, request, delivery attempt, conversation, emotional reaction or outcome is documented. Any such action appearing in a simulation should be presented as a new hypothetical development, not as something she has already done. Likewise, the record does not establish how long the outage has lasted, whether the delivery has been arranged, or whether the deadline will be met.",
+        "outcome": "llm",
+        "instruction": "Fictional storm exercise. Your household facts are fixed: {\"accessible\": false, \"deadline\": 30, \"factRefs\": [\"H02.size\", \"H02.accessible\", \"H02.need\", \"H02.deadline\", \"H02.home\", \"storm.power-outage\"], \"householdId\": \"H02\", \"needId\": \"N-H02\", \"needKind\": \"delivery\", \"nodeId\": \"g0-1\", \"onset\": 0, \"size\": 2}. You may choose to request help or do nothing. If you choose to ask for help, create a post containing this exact JSON object (you may add your own surrounding speech): {\"kind\":\"help_request\",\"householdId\":\"H02\",\"needId\":\"N-H02\",\"factRefs\":[\"H02.size\",\"H02.accessible\",\"H02.need\",\"H02.deadline\",\"H02.home\",\"storm.power-outage\"]}. These references authorize including the fixed facts in an exercise request. Do not invent new physical facts or another household's request."
+      },
+      {
+        "householdId": "H09",
+        "displayName": "Riverdale resident H09",
+        "persona": "Riverdale resident H09 is a fictional 38-year-old woman, presented for simulation purposes as an administrative assistant with a community college education. Her age, occupation, education, personality, interests, and social media habits are illustrative choices, not established facts. The authoritative information is that she belongs to household H09, located at node g0-6, which has three members. The household's accessible attribute is false; its precise operational meaning is not specified, so it should not be interpreted as a diagnosis or as proof of any individual's mobility, disability, or support needs. Household need N-H09 is relocation, with onset recorded as 0 and deadline as 30. The units and reference point for those values are unspecified. The household is associated with a home and a storm-related power outage, but the supplied information does not establish the home's condition, the identities of the other household members, or where the household might relocate. In this illustrative portrayal, she is practical, observant, and inclined to organize information before making decisions. An ISFJ personality type is a fictional characterization rather than a clinical assessment. She tends to express worry through concrete questions and may become more direct when a response is vague or time-sensitive. She values calm communication, dependable follow-through, and respect for the privacy of people seeking assistance. Her social relationships can be portrayed as centered on her household and local community, without assigning unverified identities or relationships to the other two household members. On social media, she could plausibly check local updates several times a day during an emergency and post occasionally when seeking or sharing useful information. Her preferred content would include verified outage updates, relocation arrangements, transport information, and practical guidance from local responders. Her interaction style is courteous but specific: she asks who is eligible, where help is available, and how to confirm an arrangement. She avoids presenting rumors as facts and would be cautious about posting precise household details publicly. Her language is plain, concise, and oriented toward next steps; an illustrative phrase is 'What do we need to do next?' She is likely to respond positively to clear instructions, accessible points of contact, and neighbors offering assistance without demanding personal details. Dismissive comments, conflicting directions, or promises of help without an actionable route to obtain it could frustrate her. Outside the emergency scenario, local community news, everyday organization, and simple home activities are plausible fictional interests, not documented hobbies. Her event-related memory must remain bounded by the record: the household has a recorded relocation need during a storm-related outage, beginning at the recorded onset value of 0 and subject to the recorded deadline value of 30. No prior post, call, evacuation attempt, conversation, emotional reaction, or other individual action is supplied. A simulation may explore how she might respond, but must not present such imagined actions as things she has already done.",
+        "outcome": "llm",
+        "instruction": "Fictional storm exercise. Your household facts are fixed: {\"accessible\": false, \"deadline\": 30, \"factRefs\": [\"H09.size\", \"H09.accessible\", \"H09.need\", \"H09.deadline\", \"H09.home\", \"storm.power-outage\"], \"householdId\": \"H09\", \"needId\": \"N-H09\", \"needKind\": \"relocation\", \"nodeId\": \"g0-6\", \"onset\": 0, \"size\": 3}. You may choose to request help or do nothing. If you choose to ask for help, create a post containing this exact JSON object (you may add your own surrounding speech): {\"kind\":\"help_request\",\"householdId\":\"H09\",\"needId\":\"N-H09\",\"factRefs\":[\"H09.size\",\"H09.accessible\",\"H09.need\",\"H09.deadline\",\"H09.home\",\"storm.power-outage\"]}. These references authorize including the fixed facts in an exercise request. Do not invent new physical facts or another household's request."
+      },
+      {
+        "householdId": "H19",
+        "displayName": "Riverdale resident H19",
+        "persona": "Riverdale resident H19 is a fictional adult whose household is associated with node g3-4. The supplied record identifies a two-person household, marks it accessible, and records a relocation need under N-H19 with an onset of 0 and a deadline of 30. The meaning of the accessibility flag, the time unit, the exact location of the home, and the circumstances of the other household member are not specified. The storm-related power outage provides the context for the household's need, but the record does not establish what H19 has already done, whom they have contacted, or how they have reacted. For simulation purposes only, H19 can be portrayed as a 38-year-old woman working as an administrative assistant, with a community-college education and an illustrative United States setting; none of those biographical details is authoritative. Her MBTI type is imagined as ISFJ, suggesting a practical, considerate style rather than a clinical assessment. She tends to prefer clear instructions, familiar routines, and dependable communication, and may express concern calmly while becoming more direct when information is contradictory or urgent. Her relationship to the other member of the household is deliberately unspecified. In ordinary use, she might check social media several times a day, sharing local notices, community resources, and occasional updates about everyday life. During the outage, she would plausibly pay closer attention to official announcements, relocation options, transport information, and posts from neighbors, while avoiding claims she cannot verify. Her interaction style is courteous and concise: she asks specific questions, thanks people who provide useful details, and may repeat a request if an answer is unclear. A possible catchphrase is 'Any confirmed update?' Her interests include neighborhood events, practical household planning, walking, and community volunteering; these are invented characterization details, not established facts. She would likely value timely, accurate guidance that explains where to go, how to access support, and whether arrangements can accommodate the household. She might be frustrated by conflicting instructions, inaccessible or incomplete information, and speculation presented as fact, while responding warmly to concrete offers of assistance and respectful check-ins. Her defining event-related memory for the simulation is limited to the established situation: a storm-related power outage coincides with a relocation need for household H19, recorded with onset 0 and deadline 30. No prior post, evacuation attempt, request to authorities, emotional response, or outcome is documented, so any such action should be treated as a future simulated possibility rather than an existing memory.",
+        "outcome": "llm",
+        "instruction": "Fictional storm exercise. Your household facts are fixed: {\"accessible\": true, \"deadline\": 30, \"factRefs\": [\"H19.size\", \"H19.accessible\", \"H19.need\", \"H19.deadline\", \"H19.home\", \"storm.power-outage\"], \"householdId\": \"H19\", \"needId\": \"N-H19\", \"needKind\": \"relocation\", \"nodeId\": \"g3-4\", \"onset\": 0, \"size\": 2}. You may choose to request help or do nothing. If you choose to ask for help, create a post containing this exact JSON object (you may add your own surrounding speech): {\"kind\":\"help_request\",\"householdId\":\"H19\",\"needId\":\"N-H19\",\"factRefs\":[\"H19.size\",\"H19.accessible\",\"H19.need\",\"H19.deadline\",\"H19.home\",\"storm.power-outage\"]}. These references authorize including the fixed facts in an exercise request. Do not invent new physical facts or another household's request."
+      }
+    ],
+    "candidates": [
+      {
+        "sourceActionId": "reddit-trace-4",
+        "householdId": "H02",
+        "needId": "N-H02",
+        "factRefs": [
+          "H02.size",
+          "H02.accessible",
+          "H02.need",
+          "H02.deadline",
+          "H02.home",
+          "storm.power-outage"
+        ],
+        "attemptMinute": 5,
+        "sourceText": "Our two-person household needs a delivery during the storm power outage. The recorded deadline is 30. Please let us know whom to contact and keep us posted.\n\n{\"kind\":\"help_request\",\"householdId\":\"H02\",\"needId\":\"N-H02\",\"factRefs\":[\"H02.size\",\"H02.accessible\",\"H02.need\",\"H02.deadline\",\"H02.home\",\"storm.power-outage\"]}"
+      },
+      {
+        "sourceActionId": "reddit-trace-5",
+        "householdId": "H19",
+        "needId": "N-H19",
+        "factRefs": [
+          "H19.size",
+          "H19.accessible",
+          "H19.need",
+          "H19.deadline",
+          "H19.home",
+          "storm.power-outage"
+        ],
+        "attemptMinute": 5,
+        "sourceText": "Our two-person household needs relocation support during the storm-related power outage. Is there a confirmed place to go, and how can we arrange transportation? Thank you.\n\n{\"kind\":\"help_request\",\"householdId\":\"H19\",\"needId\":\"N-H19\",\"factRefs\":[\"H19.size\",\"H19.accessible\",\"H19.need\",\"H19.deadline\",\"H19.home\",\"storm.power-outage\"]}"
+      },
+      {
+        "sourceActionId": "reddit-trace-6",
+        "householdId": "H09",
+        "needId": "N-H09",
+        "factRefs": [
+          "H09.size",
+          "H09.accessible",
+          "H09.need",
+          "H09.deadline",
+          "H09.home",
+          "storm.power-outage"
+        ],
+        "attemptMinute": 5,
+        "sourceText": "Storm exercise: Our household of three needs relocation assistance during the power outage. Who should we contact, and how can we confirm an arrangement?\n\n{\"kind\":\"help_request\",\"householdId\":\"H09\",\"needId\":\"N-H09\",\"factRefs\":[\"H09.size\",\"H09.accessible\",\"H09.need\",\"H09.deadline\",\"H09.home\",\"storm.power-outage\"]}"
+      }
+    ],
+    "episode": {
+      "rounds": 1,
+      "activeAgents": 3,
+      "autonomousActions": 3,
+      "seededActions": 0
+    },
+    "provenance": [
+      {
+        "label": "Preparation",
+        "detail": "Actual pinned MiroFish OasisProfileGenerator; sequential OpenAI calls; rule fallback recorded explicitly."
+      },
+      {
+        "label": "Social episode",
+        "detail": "Actual pinned RedditSimulationRunner with one LLMAction round, hour-zero activity, no seeded posts, CREATE_POST/DO_NOTHING action menu. Successful platform trace rows retained."
+      },
+      {
+        "label": "Timing assumption",
+        "detail": "First autonomous social round maps to exercise minute 5; rules attempt minute 10 otherwise."
+      },
+      {
+        "label": "Usage",
+        "detail": "{\"calls\": 6, \"chargedUsd\": 0.018863, \"estimateDetail\": \"Standard input/output token estimate; uncertain calls retain conservative reservations.\", \"estimatedUsd\": 0.018863, \"inputTokens\": 5348, \"outputTokens\": 2703, \"reservedUsd\": 0.2611575}"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "command": {
+        "action": "ASSESS",
+        "unitId": "C1",
+        "householdId": "H19",
+        "runId": "default-witness",
+        "commandId": "W1",
+        "sequence": 1,
+        "minute": 0
+      },
+      "result": {
+        "accepted": true,
+        "reason": "Unit committed until completion at minute 8.",
+        "missionId": "M0001"
+      }
+    },
+    {
+      "command": {
+        "action": "ASSESS",
+        "unitId": "V2",
+        "householdId": "H09",
+        "runId": "default-witness",
+        "commandId": "W2",
+        "sequence": 2,
+        "minute": 0
+      },
+      "result": {
+        "accepted": true,
+        "reason": "Unit committed until completion at minute 17.",
+        "missionId": "M0002"
+      }
+    },
+    {
+      "command": {
+        "action": "RELOCATE",
+        "unitId": "V1",
+        "householdId": "H19",
+        "shelterId": "A",
+        "runId": "default-witness",
+        "commandId": "W3",
+        "sequence": 3,
+        "minute": 8
+      },
+      "result": {
+        "accepted": true,
+        "reason": "Unit committed until completion at minute 24.",
+        "missionId": "M0003"
+      }
+    },
+    {
+      "command": {
+        "action": "ASSESS",
+        "unitId": "C1",
+        "householdId": "H02",
+        "runId": "default-witness",
+        "commandId": "W4",
+        "sequence": 4,
+        "minute": 8
+      },
+      "result": {
+        "accepted": true,
+        "reason": "Unit committed until completion at minute 28.",
+        "missionId": "M0004"
+      }
+    },
+    {
+      "command": {
+        "action": "RELOCATE",
+        "unitId": "V2",
+        "householdId": "H09",
+        "shelterId": "A",
+        "runId": "default-witness",
+        "commandId": "W5",
+        "sequence": 5,
+        "minute": 17
+      },
+      "result": {
+        "accepted": true,
+        "reason": "Unit committed until completion at minute 30.",
+        "missionId": "M0005"
+      }
+    },
+    {
+      "command": {
+        "action": "RELOCATE",
+        "unitId": "V1",
+        "householdId": "H15",
+        "shelterId": "B",
+        "runId": "default-witness",
+        "commandId": "W6",
+        "sequence": 6,
+        "minute": 24
+      },
+      "result": {
+        "accepted": true,
+        "reason": "Unit committed until completion at minute 46.",
+        "missionId": "M0006"
+      }
+    },
+    {
+      "command": {
+        "action": "DELIVER",
+        "unitId": "C1",
+        "householdId": "H02",
+        "runId": "default-witness",
+        "commandId": "W7",
+        "sequence": 7,
+        "minute": 28
+      },
+      "result": {
+        "accepted": true,
+        "reason": "Unit committed until completion at minute 30.",
+        "missionId": "M0007"
+      }
+    },
+    {
+      "command": {
+        "action": "DELIVER",
+        "unitId": "C1",
+        "householdId": "H05",
+        "runId": "default-witness",
+        "commandId": "W8",
+        "sequence": 8,
+        "minute": 30
+      },
+      "result": {
+        "accepted": true,
+        "reason": "Unit committed until completion at minute 35.",
+        "missionId": "M0008"
+      }
+    },
+    {
+      "command": {
+        "action": "DELIVER",
+        "unitId": "C1",
+        "householdId": "H12",
+        "runId": "default-witness",
+        "commandId": "W9",
+        "sequence": 9,
+        "minute": 35
+      },
+      "result": {
+        "accepted": true,
+        "reason": "Unit committed until completion at minute 52.",
+        "missionId": "M0009"
+      }
+    }
+  ],
+  "savedMinute": 60,
+  "expectedSummary": {
+    "minute": 60,
+    "householdCount": 24,
+    "population": 64,
+    "contactCount": 6,
+    "assessmentCount": 3,
+    "contactCoverage": 0.25,
+    "assessmentCoverage": 0.125,
+    "timelyUrgentAssistance": 1,
+    "urgentNeeds": 3,
+    "timelyUrgentCount": 3,
+    "unmetUrgentNeedMinutes": 84,
+    "stillUndiscovered": 0,
+    "assistanceCompleted": 6,
+    "totalNeeds": 6,
+    "peopleAssisted": 15,
+    "kitsConsumed": 3,
+    "shelterOccupancy": 9,
+    "unitBusyMinutes": 120,
+    "resourceUse": 0.6666666666666666,
+    "households": [
+      {
+        "householdId": "H01",
+        "size": 3,
+        "need": null,
+        "accessible": false,
+        "contactedAt": null,
+        "assessedAt": null,
+        "completedAt": null,
+        "timely": null,
+        "undiscovered": false
+      },
+      {
+        "householdId": "H02",
+        "size": 2,
+        "need": {
+          "id": "N-H02",
+          "kind": "delivery",
+          "urgent": true,
+          "onset": 0,
+          "deadline": 30
+        },
+        "accessible": false,
+        "contactedAt": 5,
+        "assessedAt": 28,
+        "completedAt": 30,
+        "timely": true,
+        "undiscovered": false
+      },
+      {
+        "householdId": "H03",
+        "size": 1,
+        "need": null,
+        "accessible": false,
+        "contactedAt": null,
+        "assessedAt": null,
+        "completedAt": null,
+        "timely": null,
+        "undiscovered": false
+      },
+      {
+        "householdId": "H04",
+        "size": 4,
+        "need": null,
+        "accessible": false,
+        "contactedAt": null,
+        "assessedAt": null,
+        "completedAt": null,
+        "timely": null,
+        "undiscovered": false
+      },
+      {
+        "householdId": "H05",
+        "size": 3,
+        "need": {
+          "id": "N-H05",
+          "kind": "delivery",
+          "urgent": false,
+          "onset": 0,
+          "deadline": 60
+        },
+        "accessible": false,
+        "contactedAt": 6,
+        "assessedAt": null,
+        "completedAt": 35,
+        "timely": true,
+        "undiscovered": false
+      },
+      {
+        "householdId": "H06",
+        "size": 3,
+        "need": null,
+        "accessible": false,
+        "contactedAt": null,
+        "assessedAt": null,
+        "completedAt": null,
+        "timely": null,
+        "undiscovered": false
+      },
+      {
+        "householdId": "H07",
+        "size": 4,
+        "need": null,
+        "accessible": false,
+        "contactedAt": null,
+        "assessedAt": null,
+        "completedAt": null,
+        "timely": null,
+        "undiscovered": false
+      },
+      {
+        "householdId": "H08",
+        "size": 2,
+        "need": null,
+        "accessible": false,
+        "contactedAt": null,
+        "assessedAt": null,
+        "completedAt": null,
+        "timely": null,
+        "undiscovered": false
+      },
+      {
+        "householdId": "H09",
+        "size": 3,
+        "need": {
+          "id": "N-H09",
+          "kind": "relocation",
+          "urgent": true,
+          "onset": 0,
+          "deadline": 30
+        },
+        "accessible": false,
+        "contactedAt": 5,
+        "assessedAt": 17,
+        "completedAt": 30,
+        "timely": true,
+        "undiscovered": false
+      },
+      {
+        "householdId": "H10",
+        "size": 3,
+        "need": null,
+        "accessible": false,
+        "contactedAt": null,
+        "assessedAt": null,
+        "completedAt": null,
+        "timely": null,
+        "undiscovered": false
+      },
+      {
+        "householdId": "H11",
+        "size": 2,
+        "need": null,
+        "accessible": false,
+        "contactedAt": null,
+        "assessedAt": null,
+        "completedAt": null,
+        "timely": null,
+        "undiscovered": false
+      },
+      {
+        "householdId": "H12",
+        "size": 1,
+        "need": {
+          "id": "N-H12",
+          "kind": "delivery",
+          "urgent": false,
+          "onset": 0,
+          "deadline": 60
+        },
+        "accessible": false,
+        "contactedAt": 7,
+        "assessedAt": null,
+        "completedAt": 52,
+        "timely": true,
+        "undiscovered": false
+      },
+      {
+        "householdId": "H13",
+        "size": 1,
+        "need": null,
+        "accessible": false,
+        "contactedAt": null,
+        "assessedAt": null,
+        "completedAt": null,
+        "timely": null,
+        "undiscovered": false
+      },
+      {
+        "householdId": "H14",
+        "size": 3,
+        "need": null,
+        "accessible": false,
+        "contactedAt": null,
+        "assessedAt": null,
+        "completedAt": null,
+        "timely": null,
+        "undiscovered": false
+      },
+      {
+        "householdId": "H15",
+        "size": 4,
+        "need": {
+          "id": "N-H15",
+          "kind": "relocation",
+          "urgent": false,
+          "onset": 0,
+          "deadline": 60
+        },
+        "accessible": false,
+        "contactedAt": 7,
+        "assessedAt": null,
+        "completedAt": 46,
+        "timely": true,
+        "undiscovered": false
+      },
+      {
+        "householdId": "H16",
+        "size": 3,
+        "need": null,
+        "accessible": false,
+        "contactedAt": null,
+        "assessedAt": null,
+        "completedAt": null,
+        "timely": null,
+        "undiscovered": false
+      },
+      {
+        "householdId": "H17",
+        "size": 4,
+        "need": null,
+        "accessible": false,
+        "contactedAt": null,
+        "assessedAt": null,
+        "completedAt": null,
+        "timely": null,
+        "undiscovered": false
+      },
+      {
+        "householdId": "H18",
+        "size": 1,
+        "need": null,
+        "accessible": false,
+        "contactedAt": null,
+        "assessedAt": null,
+        "completedAt": null,
+        "timely": null,
+        "undiscovered": false
+      },
+      {
+        "householdId": "H19",
+        "size": 2,
+        "need": {
+          "id": "N-H19",
+          "kind": "relocation",
+          "urgent": true,
+          "onset": 0,
+          "deadline": 30
+        },
+        "accessible": true,
+        "contactedAt": 8,
+        "assessedAt": 8,
+        "completedAt": 24,
+        "timely": true,
+        "undiscovered": false
+      },
+      {
+        "householdId": "H20",
+        "size": 3,
+        "need": null,
+        "accessible": false,
+        "contactedAt": null,
+        "assessedAt": null,
+        "completedAt": null,
+        "timely": null,
+        "undiscovered": false
+      },
+      {
+        "householdId": "H21",
+        "size": 4,
+        "need": null,
+        "accessible": false,
+        "contactedAt": null,
+        "assessedAt": null,
+        "completedAt": null,
+        "timely": null,
+        "undiscovered": false
+      },
+      {
+        "householdId": "H22",
+        "size": 3,
+        "need": null,
+        "accessible": false,
+        "contactedAt": null,
+        "assessedAt": null,
+        "completedAt": null,
+        "timely": null,
+        "undiscovered": false
+      },
+      {
+        "householdId": "H23",
+        "size": 3,
+        "need": null,
+        "accessible": false,
+        "contactedAt": null,
+        "assessedAt": null,
+        "completedAt": null,
+        "timely": null,
+        "undiscovered": false
+      },
+      {
+        "householdId": "H24",
+        "size": 2,
+        "need": null,
+        "accessible": false,
+        "contactedAt": null,
+        "assessedAt": null,
+        "completedAt": null,
+        "timely": null,
+        "undiscovered": false
+      }
+    ],
+    "assistedOverTime": [
+      {
+        "minute": 0,
+        "people": 0
+      },
+      {
+        "minute": 1,
+        "people": 0
+      },
+      {
+        "minute": 2,
+        "people": 0
+      },
+      {
+        "minute": 3,
+        "people": 0
+      },
+      {
+        "minute": 4,
+        "people": 0
+      },
+      {
+        "minute": 5,
+        "people": 0
+      },
+      {
+        "minute": 6,
+        "people": 0
+      },
+      {
+        "minute": 7,
+        "people": 0
+      },
+      {
+        "minute": 8,
+        "people": 0
+      },
+      {
+        "minute": 9,
+        "people": 0
+      },
+      {
+        "minute": 10,
+        "people": 0
+      },
+      {
+        "minute": 11,
+        "people": 0
+      },
+      {
+        "minute": 12,
+        "people": 0
+      },
+      {
+        "minute": 13,
+        "people": 0
+      },
+      {
+        "minute": 14,
+        "people": 0
+      },
+      {
+        "minute": 15,
+        "people": 0
+      },
+      {
+        "minute": 16,
+        "people": 0
+      },
+      {
+        "minute": 17,
+        "people": 0
+      },
+      {
+        "minute": 18,
+        "people": 0
+      },
+      {
+        "minute": 19,
+        "people": 0
+      },
+      {
+        "minute": 20,
+        "people": 0
+      },
+      {
+        "minute": 21,
+        "people": 0
+      },
+      {
+        "minute": 22,
+        "people": 0
+      },
+      {
+        "minute": 23,
+        "people": 0
+      },
+      {
+        "minute": 24,
+        "people": 2
+      },
+      {
+        "minute": 25,
+        "people": 2
+      },
+      {
+        "minute": 26,
+        "people": 2
+      },
+      {
+        "minute": 27,
+        "people": 2
+      },
+      {
+        "minute": 28,
+        "people": 2
+      },
+      {
+        "minute": 29,
+        "people": 2
+      },
+      {
+        "minute": 30,
+        "people": 7
+      },
+      {
+        "minute": 31,
+        "people": 7
+      },
+      {
+        "minute": 32,
+        "people": 7
+      },
+      {
+        "minute": 33,
+        "people": 7
+      },
+      {
+        "minute": 34,
+        "people": 7
+      },
+      {
+        "minute": 35,
+        "people": 10
+      },
+      {
+        "minute": 36,
+        "people": 10
+      },
+      {
+        "minute": 37,
+        "people": 10
+      },
+      {
+        "minute": 38,
+        "people": 10
+      },
+      {
+        "minute": 39,
+        "people": 10
+      },
+      {
+        "minute": 40,
+        "people": 10
+      },
+      {
+        "minute": 41,
+        "people": 10
+      },
+      {
+        "minute": 42,
+        "people": 10
+      },
+      {
+        "minute": 43,
+        "people": 10
+      },
+      {
+        "minute": 44,
+        "people": 10
+      },
+      {
+        "minute": 45,
+        "people": 10
+      },
+      {
+        "minute": 46,
+        "people": 14
+      },
+      {
+        "minute": 47,
+        "people": 14
+      },
+      {
+        "minute": 48,
+        "people": 14
+      },
+      {
+        "minute": 49,
+        "people": 14
+      },
+      {
+        "minute": 50,
+        "people": 14
+      },
+      {
+        "minute": 51,
+        "people": 14
+      },
+      {
+        "minute": 52,
+        "people": 15
+      },
+      {
+        "minute": 53,
+        "people": 15
+      },
+      {
+        "minute": 54,
+        "people": 15
+      },
+      {
+        "minute": 55,
+        "people": 15
+      },
+      {
+        "minute": 56,
+        "people": 15
+      },
+      {
+        "minute": 57,
+        "people": 15
+      },
+      {
+        "minute": 58,
+        "people": 15
+      },
+      {
+        "minute": 59,
+        "people": 15
+      },
+      {
+        "minute": 60,
+        "people": 15
+      }
+    ]
+  }
+}
