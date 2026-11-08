@@ -8,6 +8,7 @@
 }
 :root { font-family:"Segoe UI",Arial,sans-serif; color:#252a32; background:#f4f5f6; font-synthesis:none; text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; --background:#f4f5f6; --foreground:#252a32; --primary:#c92332; --border:#d9dee4; }
 * { box-sizing:border-box; }
+html,body,#root { width:100%; min-width:0; }
 body { margin:0; }
 button,input,select { font:inherit; }
 button,select,summary { cursor:pointer; }
@@ -20,7 +21,7 @@ input { accent-color:var(--primary); caret-color:var(--primary); }
 h1,h2,h3,p,dl,ol,ul { margin:0; } h1 { font-size:24px; font-weight:720; line-height:1.25; letter-spacing:-.025em; } h2 { font-size:20px; font-weight:700; line-height:1.3; letter-spacing:-.015em; } h3 { font-size:16px; font-weight:650; }
 h1[tabindex="-1"]:focus { outline:none; }
 p { line-height:1.5; } small { font-size:14px; } .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
-.app-shell { height:100dvh; min-height:0; display:grid; grid-template-rows:56px minmax(0,1fr); }
+.app-shell { width:100%; max-width:100%; min-width:0; height:100dvh; min-height:0; display:grid; grid-template-rows:56px minmax(0,1fr); }
 .app-header { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:0 24px; background:#252426; color:#fff; }
 .brand { display:flex; align-items:center; gap:10px; white-space:nowrap; font-size:17px; letter-spacing:-.02em; }
 .brand-mark { display:grid; place-items:center; width:32px; height:32px; border-radius:8px; background:var(--primary); } .brand-mark svg { width:22px; height:22px; }
@@ -66,6 +67,9 @@ select,input[type=number] { height:44px; width:100%; min-width:0; padding:0 11px
 .map-panel { min-height:0; min-width:0; border:1px solid #cfd8ce; border-radius:12px; overflow:hidden; }
 .town-map { width:100%; height:100%; display:grid; grid-template-rows:minmax(0,1fr) auto; min-height:0; background:#e4ecde; border-radius:inherit; }
 .map-scene { min-height:0; position:relative; } .map-scene canvas { width:100%; height:100%; display:block; } .map-overlay { position:absolute; inset:0; pointer-events:none; }
+.geographic-map { grid-template-rows:minmax(0,1fr) auto auto; background:#eef0ed; }
+.map-source { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 12px; padding:7px 10px; border-top:1px solid #d5dbd6; background:#fff; color:#58645d; font-size:12px; }
+.map-source a { color:#3d5e4a; text-decoration:underline; }
 .map-house { position:absolute; transform:translate(-50%,-50%); width:44px; height:44px; display:grid; place-items:center; padding:0; color:#64747b; background:none; border:0; pointer-events:auto; border-radius:7px; }
 .map-house svg { width:27px; height:27px; stroke-width:2; fill:#e9eeec; filter:drop-shadow(0 1px 1px white); } .map-house:hover { background:#ffffffb0; } .map-house.selected { outline:3px solid #c92332; outline-offset:0; background:#fff7f7; color:#c92332; } .map-house.selected svg { fill:#fbe1e3; }
 .map-house.reported { color:#a96810; } .map-house.reported svg { fill:#fff0ce; } .map-house.urgent,.map-house.undiscovered { color:#b62230; } .map-house.urgent svg,.map-house.undiscovered svg { fill:#ffe1e5; } .map-house.assisted { color:#287650; } .map-house.assisted svg { fill:#d9eee0; } .map-house.assessed { color:#55766b; } .map-house.assessed svg { fill:#dcebe4; }

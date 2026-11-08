@@ -3,7 +3,7 @@ import { BarChart3, ClipboardList, Map, ShieldCheck } from 'lucide-react';
 import { Button } from './components/ui/button';
 import type { AgentArtifact, CommandIntent, ScenarioConfig, SimState } from './model';
 import { HORIZON } from './model';
-import { createScenario, DEFAULT_CONFIG } from './scenario';
+import { createScenario, DALLAS_DEFAULT_CONFIG } from './scenario';
 import { initialize, advanceMinute, dispatch } from './sim/engine';
 import { observe } from './sim/observe';
 import { validateArtifact } from './artifact';
@@ -20,8 +20,9 @@ const freshRunId = () => crypto.randomUUID();
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('create');
-  const [config, setConfig] = useState<ScenarioConfig>({ ...DEFAULT_CONFIG });
-  const [artifact, setArtifact] = useState<AgentArtifact | null>(null);
+  const [config, setConfig] = useState<ScenarioConfig>({ ...DALLAS_DEFAULT_CONFIG });
+  const [artifacts, setArtifacts] = useState<Record<ScenarioConfig['template'], AgentArtifact | null>>({ 'storm-v1':null, 'storm-dallas-v1':null });
+  const artifact = artifacts[config.template];
   const [state, setState] = useState<SimState | null>(null);
   const stateRef = useRef<SimState | null>(null);
   const [running, setRunning] = useState(false);
@@ -49,9 +50,15 @@ export default function App() {
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch('/data/mirofish-v1.json', { signal: controller.signal })
-      .then(response => { if (!response.ok) throw new Error('No prepared artifact'); return response.json(); })
-      .then(json => setArtifact(validateArtifact(json))).catch(() => {});
+    for (const [template, url] of [['storm-v1','/data/mirofish-v1.json'], ['storm-dallas-v1','/data/mirofish-dallas-v1.json']] as const) {
+      fetch(url, { signal: controller.signal })
+        .then(response => { if (!response.ok) throw new Error('No prepared artifact'); return response.json(); })
+        .then(json => {
+          const prepared = validateArtifact(json);
+          if (prepared.template !== template) throw new Error('Prepared location differs.');
+          if (!controller.signal.aborted) setArtifacts(current => ({ ...current, [template]:prepared }));
+        }).catch(() => {});
+    }
     return () => controller.abort();
   }, []);
 
@@ -91,7 +98,7 @@ export default function App() {
   const start = (override?: ScenarioConfig) => {
     try {
       const chosen = override ?? config;
-      const next = initialize(createScenario(chosen, artifact), freshRunId());
+      const next = initialize(createScenario(chosen, artifacts[chosen.template]), freshRunId());
       if (override) setConfig({ ...override });
       generation.current++; pause(); clearSelections(); install(next); setScreen('respond');
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Check the exercise settings.'); }
@@ -163,7 +170,7 @@ export default function App() {
     </header>
     <main className={`main-content screen-${screen}`}>
       {error && screen !== 'create' && <div className="global-error" role="alert"><span>{error}</span><Button variant="ghost" onClick={() => setError(null)}>Dismiss</Button></div>}
-      {screen === 'create' && <Creator config={config} artifact={artifact} error={error} onChange={setConfig} onStart={start} onDefault={() => { setConfig({ ...DEFAULT_CONFIG }); setError(null); }} onImport={importClick} />}
+      {screen === 'create' && <Creator config={config} artifact={artifact} error={error} onChange={setConfig} onStart={start} onDefault={() => { setConfig({ ...DALLAS_DEFAULT_CONFIG }); setError(null); }} onImport={importClick} />}
       {screen === 'respond' && view && <Response view={view} selected={selected} unitId={unitId} shelterId={shelterId} artifact={state!.scenario.artifact}
         running={running} speed={speed} notice={notice} onSelect={select} onUnit={setUnitId} onShelter={setShelterId}
         onToggle={() => runningRef.current ? pause() : run()} onStep={() => { pause(); step(); }} onSpeed={setSpeed} onPause={pause} onDispatch={command}

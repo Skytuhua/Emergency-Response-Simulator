@@ -6,7 +6,7 @@ import { Creator } from '../src/ui/Creator';
 import { Results } from '../src/ui/Results';
 import { SecondaryPanel } from '../src/ui/SecondaryPanel';
 import type { ScenarioConfig } from '../src/model';
-import { createScenario, DEFAULT_CONFIG } from '../src/scenario';
+import { createScenario, DEFAULT_CONFIG, DALLAS_DEFAULT_CONFIG } from '../src/scenario';
 import { runBaseline, runDefaultWitness, summarize } from '../src/sim/results';
 
 vi.mock('../src/ui/TownMap', () => ({ TownMap: () => <div data-testid="town-map">Town map</div> }));
@@ -28,13 +28,13 @@ describe('exercise setup wizard', () => {
     expect(screen.getByText('Find who needs help, send a team, and see help arrive.')).toBeTruthy();
     expect(screen.queryByRole('combobox')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'Start the demo' }));
-    expect(onStart).toHaveBeenCalledExactlyOnceWith(DEFAULT_CONFIG);
+    expect(onStart).toHaveBeenCalledExactlyOnceWith(DALLAS_DEFAULT_CONFIG);
     customize();
     fireEvent.change(screen.getByLabelText('How many more households need help?'), { target: { value: '5' } });
     fireEvent.click(screen.getByRole('button', { name: 'Back' }));
     expect(screen.getByRole('button', { name: 'Start the demo' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Start the demo' }));
-    expect(onStart).toHaveBeenLastCalledWith(DEFAULT_CONFIG);
+    expect(onStart).toHaveBeenLastCalledWith(DALLAS_DEFAULT_CONFIG);
     expect(onStart).toHaveBeenCalledTimes(2);
     customize();
     expect((screen.getByLabelText('How many more households need help?') as HTMLInputElement).value).toBe('5');

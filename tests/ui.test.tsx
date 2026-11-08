@@ -2,8 +2,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import App from '../src/App';
+import { DEFAULT_CONFIG } from '../src/scenario';
+import type { ScenarioConfig } from '../src/model';
 
-vi.mock('../src/ui/Creator', () => ({ Creator: ({ onStart }: { onStart: () => void }) => <button onClick={() => onStart()}>Start exercise</button> }));
+// These controller regressions retain the original grid's 8/16/24 witness.
+vi.mock('../src/ui/Creator', () => ({ Creator: ({ onStart }: { onStart: (config?: ScenarioConfig) => void }) => <button onClick={() => onStart(DEFAULT_CONFIG)}>Start exercise</button> }));
 beforeEach(() => {
   vi.useFakeTimers();
   vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} });

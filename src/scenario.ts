@@ -1,14 +1,16 @@
 import type { AgentArtifact, Household, Need, Scenario, ScenarioConfig } from './model';
 import { createShelters, createTown, createUnits } from './content/town-v1';
+import { createDallasShelters, createDallasTown, createDallasUnits } from './content/dallas-v1';
 import { validateArtifact } from './artifact';
 
 export const DEFAULT_CONFIG: ScenarioConfig = { version: 1, template: 'storm-v1', seed: 42, additionalNeeds: 3, vans: 2, kits: 3, shelterA: 8, shelterB: 8, networkGap: 'southeast', roadPreset: 'open' };
+export const DALLAS_DEFAULT_CONFIG: ScenarioConfig = { ...DEFAULT_CONFIG, template: 'storm-dallas-v1' };
 const KEYS = Object.keys(DEFAULT_CONFIG).sort();
 export function parseConfig(input: unknown): ScenarioConfig {
   if (!input || typeof input !== 'object' || Array.isArray(input)) throw new Error('Exercise settings must be an object.');
   const value = input as Record<string, unknown>;
   if (Object.keys(value).sort().join('|') !== KEYS.join('|')) throw new Error('Exercise settings contain missing or unsupported fields.');
-  if (value.version !== 1 || value.template !== 'storm-v1') throw new Error('Unsupported exercise version or storm template.');
+  if (value.version !== 1 || typeof value.template !== 'string' || !['storm-v1', 'storm-dallas-v1'].includes(value.template)) throw new Error('Unsupported exercise version or storm template.');
   for (const [key, min, max] of [['seed', 0, 4294967295], ['additionalNeeds', 0, 9], ['vans', 1, 2], ['kits', 0, 6], ['shelterA', 0, 8], ['shelterB', 0, 8]] as const) {
     const field = value[key];
     if (typeof field !== 'number' || !Number.isInteger(field) || field < min || field > max) throw new Error(`${key} must be an integer from ${min} to ${max}.`);
@@ -24,8 +26,10 @@ function mulberry32(seed: number): () => number {
 export function createScenario(input: ScenarioConfig, inputArtifact: AgentArtifact | null = null): Scenario {
   const config = parseConfig(input);
   const artifact = inputArtifact ? validateArtifact(inputArtifact) : null;
+  if (artifact && artifact.template !== config.template) throw new Error('Prepared artifact template does not match this exercise.');
   const random = mulberry32(config.seed);
-  const town = createTown(config.roadPreset);
+  const dallas = config.template === 'storm-dallas-v1';
+  const town = dallas ? createDallasTown(config.roadPreset) : createTown(config.roadPreset);
   const ordinary = town.households.filter(h => !['H02', 'H09', 'H19'].includes(h.id)).map(h => h.id);
   const data = new Map(ordinary.map(id => [id, { size: 1 + Math.floor(random() * 4), kind: random() < 0.5 ? 'delivery' as const : 'relocation' as const, urgent: random() < 0.5, reportMinute: 2 + Math.floor(random() * 9) }]));
   const candidates = [...ordinary];
@@ -45,7 +49,7 @@ export function createScenario(input: ScenarioConfig, inputArtifact: AgentArtifa
   });
   return {
     version: 1, generationVersion: 'mulberry32-v1', config, map: town.map, households,
-    units: createUnits(config.vans), shelters: createShelters(config),
+    units: dallas ? createDallasUnits(config.vans) : createUnits(config.vans), shelters: dallas ? createDallasShelters(config) : createShelters(config),
     kits: { initial: config.kits, available: config.kits, reserved: 0, consumed: 0 }, artifact,
     reports: households.filter(h => h.need).map(h => {
       const candidate = artifact?.candidates.find(c => c.householdId === h.id);

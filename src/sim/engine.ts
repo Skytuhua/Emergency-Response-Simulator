@@ -1,6 +1,6 @@
 import type { Command, CommandResult, Household, KnownFacts, Mission, Route, Scenario, SimState, Unit } from '../model';
 import { HORIZON } from '../model';
-import { shortestPath } from './routes';
+import { isGeographicGraph, routePosition, shortestPath, validateGeographicGraph } from './routes';
 
 const clone = <T>(value: T): T => structuredClone(value);
 const event = (state: SimState, type: SimState['events'][number]['type'], message: string, householdId?: string, urgent?: boolean) => {
@@ -25,7 +25,8 @@ export function initialize(scenario: Scenario, runId: string): SimState {
   if (!runId || typeof runId !== 'string' || runId.length > 120) throw new Error('A valid run identity is required.');
   const ids = new Set(scenario.map.nodes.map(n => n.id));
   const duplicateIds = [scenario.map.nodes, scenario.map.edges, scenario.households, scenario.units, scenario.shelters, scenario.reports].some(items => new Set(items.map(item => item.id)).size !== items.length);
-  if (duplicateIds || scenario.households.some(h => !ids.has(h.nodeId)) || scenario.units.some(u => !ids.has(u.nodeId)) || scenario.shelters.some(s => !ids.has(s.nodeId)) || scenario.map.edges.some(e => !ids.has(e.from) || !ids.has(e.to) || !Number.isInteger(e.minutes) || e.minutes <= 0) || scenario.reports.some(r => !scenario.households.some(h => h.id === r.householdId && h.need?.id === r.needId))) throw new Error('The scenario contains invalid or dangling map references.');
+  if (isGeographicGraph(scenario.map)) validateGeographicGraph(scenario.map);
+  if (duplicateIds || scenario.households.some(h => !ids.has(h.nodeId)) || scenario.units.some(u => !ids.has(u.nodeId)) || scenario.shelters.some(s => !ids.has(s.nodeId)) || scenario.map.edges.some(e => !ids.has(e.from) || !ids.has(e.to) || (!isGeographicGraph(scenario.map) && (!Number.isInteger(e.minutes) || e.minutes <= 0))) || scenario.reports.some(r => !scenario.households.some(h => h.id === r.householdId && h.need?.id === r.needId))) throw new Error('The scenario contains invalid or dangling map references.');
   const state: SimState = {
     runId, minute: 0, finalized: false, scenario: clone(scenario),
     households: scenario.households.map(h => ({ householdId: h.id, known: null, contactedAt: null, assessedAt: null, completedAt: null, missionId: null })),
@@ -86,15 +87,8 @@ export function dispatch(state: SimState, command: Command): { state: SimState; 
   return { state: next, result };
 }
 function positionAlong(state: SimState, unit: Unit, route: Route, elapsed: number) {
-  let remaining = Math.max(0, elapsed);
-  for (const leg of route.legs) {
-    const a = state.scenario.map.nodes.find(n => n.id === leg.from)!;
-    const b = state.scenario.map.nodes.find(n => n.id === leg.to)!;
-    if (remaining <= leg.minutes) { const ratio = Math.min(1, remaining / leg.minutes); unit.x = a.x + (b.x - a.x) * ratio; unit.y = a.y + (b.y - a.y) * ratio; return; }
-    remaining -= leg.minutes;
-  }
-  const endpoint = state.scenario.map.nodes.find(n => n.id === route.nodes.at(-1))!;
-  unit.x = endpoint.x; unit.y = endpoint.y;
+  const position = routePosition(state.scenario.map, route, elapsed);
+  unit.x = position.x; unit.y = position.y;
 }
 export function advanceMinute(state: SimState): SimState {
   if (state.finalized || state.minute >= HORIZON) return state;

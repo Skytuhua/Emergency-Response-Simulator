@@ -74,15 +74,18 @@ def main() -> int:
         parser.error("Preparation budget must be explicitly configured, above zero and at most $10.")
     if args.model != TERRA_MODEL:
         parser.error("New preparation calls require exact gpt-6.1-terra LOW; legacy artifacts remain replayable.")
+    # Validate the entire frozen contract and manifest before secret access or work creation.
+    try:
+        contract = load_contract(args.input)
+        manifest = preparation_manifest(contract, args.model)
+    except (OSError, ValueError) as error:
+        parser.error(str(error))
     key = (args.key_file.read_text(encoding="utf-8-sig").strip().strip('"') if args.key_file else os.environ.get("OPENAI_API_KEY", ""))
     # A supplied text document may have a label; extract only a valid key internally.
     key_match = re.search(r"sk-[A-Za-z0-9_-]+", key)
     if not key_match:
         parser.error("Authorized OpenAI key was not found. Key content was not printed.")
     key = key_match.group(0)
-    contract = load_contract(args.input)
-    if contract != load_contract():
-        parser.error("Actor input is incompatible with the frozen storm-v1 contract.")
     actual = subprocess.check_output(["git", "-C", str(ROOT / "vendor/MiroFish"), "rev-parse", "HEAD"], text=True).strip()
     if actual != SOURCE_COMMIT:
         parser.error("MiroFish source revision does not match the supported pinned commit.")
@@ -102,13 +105,13 @@ def main() -> int:
         if json.loads((work / "contract.json").read_text(encoding="utf-8")) != contract:
             parser.error("Resume context differs from the frozen preparation contract.")
         try:
-            verify_resume_manifest(work, preparation_manifest(contract, args.model))
+            verify_resume_manifest(work, manifest)
         except ValueError as error:
             parser.error(str(error))
     else:
         work = Path(tempfile.mkdtemp(prefix="mirofish-", dir=private))
         (work / "contract.json").write_text(json.dumps(contract), encoding="utf-8")
-        (work / "preparation-manifest.json").write_text(json.dumps(preparation_manifest(contract, args.model), indent=2), encoding="utf-8")
+        (work / "preparation-manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     try:
         preflight_receipt = preflight_model(work, key)
     except RuntimeError as error:

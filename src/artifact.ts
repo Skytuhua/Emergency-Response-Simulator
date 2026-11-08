@@ -1,6 +1,8 @@
 import contract from '../fixtures/actor-context-v1.json';
 import preparation from '../fixtures/preparation-manifest-v1.json';
 import terraPreparation from '../fixtures/preparation-manifest-terra-low-v1.json';
+import dallasContract from '../fixtures/actor-context-dallas-v1.json';
+import dallasTerraPreparation from '../fixtures/preparation-manifest-dallas-terra-low-v1.json';
 import type { ActorContext, AgentArtifact } from './model';
 
 export const ACTOR_CONTEXTS = contract.actorContexts as ActorContext[];
@@ -10,6 +12,11 @@ export const TERRA_PREPARATION_INPUT_HASH = '4b5c2eb1432d0146f1e5962df091f993a0a
 export const PREPARATION_VERSION = 'catastrophe-preparation-v1';
 export const TIMING_MAP_VERSION = 'round0-minute5-v1';
 export const MIROFISH_COMMIT = '7657031ac01184afe2cb220f5ee3545573b5e843';
+export const DALLAS_ACTOR_CONTEXTS = dallasContract.actorContexts as ActorContext[];
+export const DALLAS_ACTOR_CONTEXT_DIGEST = '41a8c28b2da65f9519a19e6426514a86328724021c0d0cca3f84499386fd4062';
+export const DALLAS_TERRA_PREPARATION_INPUT_HASH = 'f1f98271f7c423fa1dc0a851c67837c228c81ddd05bfd3c992502110e1c3d20b';
+export const DALLAS_PREPARATION_VERSION = 'catastrophe-preparation-dallas-v1';
+export const DALLAS_MAP_DATASET_HASH = dallasContract.mapDatasetHash;
 
 function object(value: unknown, keys: string[], required = keys): Record<string, unknown> {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Artifact must contain objects.');
@@ -34,14 +41,19 @@ function canonical(value: unknown): string {
 export function validateArtifact(input: unknown): AgentArtifact {
   const required = ['version','template','sourceCommit','model','generationOutcome','preparationVersion','timingMapVersion','inputHash','actorContextDigest','actorContexts','profiles','candidates','episode','provenance'];
   const a = object(input, [...required, 'api', 'reasoningEffort'], required);
-  if (a.version !== 1 || a.template !== 'storm-v1' || a.sourceCommit !== MIROFISH_COMMIT) throw new Error('Unsupported MiroFish artifact version or source.');
-  const supported = a.model === terraPreparation.profiles.model ? terraPreparation : a.model === preparation.profiles.model ? preparation : null;
+  if (a.version !== 1 || (a.template !== 'storm-v1' && a.template !== 'storm-dallas-v1') || a.sourceCommit !== MIROFISH_COMMIT) throw new Error('Unsupported MiroFish artifact version or source.');
+  const dallas = a.template === 'storm-dallas-v1';
+  const supported = dallas
+    ? a.model === dallasTerraPreparation.profiles.model ? dallasTerraPreparation : null
+    : a.model === terraPreparation.profiles.model ? terraPreparation : a.model === preparation.profiles.model ? preparation : null;
   if (!supported) throw new Error('Artifact model differs from the supported preparation inputs.');
-  const terra = supported === terraPreparation;
-  const expectedHash = terra ? TERRA_PREPARATION_INPUT_HASH : PREPARATION_INPUT_HASH;
-  if (a.preparationVersion !== PREPARATION_VERSION || a.timingMapVersion !== TIMING_MAP_VERSION || a.inputHash !== expectedHash) throw new Error('MiroFish preparation input identity does not match this exercise.');
+  const terra = a.model === terraPreparation.profiles.model;
+  const actors = dallas ? DALLAS_ACTOR_CONTEXTS : ACTOR_CONTEXTS;
+  const actorDigest = dallas ? DALLAS_ACTOR_CONTEXT_DIGEST : ACTOR_CONTEXT_DIGEST;
+  const expectedHash = dallas ? DALLAS_TERRA_PREPARATION_INPUT_HASH : terra ? TERRA_PREPARATION_INPUT_HASH : PREPARATION_INPUT_HASH;
+  if (a.preparationVersion !== (dallas ? DALLAS_PREPARATION_VERSION : PREPARATION_VERSION) || a.timingMapVersion !== TIMING_MAP_VERSION || a.inputHash !== expectedHash) throw new Error('MiroFish preparation input identity does not match this exercise.');
   if (terra ? a.api !== 'responses' || a.reasoningEffort !== 'low' : Object.hasOwn(a, 'api') || Object.hasOwn(a, 'reasoningEffort')) throw new Error('Artifact transport or reasoning differs from the supported preparation inputs.');
-  if (a.actorContextDigest !== ACTOR_CONTEXT_DIGEST || canonical(a.actorContexts) !== canonical(ACTOR_CONTEXTS)) throw new Error('MiroFish actor context is incompatible with this exercise.');
+  if (a.actorContextDigest !== actorDigest || canonical(a.actorContexts) !== canonical(actors)) throw new Error('MiroFish actor context is incompatible with this exercise.');
   text(a.model, 120);
   if (typeof a.generationOutcome !== 'string' || !['target','profiles-only','blocked'].includes(a.generationOutcome)) throw new Error('Unsupported MiroFish integration outcome.');
   const profiles = array(a.profiles, 3);
@@ -49,7 +61,7 @@ export function validateArtifact(input: unknown): AgentArtifact {
   let verified = 0;
   for (const value of profiles) {
     const p = object(value, ['householdId','displayName','persona','outcome','instruction']);
-    if (!ACTOR_CONTEXTS.some(actor => actor.householdId === p.householdId) || profileIds.has(p.householdId)) throw new Error('Invalid or duplicate profile actor.');
+    if (!actors.some(actor => actor.householdId === p.householdId) || profileIds.has(p.householdId)) throw new Error('Invalid or duplicate profile actor.');
     profileIds.add(p.householdId);
     text(p.displayName, 120); text(p.persona); text(p.instruction);
     if (p.instruction !== supported.entities.find(entity => entity.uuid === p.householdId)?.instruction) throw new Error('Artifact instruction differs from the supported preparation inputs.');
@@ -63,7 +75,7 @@ export function validateArtifact(input: unknown): AgentArtifact {
   const candidateIds = new Set(), sources = new Set();
   for (const value of candidates) {
     const c = object(value, ['sourceActionId','householdId','needId','factRefs','attemptMinute','sourceText']);
-    const actor = ACTOR_CONTEXTS.find(actor => actor.householdId === c.householdId);
+    const actor = actors.find(actor => actor.householdId === c.householdId);
     if (!actor || actor.needId !== c.needId || canonical(actor.factRefs) !== canonical(c.factRefs) || c.attemptMinute !== 5) throw new Error('Invalid social request fact references.');
     text(c.sourceActionId, 120); text(c.sourceText);
     if (!c.sourceActionId || !c.sourceText || candidateIds.has(c.householdId) || sources.has(c.sourceActionId)) throw new Error('Duplicate or missing social request source.');
