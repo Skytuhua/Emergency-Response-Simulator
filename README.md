@@ -18,11 +18,13 @@ If port 4173 is occupied, use `npm run demo -- --port 4175` and open http://127.
 
 ## Exercise
 
-Create opens first. The default is seed 42, 24 households, two four-seat vans (V1 is accessible), one assessment/supply crew, three kits, two shelters with eight places each, and a southeast household communications outage. Teams retain working radios.
+Setup opens with three steps: **Conditions → Resources → Review**. Defaults are prefilled and Back preserves edits. The default is seed 42, 24 homes, two four-seat vans (V1 is accessible), one response crew, three kits, two shelters with eight places each, and a southeast communications outage.
 
-The response screen starts paused. Select H19 and send the crew for a welfare check. Its assessment finishes at minute 8. Dispatch accessible van V1 to H19 and Shelter A at that minute. Boarding finishes at minute 16; drop-off finishes at minute 24. Dispatch reserves resources; assistance is complete only after delivery or shelter drop-off.
+The dashboard starts paused. Select a home and use its contextual action: **Check home & run**, **Deliver kit & run**, or **Send transport & run**. The fastest feasible team/shelter is suggested; choices remain editable. Successful dispatch starts playback. A sent team remains in progress until delivery or shelter drop-off.
 
-Use the HTML household list for keyboard selection. Selection, new urgent observations, and switching away from the tab pause playback. Step advances one simulated minute. Default playback is two real seconds per simulated minute, with labeled faster options. Finish advances the remaining simulation to minute 60; it does not invent decisions.
+**Homes**, **Teams**, **Activity**, and **Details** open secondary drawers. The **Exercise** menu contains import, export, new exercise, and finish. Selecting a home, opening a drawer, new urgency, and hiding the tab pause playback. Closing a drawer leaves the clock paused. **+1 min** pauses and advances one minute. Playback remains two real seconds per simulated minute at1×.
+
+For the golden path, send C1 to check H19 at minute0, pause or step to8, then send V1 to H19/East Shelter. Pickup is16 and drop-off24. Results use **Overview / Compare / Homes / Details** tabs.
 
 Export paused or completed runs to JSON. Reloading the page discards an unsaved run. Import validates the whole file before installing it, replays the recorded decisions, and opens paused. Replay preserves decisions; restart preserves conditions and clears decisions; edit conditions creates a new scenario.
 
@@ -37,7 +39,7 @@ npm run build
 python -m unittest discover -s tools/tests
 ```
 
-With the production preview running at port 4175, `npm run test:browser` checks the golden household path, a minute-17 export/import, invalid-import preservation, results, restart, external network isolation, and desktop/mobile layout. It saves evidence under ignored `.private/browser-evidence/`. Set `APP_URL` to use a different preview origin. `npx playwright install chromium` installs the test browser. `npm run demo:record` records the three-minute scripted demonstration to ignored `.private/demo-recording/`.
+With the production preview running at port 4175, `npm run test:browser` checks the wizard, 26 desktop states at 1366×768 and 1440×900, readable controls/map labels, golden path, minute-17 replay, invalid-import preservation, results tabs, shortages, keyboard panels, and compact reflow. Evidence stays under ignored `.private/browser-evidence/simpler/`. Set `APP_URL` for another origin; this revision was tested at 43179. `npx playwright install chromium` installs the browser. `npm run demo:record` records `.private/demo-recording/simpler-response-demo.webm`.
 
 The master plan defines acceptance. See `docs/evidence/build-status.md` for executed checks and unresolved gates. Automated fixtures do not establish operational emergency-response validity or competition eligibility.
 
