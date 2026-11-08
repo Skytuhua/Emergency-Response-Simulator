@@ -34,7 +34,7 @@ Canonical private evidence is retained under `.private/mirofish-l6u41ega/`: comp
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File tools/setup_mirofish.ps1
-.venv-mirofish/Scripts/python.exe tools/prepare_mirofish.py --input fixtures/actor-context-v1.json --output public/data/new-episode.json --key-file C:/path/to/authorized-key.txt --budget-usd 10
+.venv-mirofish/Scripts/python.exe tools/prepare_mirofish.py --input fixtures/actor-context-v1.json --output public/data/new-episode.json --key-file C:/path/to/authorized-key.txt --model gpt-6.1-terra --budget-usd 1
 python -m unittest discover -s tools/tests
 npm run test:pack
 ```

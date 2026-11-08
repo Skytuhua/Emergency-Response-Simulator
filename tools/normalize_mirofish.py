@@ -47,7 +47,9 @@ def verified_model_persona(responses: list[str], exported_persona: str) -> bool:
 
 def preparation_manifest(contract: dict, model: str) -> dict:
     """All controlled inputs actually supplied to pinned generation and social APIs."""
-    return {
+    if model not in {'gpt-4.1-mini', 'gpt-6.1-terra'}:
+        raise ValueError('Unsupported preparation model; no substitution is permitted.')
+    manifest = {
         'version': 1, 'sourceCommit': SOURCE_COMMIT, 'contract': contract,
         'locale': 'en',
         'entities': [dict(uuid=a['householdId'], name=f"Riverdale resident {a['householdId']}",
@@ -66,6 +68,14 @@ def preparation_manifest(contract: dict, model: str) -> dict:
                    'agent_configs': [{'agent_id': i, 'active_hours': [0], 'activity_level': 1} for i in range(3)],
                    'event_config': {'initial_posts': []}},
     }
+    if model == 'gpt-6.1-terra':
+        for settings in (manifest['profiles'], manifest['social']):
+            settings.pop('maxTokens')
+            settings.update(api='responses', reasoningEffort='low', maxOutputTokens=4096,
+                            serviceTier='default', adapterVersion='terra-responses-v1',
+                            temperatureForwarded=False)
+        manifest['social']['contextWindowTokens'] = 32768
+    return manifest
 
 
 def normalize_action(action: dict, actors: list[dict]) -> dict | None:
@@ -112,9 +122,15 @@ def build_artifact(contract: dict, profile_evidence: dict, social: dict) -> dict
     profiles = profile_evidence.get("profiles", [])
     verified = sum(p["outcome"] == "llm" for p in profiles)
     outcome = "target" if verified == 3 and candidates and social.get("activeAgents") == 3 else "profiles-only" if verified else "blocked"
-    return {"version":1, "template":"storm-v1", "sourceCommit":SOURCE_COMMIT, "model":profile_evidence.get("model", "unavailable"),
+    if outcome != 'target':
+        # Partial preparation cannot export a request set that the runtime's
+        # complete-profile contract rejects. Raw platform traces stay private.
+        candidates = []
+    model = profile_evidence.get('model', 'unavailable')
+    transport = {'api':'responses', 'reasoningEffort':'low'} if model == 'gpt-6.1-terra' else {}
+    return {"version":1, "template":"storm-v1", "sourceCommit":SOURCE_COMMIT, "model":model, **transport,
             "generationOutcome":outcome, "preparationVersion":contract["preparationVersion"], "timingMapVersion":contract["timingMapVersion"],
-            "inputHash":canonical_hash(preparation_manifest(contract, profile_evidence.get('model', 'unavailable'))), "actorContextDigest":canonical_hash(actors), "actorContexts":actors,
+            "inputHash":canonical_hash(preparation_manifest(contract, model)), "actorContextDigest":canonical_hash(actors), "actorContexts":actors,
             "profiles":profiles, "candidates":candidates,
             "episode":{"rounds":social.get("rounds", 0), "activeAgents":social.get("activeAgents", 0),
                        "autonomousActions":len(social.get("actions", [])), "seededActions":0},
