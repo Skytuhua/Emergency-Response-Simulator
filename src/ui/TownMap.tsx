@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Accessibility, Check, House, ShieldCheck, TriangleAlert, Truck, Users } from 'lucide-react';
 import type { ObservationView, RunSummary } from '../model';
+import type { CoordinatorObservationV2 } from '../v2/contracts';
 import { drawTown, neighborhoodName, publicUnitPosition } from '../map';
 import { GeographicTownMap } from './GeographicTownMap';
 
@@ -12,6 +13,7 @@ export interface ResponseBaseMarker { nodeId:string; x:number; y:number; label:s
 export interface TownMapProps {
   view: ObservationView; selected?: string | null; onSelect?: (id: string) => void; compact?: boolean; debrief?: RunSummary;
   unitStates?: Record<string,{x:number;y:number;label:string}>;
+  motionObservation?:CoordinatorObservationV2; motionPlaying?:boolean; motionSpeed?:number;
   boundaryRings?: [number,number][][];
   householdLabels?: Record<string,string>;
   householdTitles?: Record<string,string>;

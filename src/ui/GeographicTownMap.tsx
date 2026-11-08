@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import * as L from 'leaflet';
 import { Accessibility, Check, House, MapPin, ShieldCheck, TriangleAlert, Truck, Users } from 'lucide-react';
@@ -6,6 +6,8 @@ import type { TownMapProps } from './TownMap';
 import { neighborhoodName, publicUnitPosition } from '../map';
 import { routeLegGeometry } from '../sim/routes';
 import { geographicIdentity, outageBounds, simulationBounds, xyToLatLng } from './geographic';
+import { vehicleMotionPositionV2, vehicleMotionV2 } from './v2/vehicle-motion';
+import type { CoordinatorObservationV2 } from '../v2/contracts';
 import 'leaflet/dist/leaflet.css';
 import './geographic-map.css';
 
@@ -17,7 +19,7 @@ const providerCredit = env?.VITE_MAP_TILE_ATTRIBUTION;
 const textLabel = (text: string) => { const node = document.createElement('span'); node.textContent = text; return node; };
 
 /** Tiles provide visual context only. Routing and observations remain on the frozen engine graph. */
-export function GeographicTownMap({ view, selected = null, onSelect, compact = false, debrief, unitStates, boundaryRings, householdLabels, householdTitles, householdCounts, mapTitle, onViewportChange, mapLabel, responseBase, requestedBase, onMapPoint, onRoadSelect, roadOverrides, selectedRoadId }: TownMapProps) {
+export function GeographicTownMap({ view, selected = null, onSelect, compact = false, debrief, unitStates, boundaryRings, householdLabels, householdTitles, householdCounts, mapTitle, onViewportChange, mapLabel, responseBase, requestedBase, onMapPoint, onRoadSelect, roadOverrides, selectedRoadId, motionObservation, motionPlaying = false, motionSpeed = 1 }: TownMapProps) {
   const container = useRef<HTMLDivElement>(null);
   const dragged = useRef(false);
   const [runtime, setRuntime] = useState<MapRuntime | null>(null);
@@ -173,6 +175,39 @@ export function GeographicTownMap({ view, selected = null, onSelect, compact = f
       }
     }
   },[runtime,view.map,roadOverrides,selectedRoadId,!!onRoadSelect]);
+
+  const previousMotion = useRef<CoordinatorObservationV2 | undefined>(undefined);
+  const latestMotion = useRef(motionObservation); latestMotion.current=motionObservation;
+  useLayoutEffect(()=>{
+    const previous=previousMotion.current; previousMotion.current=motionObservation;
+    if(!runtime||!motionObservation||!previous||!motionPlaying||document.hidden||motionSpeed<=0)return;
+    const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
+    if(reduced?.matches)return;
+    const markers=Array.from(runtime.markers.querySelectorAll<HTMLElement>('[data-unit-id]'));
+    const animations=motionObservation.units.flatMap(unit=>{
+      const element=markers.find(item=>item.dataset.unitId===unit.id),motion=vehicleMotionV2(previous,motionObservation,unit.id);
+      return element&&motion?[{element,motion,unit}]:[];
+    });
+    if(!animations.length)return;
+    let frame=0,finished=false;
+    const draw=(fraction:number)=>{for(const item of animations){
+      const point=vehicleMotionPositionV2(motionObservation.map,item.motion,fraction);
+      const projected=runtime.map.latLngToLayerPoint(xyToLatLng(motionObservation.map,point));
+      item.element.style.left=`${projected.x}px`;item.element.style.top=`${projected.y}px`;
+    }};
+    const restore=()=>{if(finished)return;finished=true;cancelAnimationFrame(frame);for(const item of animations){
+      const latest=latestMotion.current,unit=latest?.units.find(candidate=>candidate.id===item.unit.id);
+      if(!latest||!unit)continue;
+      const point=runtime.map.latLngToLayerPoint(xyToLatLng(latest.map,unit.position));
+      item.element.style.left=`${point.x}px`;item.element.style.top=`${point.y}px`;
+    }};
+    const started=performance.now(),duration=1000/motionSpeed;
+    const animate=(now:number)=>{const progress=Math.min(1,Math.max(0,(now-started)/duration));draw(progress);if(progress<1)frame=requestAnimationFrame(animate);else restore();};
+    const hidden=()=>{if(document.hidden)restore();};const preference=()=>{if(reduced?.matches)restore();};
+    document.addEventListener('visibilitychange',hidden);reduced?.addEventListener?.('change',preference);
+    draw(0);frame=requestAnimationFrame(animate);
+    return()=>{document.removeEventListener('visibilitychange',hidden);reduced?.removeEventListener?.('change',preference);restore();};
+  },[runtime,motionObservation,motionPlaying,motionSpeed]);
 
   const position = (point: { x: number; y: number }) => {
     const p = runtime!.map.latLngToLayerPoint(xyToLatLng(view.map, point));

@@ -7,8 +7,8 @@ import { homeLabelV2 } from './home-labels';
 import './observer-v2.css';
 import './map-v2.css';
 
-export interface MapV2Props { snapshot:ObserverSnapshotV2; selected?:string|null; onSelect?:(id:string)=>void; onPause?:()=>void; fallbackFocusId?:string; geography?:GeographyBundleV2; compact?:boolean; mapTitle?:string }
-export function MapV2({snapshot,selected=null,onSelect,onPause,fallbackFocusId,geography,compact=false,mapTitle='Dallas response area'}:MapV2Props) {
+export interface MapV2Props { snapshot:ObserverSnapshotV2; selected?:string|null; onSelect?:(id:string)=>void; onPause?:()=>void; fallbackFocusId?:string; geography?:GeographyBundleV2; compact?:boolean; mapTitle?:string; playing?:boolean; speed?:number }
+export function MapV2({snapshot,selected=null,onSelect,onPause,fallbackFocusId,geography,compact=false,mapTitle='Dallas response area',playing=false,speed=1}:MapV2Props) {
   const [viewport,setViewport]=useState<MapViewport|null>(null);
   const onViewportChange=useCallback((next:MapViewport)=>setViewport(current=>current?.zoom===next.zoom && current.bounds.north===next.bounds.north && current.bounds.south===next.bounds.south && current.bounds.west===next.bounds.west && current.bounds.east===next.bounds.east ? current : next),[]);
   const scene=useMemo(()=>adaptMapV2(snapshot.coordinator,selected,viewport),[snapshot.coordinator,selected,viewport]);
@@ -27,7 +27,7 @@ export function MapV2({snapshot,selected=null,onSelect,onPause,fallbackFocusId,g
   };
   return <div className="v2-map-wrap" id={mapFocusId} tabIndex={-1} aria-label="Dallas map and home groups">
     <TownMap view={scene.view} selected={scene.selectedFeatureId} onSelect={onSelect?choose:undefined} compact={compact}
-      unitStates={scene.unitStates} boundaryRings={geography?.tracts.flatMap(tract=>tract.rings)} householdLabels={scene.householdLabels} householdTitles={scene.householdTitles} householdCounts={scene.householdCounts}
+      unitStates={scene.unitStates} motionObservation={snapshot.coordinator} motionPlaying={playing} motionSpeed={speed} boundaryRings={geography?.tracts.flatMap(tract=>tract.rings)} householdLabels={scene.householdLabels} householdTitles={scene.householdTitles} householdCounts={scene.householdCounts}
       onViewportChange={onViewportChange} mapTitle={mapTitle} responseBase={scene.responseBase}/>
     {cluster&&<SecondaryPanel title="Homes in selected map group" onClose={()=>setClusterId(null)} fallbackFocusId={fallbackFocusId??mapFocusId} className="v2-secondary">
       <section className="v2-group-browser" aria-label="Map group members"><h3>{cluster.homeCount} homes in this group</h3>
