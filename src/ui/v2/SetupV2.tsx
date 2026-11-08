@@ -72,10 +72,9 @@ export function SetupV2({bundle,setup,onChange,onStart,onImport,map,editMode,onE
   };
 
   if(screen==='welcome')return <section className="setup-v2 setup-v2-welcome" aria-label="Dallas simulation welcome">
-    <div className="setup-v2-welcome-copy"><span className="setup-v2-eyebrow">Automatic response simulation</span><h1 ref={title} tabIndex={-1}>Dallas storm response</h1><p className="setup-v2-intro">Watch how reports and home checks guide help after a simulated storm.</p>
+    <div className="setup-v2-welcome-copy"><h1 ref={title} tabIndex={-1}>Dallas storm response</h1><p className="setup-v2-intro">Watch how reports and home checks guide help after a simulated storm.</p>
       <dl className="setup-v2-population"><div><dd>{bundle.assets.population.households.length.toLocaleString()}</dd><dt>simulated homes</dt></div><div><dd>{bundle.assets.population.persons.length.toLocaleString()}</dd><dt>residents</dt></div><div><dd>6 hours</dd><dt>simulated time</dt></div></dl>
       <div className="setup-v2-welcome-actions"><Button onClick={start} disabled={busy}>Start simulation<ChevronRight size={17}/></Button><Button variant="outline" onClick={()=>{setScreen('customize');move(0);}} disabled={busy}>Customize setup</Button><Button variant="ghost" onClick={onImport} disabled={busy}>Open saved run</Button></div>
-      <p className="setup-v2-muted">Teams respond automatically. You can pause and inspect any home.</p>
       {generalError&&<p className="setup-v2-error" role="alert">{generalError}</p>}
     </div><div className="setup-v2-welcome-map"><div className="setup-v2-welcome-map-heading">Dallas simulation area</div><div key={mapAttempt} ref={preview} className="setup-v2-welcome-preview" inert aria-hidden="true">{map}</div>{mapUnavailable&&<div className="setup-v2-welcome-map-status"><span role="status">Map incomplete or unavailable. Roads are still shown.</span><Button variant="outline" onClick={()=>{credit.current?.focus();setMapUnavailable(false);setMapAttempt(value=>value+1);}}>Reload map</Button></div>}<a ref={credit} className="setup-v2-welcome-attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">&copy; OpenStreetMap contributors</a></div>
   </section>;

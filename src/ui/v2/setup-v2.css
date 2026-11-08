@@ -8,12 +8,14 @@
 .setup-v2-error { color:#a12635; font-size:14px; margin-top:5px; }
 .setup-v2-welcome { display:grid; grid-template-columns:minmax(360px,.8fr) minmax(0,1.2fr); gap:32px; align-items:center; flex:1 1 auto; max-width:1500px; margin:0 auto; padding:20px 0; }
 .setup-v2-welcome-copy { padding:clamp(24px,3vw,44px); background:#fff; border:1px solid #d9dee4; border-radius:12px; }
-.setup-v2-welcome h1 { margin:8px 0 12px; }
-.setup-v2-intro { font-size:17px; line-height:1.5; max-width:440px; }
-.setup-v2-population { display:flex; flex-wrap:wrap; gap:20px 28px; margin:25px 0; }
-.setup-v2-population dd { font-size:25px; font-weight:700; line-height:1.2; margin:0; color:#24313c; }
-.setup-v2-population dt { color:#5e6c78; margin-top:4px; }
-.setup-v2-welcome-actions { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 15px; }
+.setup-v2-welcome h1 { margin:0 0 12px; font-size:clamp(28px,2.4vw,36px); line-height:1.15; }
+.setup-v2-intro { font-size:17px; line-height:1.5; max-width:440px; color:#52616e; }
+.setup-v2-population { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:28px 0; padding:20px 0; border-block:1px solid #e3e8ec; }
+.setup-v2-population dd { font-size:clamp(20px,1.7vw,26px); font-weight:700; line-height:1.2; margin:0; color:#24313c; font-variant-numeric:tabular-nums; }
+.setup-v2-population dt { color:#52616e; margin-top:4px; line-height:1.35; }
+.setup-v2-welcome-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.setup-v2-welcome-actions button:first-child { grid-column:1/-1; min-height:50px; justify-content:center; }
+.setup-v2-welcome-actions button { min-width:0; white-space:normal; text-align:center; }
 .setup-v2-welcome-map { display:flex; flex-direction:column; height:100%; min-height:400px; min-width:0; border:1px solid #d9dee4; border-radius:12px; overflow:hidden; background:#fff; }
 .setup-v2-welcome-map-heading { flex:none; padding:14px 18px; font-size:16px; font-weight:700; }
 .setup-v2-welcome-preview { flex:1 1 auto; min-height:0; }
