@@ -141,6 +141,19 @@ describe('v2 observer evidence and selection', () => {
     expect(within(selected).getByText('Shelter trip not completed')).toBeTruthy();
     expect(within(selected).queryByText('No transport arrived yet')).toBeNull();
     expect(within(selected).queryByText('Help completed')).toBeNull();
+    const stopped=screen.getByRole('region',{name:'Teams stopped'});
+    expect(within(stopped).getByText(status==='stranded'?'The road became unsafe.':'The destination shelter is closed.')).toBeTruthy();
+    expect(within(stopped).getByText('6 people on board')).toBeTruthy();
+    expect(stopped.textContent).not.toMatch(/0 supply|0 passengers/);
+  });
+  it('shows a single supply bundle without zero passenger counts or invented reasons',()=>{
+    const value=snapshot(),unit=value.coordinator.units[0];unit.status='blocked';unit.passengers=0;unit.carriedBundles=1;
+    show(value);
+    const stopped=screen.getByRole('region',{name:'Teams stopped'});
+    expect(within(stopped).getByText('Team C1 · Stopped')).toBeTruthy();
+    expect(within(stopped).getByText('1 supply bundle on board')).toBeTruthy();
+    expect(within(stopped).getByText('Reason not available.')).toBeTruthy();
+    expect(stopped.textContent).not.toContain('0');
   });
   it('never relabels an authored persona as direct AI evidence and keeps provenance out of the primary panel',()=>{
     const value=snapshot();value.personas=[{...persona,origin:'authored'} as unknown as PersonaV2];show(value);
