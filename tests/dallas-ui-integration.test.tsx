@@ -23,8 +23,12 @@ it('renders completed Dallas vehicles at their actual street arrival position', 
   expect(unit.missionId).toBeNull();
   const {container} = render(<TownMap view={view} />);
   const marker = container.querySelector<HTMLElement>('[data-unit-id="C1"]')!;
-  expect(parseFloat(marker.style.left)).toBeCloseTo(unit.x / view.map.width * 100);
-  expect(parseFloat(marker.style.top)).toBeCloseTo(unit.y / view.map.height * 100);
+  // Both anchors now live in Leaflet's pixel pane. The completed vehicle must
+  // remain at its actual destination rather than teleporting to the base.
+  const destination = container.querySelector<HTMLElement>('[title^="H19,"]')!;
+  expect(marker.style.left).toBe(destination.style.left);
+  expect(marker.style.top).toBe(destination.style.top);
+  expect(marker.style.left).not.toBe(container.querySelector<HTMLElement>('.map-facility.base')!.style.left);
 });
 
 it('keeps the Dallas welcome preview valid when editing a retained legacy run', () => {
