@@ -250,7 +250,7 @@ function deliverResidentActions(state: WorldStateV2): void {
   for (const need of background) {
     const opportunityId = `report:${need.id}:${need.reportAttempt}`;
     // Tentatively schedule retry; receipt/suppression clears it below.
-    need.reportAttempt++; need.nextReportAtMs = state.nowMs + state.bundle.behaviorRules.retryMs;
+    need.reportAttempt++; need.nextReportAtMs = state.nowMs + effectiveScenarioV2(state.bundle).behaviorRules.retryMs;
     processOpportunity(state, need.householdId, opportunityId, need);
     if (need.completedAtMs !== null) need.nextReportAtMs = null;
   }

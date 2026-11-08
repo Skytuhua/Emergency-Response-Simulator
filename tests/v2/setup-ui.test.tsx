@@ -19,11 +19,28 @@ function resources(){fireEvent.click(screen.getByRole('button',{name:'Customize 
 describe('expanded onboarding and guided setup',()=>{
   it('starts the default automatic simulation or opens a saved run from the welcome screen',()=>{
     const callbacks=show();
-    expect(screen.getByRole('heading',{name:'Dallas storm response'})).toBeTruthy();
+    expect(screen.getByRole('heading',{name:'Dallas disaster response'})).toBeTruthy();
     fireEvent.click(screen.getByRole('button',{name:'Start simulation'}));
     expect(callbacks.onStart).toHaveBeenCalledWith(initial);
     fireEvent.click(screen.getByRole('button',{name:'Open saved run'}));
     expect(callbacks.onImport).toHaveBeenCalledTimes(1);
+  });
+  it('lets people choose an event, keeps it through setup, and starts with it',()=>{
+    const callbacks=show();
+    expect((screen.getByRole('radio',{name:/Storm/}) as HTMLInputElement).checked).toBe(true);
+    fireEvent.click(screen.getByRole('radio',{name:/Flood/}));
+    fireEvent.click(screen.getByRole('button',{name:'Customize setup'}));
+    fireEvent.click(screen.getByRole('button',{name:'Continue'}));
+    fireEvent.click(screen.getByRole('button',{name:'Continue'}));
+    expect(screen.getByText('Flood')).toBeTruthy();
+    expect(screen.getByText(/simulation rules instead of prepared AI actions/)).toBeTruthy();
+    fireEvent.click(screen.getByRole('button',{name:'Start simulation'}));
+    expect(callbacks.onStart).toHaveBeenCalledWith(expect.objectContaining({scenario:'flood'}));
+  });
+  it('starts the selected event directly from the welcome screen',()=>{
+    const callbacks=show();fireEvent.click(screen.getByRole('radio',{name:/Tornado/}));
+    fireEvent.click(screen.getByRole('button',{name:'Start simulation'}));
+    expect(callbacks.onStart).toHaveBeenCalledWith(expect.objectContaining({scenario:'tornado'}));
   });
   it('offers an accessible welcome-map retry without enabling map editing',async()=>{
     let mounts=0;

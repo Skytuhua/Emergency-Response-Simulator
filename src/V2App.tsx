@@ -9,7 +9,7 @@ import { SecondaryPanel } from './ui/SecondaryPanel';
 import { householdSituationV2 } from './ui/v2/household-situation';
 import { SetupV2,type SetupV2Settings } from './ui/v2/SetupV2';
 import { SetupMapV2 } from './ui/v2/SetupMapV2';
-import { defaultSetupV2,validateSetupV2,withSetupV2 } from './v2/setup';
+import { defaultSetupV2,effectiveScenarioV2,validateSetupV2,withSetupV2 } from './v2/setup';
 import { baseSnapDistanceMetersV2,initialClosedEdgeIdsV2,resolveBaseV2 } from './v2/setup-topology';
 import { MAX_V2_BYTES,parseScenarioV2 } from './v2/admission';
 import type { PolicyIdV2,ScenarioBundleV2 } from './v2/contracts';
@@ -25,7 +25,7 @@ function readableError(message: string, cause: unknown): AppError {
   return { message, detail: cause instanceof Error ? cause.message : String(cause) };
 }
 function initialHomeV2(session:SessionV2):string|null {
-  const prepared=new Set(session.world.bundle.assets.behavior?.personas.map(persona=>persona.householdId)??[]);
+  const prepared=new Set(effectiveScenarioV2(session.world.bundle).behavior?.personas.map(persona=>persona.householdId)??[]);
   const active=session.world.needs.filter(need=>need.completedAtMs===null);
   return (active.find(need=>need.urgent&&prepared.has(need.householdId))??active.find(need=>prepared.has(need.householdId))??active.find(need=>need.urgent)??active[0])?.householdId
     ??session.world.households[0]?.id??null;
@@ -57,7 +57,7 @@ export function V2App({onLegacy}:{onLegacy:(state?:SimState)=>void}){
   const evidence=useMemo<ObserverEvidenceV2|undefined>(()=>{
     if(!session)return;
     const b=session.world.bundle,sources=new Map([...b.assets.population.sourceReceipts,...b.assets.geography.sourceReceipts,...(b.assets.behavior?.sourceReceipts??[])].map(s=>[s.id,s]));
-    return {assumptions:b.assumptions,sources:[...sources.values()],fit:b.assets.population.fit,geography:b.assets.geography,decisions:session.decisions,roadChangesDisableActions:!!b.setup?.roads.length};
+    return {assumptions:b.assumptions,sources:[...sources.values()],fit:b.assets.population.fit,geography:b.assets.geography,decisions:session.decisions,roadChangesDisableActions:!!b.setup?.roads.length,scenarioChangesDisableActions:!!b.setup?.scenario&&b.setup.scenario!=='storm',scenarioName:b.setup?.scenario??'storm'};
   },[session]);
   const initialize=(bundle:ScenarioBundleV2,policy:PolicyIdV2='urgency-plus-coverage-v2')=>{
     const next=initializeSessionV2(bundle,policy);install(next);setComparisons([]);setError(null);setVerification(null);
@@ -136,11 +136,11 @@ export function V2App({onLegacy}:{onLegacy:(state?:SimState)=>void}){
       initialize(withSetupV2(sourceBundle,settings));setSetupErrors({});setPhase('run');setBusy(null);run();
     }catch(cause){setSetupErrors({setup:'These settings could not start. Check the base, roads and resources.'});setError(readableError('The simulation could not start with these settings.',cause));}
   };
-  const pickBase=async(point:{lat:number;lon:number},roads=draftRef.current?.roads)=>{
+  const pickBase=async(point:{lat:number;lon:number},roads=draftRef.current?.roads,scenario=draftRef.current?.scenario)=>{
     if(!sourceBundle||!draftRef.current||!roads)return;
     const marker=++baseGeneration.current;setPlacingBase(true);setSetupErrors(previous=>{const next={...previous};delete next.base;return next;});
     try{
-      const result=await resolveBaseV2(sourceBundle,point,roads);if(marker!==baseGeneration.current)return;
+      const result=await resolveBaseV2(sourceBundle,point,roads,scenario);if(marker!==baseGeneration.current)return;
       if(result.ok)installDraft(previous=>previous?{...previous,base:result.base}:previous);
       else setSetupErrors(previous=>({...previous,base:result.message}));
     }catch(cause){if(marker===baseGeneration.current)setSetupErrors(previous=>({...previous,base:'This point could not be checked. Choose another street location.'}));}
@@ -149,7 +149,7 @@ export function V2App({onLegacy}:{onLegacy:(state?:SimState)=>void}){
   const toggleRoad=(edgeId:string)=>{
     const current=draftRef.current;if(!sourceBundle||!current)return;
     baseGeneration.current++;setPlacingBase(false);
-    const closed=new Set(initialClosedEdgeIdsV2(sourceBundle,current.roads));
+    const closed=new Set(initialClosedEdgeIdsV2(sourceBundle,current.roads,current.scenario));
     const roads=[...current.roads.filter(road=>road.edgeId!==edgeId),{edgeId,closed:!closed.has(edgeId)}].sort((a,b)=>a.edgeId<b.edgeId?-1:a.edgeId>b.edgeId?1:0);
     installDraft({...current,roads});setSetupErrors((previous):Record<string,string>=>previous.base?{base:previous.base}:{});
     if(current.base&&!setupErrors.base)void pickBase(current.base.requested,roads);
@@ -170,12 +170,12 @@ export function V2App({onLegacy}:{onLegacy:(state?:SimState)=>void}){
   };
   const ask=(next:'restart'|'finish'|'setup'|'import')=>{pause();setConfirmation(next);};
   return <div className="app-shell v2-app-shell">
-    <header className="app-header"><div className="brand" id="v2-app-title" tabIndex={-1}><span className="brand-mark"><ShieldCheck/></span><div><strong>Response Simulator</strong><span className="v2-header-population">{snapshot?`Dallas · ${snapshot.population.persons.toLocaleString()} simulated residents`:sourceBundle?`Dallas · ${sourceBundle.assets.population.persons.length.toLocaleString()} simulated residents`:'Dallas simulation'}</span></div></div><div className="v2-header-controls" ref={setControlsTarget}/></header>
+    <header className="app-header"><div className="brand" id="v2-app-title" tabIndex={-1}><span className="brand-mark"><ShieldCheck/></span><div><strong>Response Simulator</strong><span className="v2-header-population">{snapshot?`${{storm:'Storm',flood:'Flood',tornado:'Tornado'}[session?.world.bundle.setup?.scenario??'storm']} / Dallas · ${snapshot.population.persons.toLocaleString()} simulated residents`:sourceBundle?`Dallas · ${sourceBundle.assets.population.persons.length.toLocaleString()} simulated residents`:'Dallas simulation'}</span></div></div><div className="v2-header-controls" ref={setControlsTarget}/></header>
     <main className={`main-content ${phase==='setup'?'screen-create':snapshot?.finalized?'screen-results':'screen-respond'}`}>
       {(busy||error)&&<div className={`v2-app-status${error?' error':''}`} role={error?'alert':'status'}><div><span>{error?.message??busy}</span>{error&&<details><summary>Error details</summary><pre>{error.detail}</pre></details>}</div>{error&&<Button variant="ghost" onClick={()=>setError(null)}>Dismiss</Button>}</div>}
       {verification&&<div className="v2-app-status" role="status">{verification}</div>}
       {!sourceBundle&&!busy&&<Button onClick={()=>location.reload()}>Reload Dallas</Button>}
-      {phase==='setup'&&sourceBundle&&setupDraft&&<SetupV2 key={sourceBundle.hashes.population} initialScreen={setupEntry} bundle={sourceBundle} setup={setupDraft} onChange={next=>{installDraft(next);setSetupErrors(previous=>{const nextErrors:Record<string,string>={};if(previous.base)nextErrors.base=previous.base;return nextErrors;});}} onStart={startConfigured} onImport={()=>fileInput.current?.click()}
+      {phase==='setup'&&sourceBundle&&setupDraft&&<SetupV2 key={sourceBundle.hashes.population} initialScreen={setupEntry} bundle={sourceBundle} setup={setupDraft} onChange={next=>{const previous=draftRef.current;if((previous?.scenario??'storm')!==(next.scenario??'storm')){baseGeneration.current++;setPlacingBase(false);if(setupErrors.base){installDraft(next);setSetupErrors({base:setupErrors.base});return;}installDraft({...next,base:null});setSetupErrors({});if(next.base)void pickBase(next.base.requested,next.roads,next.scenario);return;}installDraft(next);setSetupErrors(previousErrors=>{const nextErrors:Record<string,string>={};if(previousErrors.base)nextErrors.base=previousErrors.base;return nextErrors;});}} onStart={startConfigured} onImport={()=>fileInput.current?.click()}
         map={<SetupMapV2 bundle={sourceBundle} setup={setupDraft} mode={editMode} onBasePick={point=>void pickBase(point)} onRoadToggle={toggleRoad} baseBusy={placingBase} message={setupErrors.base}/>}
         editMode={editMode} onEditMode={setEditMode} baseLabel={baseLabel} errors={setupErrors} busy={!!busy||placingBase}/>}
       {phase==='run'&&snapshot&&session&&!snapshot.finalized&&<ObserverV2 key={snapshot.runId} snapshot={snapshot} policy={session.policy} playing={playing} speed={speed} selected={selected} onSelect={setSelected} controlsTarget={controlsTarget} situation={situation??undefined}

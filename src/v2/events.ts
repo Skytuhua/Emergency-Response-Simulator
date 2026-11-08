@@ -53,9 +53,9 @@ export function applyWorldChangesV2(state: WorldStateV2): void {
     const event = schedule.effective[state.effectiveEventIndex++], payload = event.payload;
     if (payload.type === 'need-onset') {
       if (state.needs.some(need => need.id === payload.need.id)) throw new Error('V2 duplicate canonical need ID.');
-      const reporting = state.bundle.behaviorRules.reportingHouseholdIds.includes(payload.need.householdId);
+      const reporting = effectiveScenarioV2(state.bundle).behaviorRules.reportingHouseholdIds.includes(payload.need.householdId);
       state.needs.push({ ...payload.need, onsetEventId: event.id, completedAtMs: null, discovered: false,
-        nextReportAtMs: reporting ? event.effectiveAtMs + state.bundle.behaviorRules.reportDelayMs : null, reportAttempt: 0 });
+        nextReportAtMs: reporting ? event.effectiveAtMs + effectiveScenarioV2(state.bundle).behaviorRules.reportDelayMs : null, reportAttempt: 0 });
     } else if (payload.type === 'communications-change') {
       for (const id of payload.householdIds) state.households.find(item => item.id === id)!.communicationsAvailable = payload.available;
     } else if (payload.type === 'edge-state-change') {

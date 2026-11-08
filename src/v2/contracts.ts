@@ -58,8 +58,12 @@ export interface ResourceSpecificationV2 {
   units: UnitSpecificationV2[]; supplyBundles: number; depotNodeId: string;
   loadMs: number; assessmentMs: number; deliveryMs: number; boardingMs: number; dropoffMs: number;
 }
+export type DisasterScenarioV2 = 'storm' | 'flood' | 'tornado';
+export const DISASTER_SCENARIO_RECIPE_V1 = 'dallas-hazards-v1' as const;
 export interface SetupOverlayV2 {
   kind:'dallas-user-setup'; version:1;
+  scenario?:DisasterScenarioV2;
+  scenarioRecipe?:typeof DISASTER_SCENARIO_RECIPE_V1;
   base:null|{requested:{lat:number;lon:number};nodeId:string};
   roads:{edgeId:string;closed:boolean}[];
   resources:{crews:number;vans:number;accessibleVans:number;supplyBundles:number;shelterPlaces:{facilityId:string;places:number}[]};

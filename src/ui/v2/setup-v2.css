@@ -10,6 +10,17 @@
 .setup-v2-welcome-copy { padding:clamp(24px,3vw,44px); background:#fff; border:1px solid #d9dee4; border-radius:12px; }
 .setup-v2-welcome h1 { margin:0 0 12px; font-size:clamp(28px,2.4vw,36px); line-height:1.15; }
 .setup-v2-intro { font-size:17px; line-height:1.5; max-width:440px; color:#52616e; }
+.setup-v2-scenarios { border:0; margin:20px 0 0; padding:0; min-width:0; }
+.setup-v2-scenarios legend { font-weight:650; margin-bottom:8px; }
+.setup-v2-scenarios>div { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+.setup-v2-scenarios label { display:flex; align-items:center; gap:8px; padding:10px 12px; border:1px solid #cfd7dd; border-radius:8px; cursor:pointer; }
+.setup-v2-scenarios label.is-selected { color:#a92130; background:#fff4f4; border-color:#b72c3b; font-weight:650; }
+.setup-v2-scenarios input { accent-color:#b72c3b; width:16px; height:16px; flex:none; }
+.setup-v2-scenarios input:focus-visible { outline:3px solid #b72c3b66; outline-offset:2px; }
+.setup-v2-scenarios p { margin:8px 0 0; color:#52616e; }
+.setup-v2-scenario-select { display:flex; flex-direction:column; gap:6px; font-weight:650; }
+.setup-v2-scenario-select select { min-height:44px; padding:8px; border:1px solid #c4cfd7; border-radius:6px; background:white; color:#24313c; font:inherit; }
+.setup-v2-scenario-select select:focus-visible { outline:3px solid #b72c3b66; outline-offset:2px; }
 .setup-v2-population { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:28px 0; padding:20px 0; border-block:1px solid #e3e8ec; }
 .setup-v2-population dd { text-align:left; font-size:clamp(20px,1.7vw,26px); font-weight:700; line-height:1.2; margin:0; color:#24313c; font-variant-numeric:tabular-nums; }
 .setup-v2-population dt { color:#52616e; margin-top:4px; line-height:1.35; }

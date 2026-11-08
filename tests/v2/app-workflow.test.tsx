@@ -5,6 +5,7 @@ import { mechanicsFixture } from '../../fixtures/v2/mechanics/fixture';
 import { V2App } from '../../src/V2App';
 import { finishSessionV2 } from '../../src/v2/coordinate';
 import { replayV2 } from '../../src/v2/run-file';
+import { resolveBaseV2 } from '../../src/v2/setup-topology';
 import type { SessionV2 } from '../../src/v2/session';
 vi.mock('../../src/v2/coordinate',async original=>{const real=await original<typeof import('../../src/v2/coordinate')>();return {...real,finishSessionV2:vi.fn(async (session:SessionV2)=>({...session,world:{...session.world,finalized:true}}))};});
 vi.mock('../../src/v2/run-file',async original=>({...await original<typeof import('../../src/v2/run-file')>(),makeRunFileV2:vi.fn(()=>({})),replayV2:vi.fn(async()=>({}))}));
@@ -54,9 +55,21 @@ describe('actual observer panel lifecycle',()=>{
     expect(screen.getByRole('alert').textContent).toContain('inside the boundary');
     await act(async()=>{fireEvent.click(screen.getByRole('button',{name:'Toggle road'}));});
     expect(screen.getByRole('alert').textContent).toContain('inside the boundary');
+    await act(async()=>{fireEvent.change(screen.getByLabelText('Simulated event'),{target:{value:'tornado'}});});
+    expect(screen.getByRole('alert').textContent).toContain('inside the boundary');
     fireEvent.click(screen.getByRole('button',{name:'Continue'}));
     expect(screen.getByRole('heading',{name:'Base & roads'})).toBeTruthy();
     await act(async()=>{fireEvent.click(screen.getByRole('button',{name:'Valid point'}));});
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+  it('revalidates a chosen base and preserves road edits when the event changes',async()=>{
+    render(<V2App onLegacy={vi.fn()}/>);
+    await act(async()=>{await Promise.resolve();await Promise.resolve();});
+    fireEvent.click(screen.getByRole('button',{name:'Customize setup'}));
+    await act(async()=>{fireEvent.click(screen.getByRole('button',{name:'Valid point'}));});
+    await act(async()=>{fireEvent.click(screen.getByRole('button',{name:'Toggle road'}));});
+    await act(async()=>{fireEvent.change(screen.getByLabelText('Simulated event'),{target:{value:'flood'}});});
+    expect(resolveBaseV2).toHaveBeenLastCalledWith(expect.anything(),{lat:1,lon:1},[{edgeId:'BH',closed:true}],'flood');
     expect(screen.queryByRole('alert')).toBeNull();
   });
   it('confirms before choosing another run and keeps progress on cancel or invalid input',async()=>{

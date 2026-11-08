@@ -45,7 +45,6 @@ export function admitScenarioV2(input: unknown): string[] {
     const b=input as ScenarioBundleV2;
     if(!b||b.kind!=='catastrophe-scenario'||b.version!==2||b.engineVersion!==ENGINE_V2||b.recipeVersion!==RECIPE_V2||b.horizonMs!==HORIZON_MS)return ['Unsupported v2 scenario/engine/recipe/horizon.'];
     canonical(b);
-    if(Object.hasOwn(b,'setup'))errors.push(...validateSetupV2(b,b.setup));
     if(!Number.isSafeInteger(b.seed)||b.seed<0)errors.push('Invalid scenario seed.');
     errors.push(...admitDataV2(b.assets.population,b.assets.geography,b.assets.map));
     errors.push(...admitMapV2(b.assets.map));
@@ -82,6 +81,8 @@ export function admitScenarioV2(input: unknown): string[] {
     if(!Number.isSafeInteger(b.resources.supplyBundles)||b.resources.supplyBundles<0||b.resources.supplyBundles>100_000)errors.push('Invalid supply count.');
     if(!Number.isSafeInteger(b.behaviorRules.reportDelayMs)||b.behaviorRules.reportDelayMs<0||!Number.isSafeInteger(b.behaviorRules.retryMs)||b.behaviorRules.retryMs<=0||b.behaviorRules.reportingHouseholdIds.some(id=>!homes.has(id)))errors.push('Invalid reporting rules.');
     errors.push(...admitBehaviorV2(b).errors);
+    // Setup base checks search the graph; only run them after source admission.
+    if(!errors.length&&Object.hasOwn(b,'setup'))errors.push(...validateSetupV2(b,b.setup));
   }catch(cause){errors.push(`Malformed v2 scenario: ${cause instanceof Error?cause.message:'invalid structure'}`);}
   return [...new Set(errors)];
 }

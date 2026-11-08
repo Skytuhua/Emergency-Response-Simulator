@@ -20,6 +20,8 @@ export interface ObserverEvidenceV2 {
   geography: GeographyBundleV2;
   decisions?: DecisionEvidenceV2[];
   roadChangesDisableActions?: boolean;
+  scenarioChangesDisableActions?: boolean;
+  scenarioName?: 'storm'|'flood'|'tornado';
 }
 export interface ObserverV2Props {
   snapshot:ObserverSnapshotV2; policy:PolicyIdV2; playing:boolean; speed:number; selected:string|null;
@@ -70,6 +72,7 @@ export function fallbackReasonTextV2(reason:string):string {
     'artifact-hash-mismatch':'The AI plan records did not match','invalid-prepared-source-chain':'The AI plan’s source could not be verified',
     'illegal-prepared-report':'The planned call did not match a current need',
     'custom-road-conditions':'Road changes: simulation reporting rules used',
+    'different-disaster-scenario':'This scenario uses simulation reporting rules.',
   };
   return Object.hasOwn(labels,reason)?labels[reason]:'Other recorded reason';
 }
@@ -192,7 +195,7 @@ export function EvidenceDetailsV2({evidence}: {evidence?:ObserverEvidenceV2}) {
     <p>Population matching does not validate how a disaster unfolds or how people behave.</p>
     <h3>Simulated events</h3><p>Incidents and response resources follow the assumptions chosen for this simulation.</p>
     <details className="v2-technical-evidence"><summary>Technical evidence</summary>
-      <h4>Original assumptions</h4><ol>{evidence.assumptions.map((text,index)=><li key={index}>{text}</li>)}</ol>
+      <h4>Original source assumptions</h4>{evidence.scenarioChangesDisableActions&&<p>This event changes the simulated needs, outages and road closures.</p>}<ol>{evidence.assumptions.map((text,index)=><li key={index}>{text}</li>)}</ol>
       <h4>Original population matching</h4><pre>{JSON.stringify(evidence.fit,null,2)}</pre>
       <h4>Original geography limitations</h4><ul>{evidence.geography.limitations.map((text,index)=><li key={index}>{text}</li>)}</ul>
       <h4>Original source records</h4><ul>{evidence.sources.map(source=>{let safe=false;try{const url=new URL(source.url);safe=url.protocol==='https:'&&['www2.census.gov','tigerweb.geo.census.gov','api.openai.com'].includes(url.hostname)&&!url.username&&!url.password;}catch{/* Invalid source URLs remain plain text. */}return <li key={source.id}>{safe?<a href={source.url} target="_blank" rel="noopener noreferrer">{source.id}</a>:source.id}</li>;})}</ul><pre>{JSON.stringify(evidence.sources,null,2)}</pre>
@@ -249,7 +252,7 @@ export function ObserverV2(props:ObserverV2Props) {
     <div className="v2-workspace"><aside className="v2-resident-column">{residents}</aside><section className="v2-map-column" aria-label="Dallas observation map"><MapV2 snapshot={snapshot} playing={playing} speed={speed} selected={home?.id??null} onSelect={choose} onPause={onPause} fallbackFocusId="v2-find-home" geography={evidence?.geography}/></section><aside className="v2-outcomes-column">{outcomes}</aside></div>
     {panel&&<SecondaryPanel key={panel} title={titles[panel]} onClose={()=>setPanel(null)} fallbackFocusId="v2-find-home" className="v2-secondary">
       {panel==='homes'&&<HomesListV2 snapshot={snapshot} selected={home?.id??null} onSelect={id=>{choose(id);setPanel(null);}}/>}
-      {panel==='source'&&home&&<SourceDetailsV2 snapshot={snapshot} householdId={home.id} decisions={evidence?.decisions} roadChangesDisableActions={evidence?.roadChangesDisableActions}/>}
+      {panel==='source'&&home&&<SourceDetailsV2 snapshot={snapshot} householdId={home.id} decisions={evidence?.decisions} roadChangesDisableActions={evidence?.roadChangesDisableActions} scenarioChangesDisableActions={evidence?.scenarioChangesDisableActions}/>}
       {panel==='evidence'&&<EvidenceDetailsV2 evidence={evidence}/>}
       {panel==='residents'&&residents}{panel==='outcomes'&&outcomes}
       {panel==='run'&&<div className="v2-run-options"><p>Save this run at its current point, or continue from a saved run.</p><Button variant="outline" onClick={onExport}><FileDown size={16}/>Save run</Button><Button variant="outline" onClick={onImport}>Open saved run</Button><Button variant="outline" onClick={onRestart}>Restart with the same conditions</Button><Button variant="outline" onClick={onNew}>New simulation</Button><Button variant="outline" onClick={onFinish}>{snapshot.finalized?'View results':'Skip to the end'}<ChevronRight size={15}/></Button><p className="v2-muted">Closing this panel keeps the simulation paused.</p><p className="v2-muted">{Math.floor(snapshot.nowMs/MINUTE_MS)} of {HORIZON_MS/MINUTE_MS} minutes recorded.</p></div>}

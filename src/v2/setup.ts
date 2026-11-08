@@ -1,16 +1,17 @@
-import type { BehaviorArtifactV2,FacilityV2,ResourceSpecificationV2,ScenarioBundleV2,SetupOverlayV2,WorldEventV2 } from './contracts';
+import { DISASTER_SCENARIO_RECIPE_V1, type BehaviorArtifactV2,type FacilityV2,type ResourceSpecificationV2,type ScenarioBundleV2,type SetupOverlayV2,type WorldEventV2 } from './contracts';
 import { hashValue } from './hash';
 import { compareIdsV2 } from './routes';
 import { resolveBaseImmediatelyV2 } from './setup-topology';
+import { scenarioEventsV2,scenarioReportingHouseholdsV2 } from './disaster-scenarios';
 
-export interface EffectiveScenarioV2 {resources:ResourceSpecificationV2;facilities:FacilityV2[];events:WorldEventV2[];behavior:BehaviorArtifactV2|null;eventTapeHash:string}
+export interface EffectiveScenarioV2 {resources:ResourceSpecificationV2;facilities:FacilityV2[];events:WorldEventV2[];behavior:BehaviorArtifactV2|null;behaviorRules:ScenarioBundleV2['behaviorRules'];eventTapeHash:string}
 const cache=new WeakMap<ScenarioBundleV2,EffectiveScenarioV2>();
 const plain=(value:unknown):value is Record<string,unknown>=>Boolean(value)&&typeof value==='object'&&!Array.isArray(value)&&Object.getPrototypeOf(value)===Object.prototype;
 const keys=(value:Record<string,unknown>,names:string[])=>Object.keys(value).length===names.length&&names.every(name=>Object.hasOwn(value,name));
 const integer=(value:unknown,min:number,max:number)=>typeof value==='number'&&Number.isSafeInteger(value)&&value>=min&&value<=max;
 
 export function defaultSetupV2(bundle:ScenarioBundleV2):SetupOverlayV2 {
-  return {kind:'dallas-user-setup',version:1,base:null,roads:[],resources:{
+  return {kind:'dallas-user-setup',version:1,scenario:'storm',base:null,roads:[],resources:{
     crews:bundle.resources.units.filter(unit=>unit.kind==='crew').length,vans:bundle.resources.units.filter(unit=>unit.kind==='van').length,
     accessibleVans:bundle.resources.units.filter(unit=>unit.kind==='van'&&unit.accessiblePlaces>0).length,
     supplyBundles:bundle.resources.supplyBundles,shelterPlaces:bundle.assets.facilities.filter(facility=>facility.kind==='shelter').map(facility=>({facilityId:facility.id,places:facility.capacity})),
@@ -18,7 +19,9 @@ export function defaultSetupV2(bundle:ScenarioBundleV2):SetupOverlayV2 {
 }
 export function validateSetupV2(bundle:ScenarioBundleV2,input:unknown):string[] {
   const errors:string[]=[];
-  if(!plain(input)||!keys(input,['kind','version','base','roads','resources'])||input.kind!=='dallas-user-setup'||input.version!==1)return ['setup: These settings are not supported.'];
+  if(!plain(input))return ['setup: These settings are not supported.'];
+  const names=['kind','version','base','roads','resources',...(Object.hasOwn(input,'scenario')?['scenario']:[]),...(Object.hasOwn(input,'scenarioRecipe')?['scenarioRecipe']:[])];
+  if(!keys(input,names)||input.kind!=='dallas-user-setup'||input.version!==1||('scenario' in input&&!['storm','flood','tornado'].includes(input.scenario as string))||('scenarioRecipe' in input&&input.scenarioRecipe!==DISASTER_SCENARIO_RECIPE_V1)||((input.scenario==='flood'||input.scenario==='tornado')&&input.scenarioRecipe!==DISASTER_SCENARIO_RECIPE_V1))return ['setup: These settings are not supported.'];
   const resource=input.resources;
   if(!plain(resource)||!keys(resource,['crews','vans','accessibleVans','supplyBundles','shelterPlaces']))errors.push('resources: Choose supported resource settings.');
   else{
@@ -43,7 +46,7 @@ export function validateSetupV2(bundle:ScenarioBundleV2,input:unknown):string[] 
     const base=input.base;
     if(!plain(base)||!keys(base,['requested','nodeId'])||!plain(base.requested)||!keys(base.requested,['lat','lon'])||typeof base.nodeId!=='string')errors.push('base: Choose a base on the map.');
     else if(!errors.some(error=>error.startsWith('roads:'))){
-      const result=resolveBaseImmediatelyV2(bundle,base.requested as unknown as {lat:number;lon:number},input.roads as SetupOverlayV2['roads']);
+      const result=resolveBaseImmediatelyV2(bundle,base.requested as unknown as {lat:number;lon:number},input.roads as SetupOverlayV2['roads'],(input.scenario??'storm') as NonNullable<SetupOverlayV2['scenario']>);
       if(!result.ok)errors.push(`base: ${result.message}`);
       else if(result.base.nodeId!==base.nodeId)errors.push('base: The base must use the nearest reachable street point. Choose its location again.');
     }
@@ -56,7 +59,7 @@ export function withSetupV2(bundle:ScenarioBundleV2,setup:SetupOverlayV2):Scenar
   return {...bundle,setup:copy};
 }
 export function effectiveScenarioV2(bundle:ScenarioBundleV2):EffectiveScenarioV2 {
-  if(!bundle.setup)return {resources:bundle.resources,facilities:bundle.assets.facilities,events:bundle.assets.events,behavior:bundle.assets.behavior,eventTapeHash:bundle.hashes.events};
+  if(!bundle.setup)return {resources:bundle.resources,facilities:bundle.assets.facilities,events:bundle.assets.events,behavior:bundle.assets.behavior,behaviorRules:bundle.behaviorRules,eventTapeHash:bundle.hashes.events};
   const cached=cache.get(bundle);if(cached)return cached;
   const settings=bundle.setup,baseNode=settings.base?.nodeId??bundle.resources.depotNodeId;
   const node=bundle.assets.map.nodes.find(item=>item.id===baseNode)!;
@@ -67,7 +70,8 @@ export function effectiveScenarioV2(bundle:ScenarioBundleV2):EffectiveScenarioV2
     ...Array.from({length:settings.resources.vans},(_,index)=>({id:`V${index+1}`,kind:'van' as const,capabilities:['transport','pickup-verification'] as ('transport'|'pickup-verification')[],seats:6,accessiblePlaces:index<settings.resources.accessibleVans?1:0,baseNodeId:baseNode})),
   ];
   const resources={...bundle.resources,units,supplyBundles:settings.resources.supplyBundles,depotNodeId:baseNode};
-  let events=bundle.assets.events;
+  const differentScenario=(settings.scenario??'storm')!=='storm';
+  let events=scenarioEventsV2(bundle,settings.scenario??'storm');
   if(settings.roads.length){
     const overridden=new Set(settings.roads.map(road=>road.edgeId)),ids=new Set(events.map(event=>event.id));
     events=events.flatMap(event=>{if(event.payload.type!=='edge-state-change')return [event];const edgeIds=event.payload.edgeIds.filter(id=>!overridden.has(id));return edgeIds.length?[{...event,payload:{...event.payload,edgeIds}}]:[];});
@@ -77,6 +81,8 @@ export function effectiveScenarioV2(bundle:ScenarioBundleV2):EffectiveScenarioV2
     }
     events.sort((a,b)=>a.effectiveAtMs-b.effectiveAtMs||compareIdsV2(a.id,b.id));
   }
-  const view={resources,facilities,events,behavior:settings.roads.length?null:bundle.assets.behavior,eventTapeHash:settings.roads.length?hashValue(events):bundle.hashes.events};
+  const modified=differentScenario||settings.roads.length>0;
+  const behaviorRules=differentScenario?{...bundle.behaviorRules,reportingHouseholdIds:scenarioReportingHouseholdsV2(bundle,settings.scenario!,events)}:bundle.behaviorRules;
+  const view={resources,facilities,events,behavior:modified?null:bundle.assets.behavior,behaviorRules,eventTapeHash:modified?hashValue(events):bundle.hashes.events};
   cache.set(bundle,view);return view;
 }

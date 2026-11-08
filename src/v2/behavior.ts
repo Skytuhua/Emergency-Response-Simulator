@@ -12,12 +12,12 @@ export interface ResidentOpportunityResultV2 {
 /** Pure offline selection. Scheduling, delivery failure/retry and deduplication belong to the world. */
 export function evaluateResidentOpportunityV2(bundle: ScenarioBundleV2, input: ResidentOpportunityInputV2): ResidentOpportunityResultV2 {
   const fallback = (reason: string): ResidentOpportunityResultV2 => ({
-    action: input.need && input.need.onsetMs <= input.atMs && bundle.behaviorRules.reportingHouseholdIds.includes(input.householdId) ? 'report' : 'wait',
+    action: input.need && input.need.onsetMs <= input.atMs && effectiveScenarioV2(bundle).behaviorRules.reportingHouseholdIds.includes(input.householdId) ? 'report' : 'wait',
     source: 'behavior-model', origin: 'behavior-model-fallback', text: '', evidenceIds: [input.opportunityId], suppressed: false, fallback: true, fallbackReason: reason, directActions: 0,
   });
   if (input.need && input.completedAssistance.includes(input.need.id)) return { action: 'wait', source: 'behavior-model', origin: 'suppressed', text: '', evidenceIds: [input.opportunityId, input.need.id], suppressed: true, fallback: false, fallbackReason: null, directActions: 0 };
   const runtime=effectiveScenarioV2(bundle),artifact=runtime.behavior;
-  if (!artifact) return fallback(bundle.setup?.roads.length?'custom-road-conditions':'no-prepared-artifact');
+  if (!artifact) return fallback((bundle.setup?.scenario??'storm')!=='storm'?'different-disaster-scenario':bundle.setup?.roads.length?'custom-road-conditions':'no-prepared-artifact');
   if (artifact.populationHash !== bundle.hashes.population || artifact.mapHash !== bundle.hashes.map || artifact.eventTapeHash !== runtime.eventTapeHash || artifact.supportHash !== bundle.hashes.support) return fallback('artifact-binding-mismatch');
   const prepared = artifact.actions.filter(a => a.householdId === input.householdId && a.opportunityId === input.opportunityId);
   if (!prepared.length) return fallback(artifact.personas.some(p => p.householdId === input.householdId) ? 'missing-prepared-opportunity' : 'actor-not-prepared');

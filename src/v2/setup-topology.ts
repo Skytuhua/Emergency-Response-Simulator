@@ -1,6 +1,7 @@
-import type { PositionV2,ScenarioBundleV2,SetupOverlayV2 } from './contracts';
+import type { DisasterScenarioV2,PositionV2,ScenarioBundleV2,SetupOverlayV2 } from './contracts';
 import { pointInRingsV2 } from './data-admission';
 import { compareIdsV2 } from './routes';
+import { scenarioEventsV2 } from './disaster-scenarios';
 
 type Point={lat:number;lon:number};
 type Roads=SetupOverlayV2['roads'];
@@ -15,22 +16,22 @@ export function baseSnapDistanceMetersV2(a:Point,b:Point,earthRadiusMeters=63710
 export function pointInsideSetupAreaV2(bundle:ScenarioBundleV2,point:Point):boolean {
   return Number.isFinite(point.lat)&&Number.isFinite(point.lon)&&bundle.assets.geography.tracts.some(tract=>pointInRingsV2(point.lon,point.lat,tract.rings));
 }
-export function initialClosedEdgeIdsV2(bundle:ScenarioBundleV2,overrides:Roads=bundle.setup?.roads??[]):string[] {
+export function initialClosedEdgeIdsV2(bundle:ScenarioBundleV2,overrides:Roads=bundle.setup?.roads??[],scenario:DisasterScenarioV2=bundle.setup?.scenario??'storm'):string[] {
   const closed=new Set<string>();
-  for(const event of [...bundle.assets.events].filter(event=>event.effectiveAtMs===0).sort((a,b)=>compareIdsV2(a.id,b.id))){
+  for(const event of [...scenarioEventsV2(bundle,scenario)].filter(event=>event.effectiveAtMs===0).sort((a,b)=>compareIdsV2(a.id,b.id))){
     if(event.payload.type==='edge-state-change')for(const id of event.payload.edgeIds)event.payload.closed?closed.add(id):closed.delete(id);
   }
   for(const road of overrides)road.closed?closed.add(road.edgeId):closed.delete(road.edgeId);
   return [...closed].sort(compareIdsV2);
 }
-function context(bundle:ScenarioBundleV2,requested:Point,roads:Roads) {
-  const closed=initialClosedEdgeIdsV2(bundle,roads),closedSet=new Set(closed),outgoing=new Set<string>();
+function context(bundle:ScenarioBundleV2,requested:Point,roads:Roads,scenario:DisasterScenarioV2) {
+  const closed=initialClosedEdgeIdsV2(bundle,roads,scenario),closedSet=new Set(closed),outgoing=new Set<string>();
   for(const edge of bundle.assets.map.edges)if(!closedSet.has(edge.id)){
     if(edge.direction==='both'||edge.direction==='forward')outgoing.add(edge.from);
     if(edge.direction==='both'||edge.direction==='reverse')outgoing.add(edge.to);
   }
   const open=new Map(bundle.assets.facilities.map(f=>[f.id,f.opensAtMs===0]));
-  for(const event of [...bundle.assets.events].filter(event=>event.effectiveAtMs===0).sort((a,b)=>compareIdsV2(a.id,b.id)))if(event.payload.type==='facility-state-change')open.set(event.payload.facilityId,event.payload.open);
+  for(const event of [...scenarioEventsV2(bundle,scenario)].filter(event=>event.effectiveAtMs===0).sort((a,b)=>compareIdsV2(a.id,b.id)))if(event.payload.type==='facility-state-change')open.set(event.payload.facilityId,event.payload.open);
   const shelters=bundle.assets.facilities.filter(f=>f.kind==='shelter'&&open.get(f.id)).sort((a,b)=>compareIdsV2(a.id,b.id));
   const homes=new Set(bundle.assets.population.households.map(home=>home.homeNodeId));
   const shelterNodes=new Set(shelters.map(shelter=>shelter.nodeId));
@@ -92,16 +93,16 @@ function success(requested:Point,candidate:ReturnType<typeof context>['candidate
   return {ok:true,base:{requested:{...requested},nodeId:node.id},actual:{lat:node.lat!,lon:node.lon!,x:node.x,y:node.y},snapDistanceMeters:distance};
 }
 /** Synchronous admission uses exactly the same deterministic selection as the UI. */
-export function resolveBaseImmediatelyV2(bundle:ScenarioBundleV2,requested:Point,roads:Roads):BaseResolutionV2 {
+export function resolveBaseImmediatelyV2(bundle:ScenarioBundleV2,requested:Point,roads:Roads,scenario:DisasterScenarioV2=bundle.setup?.scenario??'storm'):BaseResolutionV2 {
   const invalid=failure(bundle,requested,roads);if(invalid)return invalid;
-  const search=context(bundle,requested,roads);
+  const search=context(bundle,requested,roads,scenario);
   for(const candidate of search.candidates)if(search.reachable(candidate.node.id))return success(requested,candidate);
   return noRoute();
 }
 /** Yield between candidate batches so a difficult placement does not monopolize UI work. */
-export async function resolveBaseV2(bundle:ScenarioBundleV2,requested:Point,roads:Roads=bundle.setup?.roads??[]):Promise<BaseResolutionV2> {
+export async function resolveBaseV2(bundle:ScenarioBundleV2,requested:Point,roads:Roads=bundle.setup?.roads??[],scenario:DisasterScenarioV2=bundle.setup?.scenario??'storm'):Promise<BaseResolutionV2> {
   const invalid=failure(bundle,requested,roads);if(invalid)return invalid;
-  const search=context(bundle,requested,roads);
+  const search=context(bundle,requested,roads,scenario);
   for(let index=0;index<search.candidates.length;index++){
     if(index>0&&index%8===0)await new Promise<void>(resolve=>setTimeout(resolve,0));
     const candidate=search.candidates[index];if(search.reachable(candidate.node.id))return success(requested,candidate);

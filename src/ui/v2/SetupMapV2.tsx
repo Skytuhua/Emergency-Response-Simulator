@@ -16,7 +16,7 @@ export function SetupMapV2({bundle,setup,mode,onBasePick,onRoadToggle,baseBusy=f
   const [query,setQuery]=useState(''),[page,setPage]=useState(0),[blockedOnly,setBlockedOnly]=useState(false),[selectedRoadId,setSelectedRoadId]=useState<string|null>(null);
   const [streetBrowserOpen,setStreetBrowserOpen]=useState(false);
   const id=useId();
-  const closed=useMemo(()=>new Set(initialClosedEdgeIdsV2(bundle,setup.roads)),[bundle,setup.roads]);
+  const closed=useMemo(()=>new Set(initialClosedEdgeIdsV2(bundle,setup.roads,setup.scenario)),[bundle,setup.roads,setup.scenario]);
   const overrides=useMemo(()=>Object.fromEntries(setup.roads.map(road=>[road.edgeId,road.closed])),[setup.roads]);
   const map=useMemo(()=>({...bundle.assets.map,edges:bundle.assets.map.edges.map(edge=>({...edge,closed:closed.has(edge.id)}))}),[bundle.assets.map,closed]);
   const sourceBase=bundle.assets.facilities.find(facility=>facility.kind==='base');

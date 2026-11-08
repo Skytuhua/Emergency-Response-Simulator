@@ -11,7 +11,7 @@ function actionOutcome(action: PreparedActionV2, events: TraceEventV2[]): string
   return direct ? action.action === 'wait' ? 'Wait recorded' : 'Attempt recorded; no call received' : 'Not recorded as carried out';
 }
 
-export function SourceDetailsV2({snapshot,householdId,decisions=[],roadChangesDisableActions=false}: {snapshot:ObserverSnapshotV2;householdId:string;decisions?:DecisionEvidenceV2[];roadChangesDisableActions?:boolean}) {
+export function SourceDetailsV2({snapshot,householdId,decisions=[],roadChangesDisableActions=false,scenarioChangesDisableActions=false}: {snapshot:ObserverSnapshotV2;householdId:string;decisions?:DecisionEvidenceV2[];roadChangesDisableActions?:boolean;scenarioChangesDisableActions?:boolean}) {
   const home=snapshot.coordinator.households.find(item=>item.id===householdId);
   const labels=createHomeLabelsV2(snapshot.coordinator.households);
   const persona=directPersonasV2(snapshot).find(item=>item.householdId===householdId);
@@ -29,7 +29,7 @@ export function SourceDetailsV2({snapshot,householdId,decisions=[],roadChangesDi
     <h3>Resident profile</h3>
     {persona?<><p>Resident profile recorded as AI-created · {persona.age} years · {persona.profession}</p><p>{persona.model} · {persona.reasoningEffort} reasoning</p></>:<p>Simulated household. This home follows simulation rules.</p>}
     <h3>Planned actions</h3><p className="v2-muted">A plan is shown separately from what happened.</p>
-    {actions.length?actions.map(action=><section key={action.id} className="v2-source-action"><h4>{action.action==='report'?'Planned call':'Planned wait'} at {timeV2(action.atMs)}</h4><p>{snapshot.nowMs<action.atMs?'Planned for later':actionOutcome(action,events)}</p></section>):<p>{roadChangesDisableActions?'Prepared actions are not used with these road changes.':'No AI actions were planned for this home.'}</p>}
+    {actions.length?actions.map(action=><section key={action.id} className="v2-source-action"><h4>{action.action==='report'?'Planned call':'Planned wait'} at {timeV2(action.atMs)}</h4><p>{snapshot.nowMs<action.atMs?'Planned for later':actionOutcome(action,events)}</p></section>):<p>{scenarioChangesDisableActions?'Prepared actions are not used for this event.':roadChangesDisableActions?'Prepared actions are not used with these road changes.':'No AI actions were planned for this home.'}</p>}
     <h3>What happened</h3><ol className="v2-event-list">{events.map(event=><li key={event.id}><time>{timeV2(event.atMs)}</time><div><strong>{activityTitleV2(event)}</strong><p>{activityTextV2(event,snapshot,labels)}</p></div></li>)}</ol>{!events.length&&<p>No call or team activity has been recorded yet.</p>}
     {missions.length>0&&<><h3>Team response</h3>{missions.map(mission=><section className="v2-source-action" key={mission.id}><h4>{mission.unitId} · {missionStatusTextV2(mission.status)}</h4><p>{mission.action==='check'?'Home check':mission.action==='deliver'?'Supply delivery':'Shelter trip'} · assigned at {timeV2(mission.dispatchedAtMs)}{mission.completedAtMs!==null?` · finished at ${timeV2(mission.completedAtMs)}`:''}</p>{mission.reason&&<p>{waitingReasonTextV2(mission.reason)}</p>}</section>)}</>}
     {publicDecisions.length>0&&<><h3>How teams were chosen</h3><p>{policyLabelsV2[publicDecisions.at(-1)!.policy]}. Assignments use received calls, home checks and known road conditions.</p></>}
