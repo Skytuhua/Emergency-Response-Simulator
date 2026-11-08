@@ -1,6 +1,6 @@
 # Catastrophe Response Simulator
 
-A fictional 60-minute storm-response exercise. Create conditions, find households that cannot report their needs, dispatch constrained resources, and compare the resulting run with a deterministic baseline.
+Observe a fictional storm response on real Dallas streets. Residents report needs, an automatic coordinator assigns constrained teams, and assistance counts only when supplies arrive or transport reaches a shelter. The current default covers **24 fictional homes and 60 simulated minutes**.
 
 ## Run locally
 
@@ -12,23 +12,21 @@ npm run build
 npm run demo
 ```
 
-Open http://127.0.0.1:4173. `demo` serves the production build with a strict port. For development use `npm run dev`. Fonts and map graphics are local; the browser simulation does not call a model provider.
+Open http://127.0.0.1:4173. `demo` serves the production build with a strict port; use `npm run dev` for development. If needed, choose another port with `npm run demo -- --port 4175`. Fonts, approved resident output and map geometry are local. Playback makes no model calls.
 
-If port 4173 is occupied, use `npm run demo -- --port 4175` and open http://127.0.0.1:4175. The production browser checks in this build used that alternative port.
+## Observe a simulation
 
-## Exercise
+**Start simulation** begins the default Dallas response immediately. **Customize conditions** opens **Conditions → Resources → Review**. Defaults are seed 42, a southeast communications outage, open roads, two four-seat vans (V1 is accessible), one response crew, three kits and two shelters with eight places each.
 
-Setup opens with three steps: **Conditions → Resources → Review**. Defaults are prefilled and Back preserves edits. The default is seed 42, 24 homes, two four-seat vans (V1 is accessible), one response crew, three kits, two shelters with eight places each, and a southeast communications outage.
+Follow the prepared resident source flow, moving teams and read-only coordinator. The coordinator uses public reports and completed on-site checks, ranks feasible known urgent needs, and checks unreported homes. A resident's prepared context does not give the coordinator knowledge of an unreceived need. Assignment and boarding are distinct from completed assistance.
 
-The dashboard starts paused. Select a home and use its contextual action: **Check home & run**, **Deliver kit & run**, or **Send transport & run**. The fastest feasible team/shelter is suggested; choices remain editable. Successful dispatch starts playback. A sent team remains in progress until delivery or shelter drop-off.
+Selecting a home and receiving a new urgent report leave desktop playback running. Opening **Details**, a resident's **Full source & custody**, or another secondary panel pauses it; closing inspection leaves it paused. Below 1200px, selecting a home opens the focused Coordinator panel and pauses for inspection. Hiding the tab also pauses. Use **Pause / Resume**, **1× / 2× / 4×**, or **Advance one minute**; a one-minute advance pauses first. At 1×, one simulated minute takes two real seconds.
 
-**Homes**, **Teams**, **Activity**, and **Details** open secondary drawers. The **Exercise** menu contains import, export, new exercise, and finish. Selecting a home, opening a drawer, new urgency, and hiding the tab pause playback. Closing a drawer leaves the clock paused. **+1 min** pauses and advances one minute. Playback remains two real seconds per simulated minute at1×.
+The **Exercise** panel contains import, export, restart, new simulation and **View outcomes**. View outcomes completes automatic coordination through minute 60. Results provide **Overview / Compare / Homes / Details** views, including completed help, timely urgent help, unchecked homes, resources and household timelines.
 
-For the golden path, send C1 to check H19 at minute0, pause or step to8, then send V1 to H19/East Shelter. Pickup is16 and drop-off24. Results use **Overview / Compare / Homes / Details** tabs.
+Export a run to JSON before reloading the page. Import validates and replays recorded decisions before replacing the active run, then opens paused. **Replay decisions** also stays paused. **Restart simulation / Restart same conditions** clears decisions and starts fresh automatic coordination with the same conditions. **New simulation / Edit conditions** returns to setup.
 
-Export paused or completed runs to JSON. Reloading the page discards an unsaved run. Import validates the whole file before installing it, replays the recorded decisions, and opens paused. Replay preserves decisions; restart preserves conditions and clears decisions; edit conditions creates a new scenario.
-
-The bundled [recorded default run](public/data/default-run.json) is a replay-validated recovery fixture: all six needs completed, three urgent needs on time, three kits consumed, and nine shelter places occupied. Import it to inspect saved decisions; **Restart same conditions** begins a fresh exercise. This is a scripted witness, separate from the comparison baseline.
+The actual prepared default automatic run completes **six needs for 15 people**, with **two of three urgent needs on time**. H19 completes at minute **36**, after its minute-30 deadline. The saved [Dallas witness](public/data/default-dallas-run.json) is separately authored: H19 check/pickup/completion occur at **6/12/21**. The retained [Riverdale witness](public/data/default-run.json) uses **8/16/24**. Neither witness is a measurement of the automatic coordinator.
 
 ## Verification
 
@@ -36,25 +34,33 @@ The bundled [recorded default run](public/data/default-run.json) is a replay-val
 npm run typecheck
 npm test
 npm run build
-python -m unittest discover -s tools/tests
+.venv-mirofish/Scripts/python.exe -m unittest discover -s tools/tests
+.venv-mirofish/Scripts/python.exe -m unittest discover -s tests -p dallas_import_test.py
 ```
 
-With the production preview running at port 4175, `npm run test:browser` checks the wizard, 26 desktop states at 1366×768 and 1440×900, readable controls/map labels, golden path, minute-17 replay, invalid-import preservation, results tabs, shortages, keyboard panels, and compact reflow. Evidence stays under ignored `.private/browser-evidence/simpler/`. Set `APP_URL` for another origin; this revision was tested at 43179. `npx playwright install chromium` installs the browser. `npm run demo:record` records `.private/demo-recording/simpler-response-demo.webm`.
+The Python preparation tests use the isolated environment described in [UPSTREAM.md](UPSTREAM.md) and make no provider calls. For browser checks or a demo recording, start the production preview and point the scripts at its origin:
 
-The master plan defines acceptance. See `docs/evidence/build-status.md` for executed checks and unresolved gates. Automated fixtures do not establish operational emergency-response validity or competition eligibility.
+```powershell
+npx playwright install chromium
+$env:APP_URL = 'http://127.0.0.1:4173'
+npm run test:browser
+npm run demo:record
+```
 
-## MiroFish preparation
+See [automatic observation evidence](docs/evidence/automatic-observation.md) for the current check scope and prior native browser observations. Scripted checks and recordings do not establish first-time human comprehension or final user visual acceptance.
 
-Preparation is separate from the browser. See [UPSTREAM.md](UPSTREAM.md) for the pinned source, installation, actual integration outcome, and evidence. No test fixture is a substitute for verified LLM generation or an autonomous OASIS action.
+## Prepared residents and scope
 
-The bundled artifact uses actual OpenAI `gpt-6.1-terra`, low reasoning through Responses: three verified profiles and three accepted autonomous requests. Original `gpt-4.1-mini` output and its saved run remain separately named and replayable. Total preparation estimate is $0.0282294 against the authorized $10 cap. Python adapter tests require `python -m pip install openai==1.109.1`; they make no provider calls.
+The bundled [Dallas artifact](public/data/mirofish-dallas-v1.json) contains three actual `gpt-6.1-terra` low-reasoning profiles and three genuine autonomous MiroFish/OASIS posts, normalized into accepted requests. The other 21 homes follow reporting rules. Reports are prepared before playback; scheduling, routing, resources and completion are deterministic. The first autonomous round maps to minute 5 as an explicit exercise assumption, and an outage can block receipt.
 
-The UI reports the loaded artifact's integration level. If no approved compatible artifact exists, deterministic reporting keeps the offline exercise usable and MiroFish remains explicitly blocked. A compatible artifact changes validated report timing, never physical needs or response capacities.
+Total preparation across Dallas, Riverdale Terra and the original `gpt-4.1-mini` episodes is **estimated $0.0472764 / $10**; this is a token-price estimate, not an invoice. Original [4.1-mini output](public/data/mirofish-4.1-mini-v1.json), its [saved run](public/data/default-run-4.1-mini-v1.json), and the separate [Riverdale Terra artifact](public/data/mirofish-v1.json) remain preserved. [UPSTREAM.md](UPSTREAM.md) records source pins, provenance, budget controls and preparation commands.
 
-## Scope and attribution
+The current map uses frozen real OpenStreetMap streets and driving routes, with fictional residents, incidents, shelters and capacities. The separate interactive map with pan and zoom has not landed. Further mobile integration is deferred.
 
-This is an independent synthetic training prototype inspired by the supplied State Farm challenge and interface references. It is not an official State Farm service. No real household data, weather prediction, clinical triage, or operational dispatch is provided.
+PR #6's population-grounded, six-hour Dallas design is the intended release specification; its runtime integration is **planned, not implemented** in this 24-home application. The four files under [the v2 scenario design](docs/scenarios/dallas-synthetic-v2/README.md) remain design records, not implemented population fit or calibration. Follow the [integrated Dallas implementation plan](docs/superpowers/plans/2026-11-08-integrated-dallas-v2.md) for the remaining work. A real four-of-five uncoached comprehension study has not been performed.
 
-UI primitives are adapted from [shadcn/ui](https://github.com/shadcn-ui/ui). The captured source revision is `42f3bb63b46a69e52a24bd005cdc9ec15ba7a7b9`; its MIT license is retained in `docs/shadcn-LICENSE.md`. Import paths and application styling are customized. See `THIRD_PARTY_NOTICES.md` and `UPSTREAM.md` for MiroFish source and license obligations.
+## Attribution
 
-Project source is provided under AGPL-3.0 in `LICENSE`; third-party components retain their respective notices.
+This independent synthetic training prototype is inspired by the supplied State Farm challenge and interface references. It is not an official State Farm service and provides no real household data, weather prediction, clinical triage or operational dispatch validation.
+
+UI primitives are adapted from [shadcn/ui](https://github.com/shadcn-ui/ui), captured at `42f3bb63b46a69e52a24bd005cdc9ec15ba7a7b9`; the MIT license is retained in [docs/shadcn-LICENSE.md](docs/shadcn-LICENSE.md). See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md), [UPSTREAM.md](UPSTREAM.md) and [Dallas map attribution](docs/DALLAS-MAP.md) for source and license obligations. Project source is provided under AGPL-3.0 in [LICENSE](LICENSE); third-party components retain their notices.

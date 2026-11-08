@@ -17,23 +17,45 @@ function Wizard({ onStart = vi.fn(), initial = DEFAULT_CONFIG }: { onStart?: (co
   const [config, setConfig] = useState<ScenarioConfig>({ ...initial });
   return <Creator config={config} artifact={null} error={null} onChange={setConfig} onStart={override => onStart(override ?? config)} onDefault={() => setConfig({ ...DEFAULT_CONFIG })} onImport={vi.fn()} />;
 }
-const customize = () => fireEvent.click(screen.getByRole('button', { name: 'Customize the scenario' }));
+const customize = () => fireEvent.click(screen.getByRole('button', { name: 'Customize conditions' }));
 
 describe('exercise setup wizard', () => {
+  it('gates the selected custom template independently of the default Dallas source', () => {
+    const onStart = vi.fn();
+    render(<Creator config={DEFAULT_CONFIG} artifact={null} error={null} loadingResidents loadingDefaultResidents={false} onChange={vi.fn()} onStart={onStart} onDefault={vi.fn()} onImport={vi.fn()} />);
+    expect((screen.getByRole('button', {name:'Start simulation'}) as HTMLButtonElement).disabled).toBe(false);
+    customize();
+    fireEvent.click(screen.getByRole('button',{name:'Continue'}));
+    fireEvent.click(screen.getByRole('button',{name:'Continue'}));
+    expect((screen.getByRole('button', { name: 'Loading residents…' }) as HTMLButtonElement).disabled).toBe(true);
+    fireEvent.submit(screen.getByRole('heading', { name: 'Review' }).closest('form')!);
+    expect(onStart).not.toHaveBeenCalled();
+    expect(screen.getByRole('heading',{name:'Review'})).toBeTruthy();
+  });
+  it('allows a ready custom template while the default Dallas source is pending', () => {
+    const onStart = vi.fn();
+    render(<Creator config={DEFAULT_CONFIG} artifact={null} error={null} loadingResidents={false} loadingDefaultResidents onChange={vi.fn()} onStart={onStart} onDefault={vi.fn()} onImport={vi.fn()} />);
+    expect((screen.getByRole('button', { name: 'Loading residents…' }) as HTMLButtonElement).disabled).toBe(true);
+    customize();
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Start simulation' }));
+    expect(onStart).toHaveBeenCalledExactlyOnceWith();
+  });
   it('welcomes first-time visitors, starts the demo with defaults, and retains custom edits', () => {
     const onStart = vi.fn();
     render(<Wizard onStart={onStart} initial={{ ...DEFAULT_CONFIG, additionalNeeds: 8 }} />);
-    expect(screen.getByRole('heading', { name: 'Storm response demo' })).toBeTruthy();
-    expect(screen.getByText('Some people need help. Others cannot call.')).toBeTruthy();
-    expect(screen.getByText('Find who needs help, send a team, and see help arrive.')).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Dallas storm simulation' })).toBeTruthy();
+    expect(screen.getByText('Residents report needs. Teams respond automatically.')).toBeTruthy();
+    expect(screen.getByText('Follow requests, coordination and assistance as they unfold.')).toBeTruthy();
     expect(screen.queryByRole('combobox')).toBeNull();
-    fireEvent.click(screen.getByRole('button', { name: 'Start the demo' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Start simulation' }));
     expect(onStart).toHaveBeenCalledExactlyOnceWith(DALLAS_DEFAULT_CONFIG);
     customize();
     fireEvent.change(screen.getByLabelText('How many more households need help?'), { target: { value: '5' } });
     fireEvent.click(screen.getByRole('button', { name: 'Back' }));
-    expect(screen.getByRole('button', { name: 'Start the demo' })).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Start the demo' }));
+    expect(screen.getByRole('button', { name: 'Start simulation' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Start simulation' }));
     expect(onStart).toHaveBeenLastCalledWith(DALLAS_DEFAULT_CONFIG);
     expect(onStart).toHaveBeenCalledTimes(2);
     customize();
@@ -60,7 +82,7 @@ describe('exercise setup wizard', () => {
     expect((screen.getByLabelText('Where can’t people call for help?') as HTMLSelectElement).value).toBe('southeast');
     expect((screen.getByLabelText('How many more households need help?') as HTMLInputElement).value).toBe('3');
     expect(screen.queryByLabelText('Supply kits')).toBeNull();
-    expect(screen.queryByRole('button', { name: 'Start exercise' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Start simulation' })).toBeNull();
     fireEvent.change(screen.getByLabelText('How many more households need help?'), { target: { value: '5' } });
     fireEvent.change(screen.getByLabelText('Roads available'), { target: { value: 'detour' } });
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
@@ -74,8 +96,8 @@ describe('exercise setup wizard', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     expect(screen.getByRole('heading', { name: 'Review' })).toBeTruthy();
     expect(onStart).not.toHaveBeenCalled();
-    expect(screen.getByText('Starts paused')).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Start exercise' }));
+    expect(screen.getByText('Automatic response')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Start simulation' }));
     expect(onStart).toHaveBeenCalledExactlyOnceWith({ ...DEFAULT_CONFIG, additionalNeeds: 5, roadPreset: 'detour', kits: 2 });
   });
 

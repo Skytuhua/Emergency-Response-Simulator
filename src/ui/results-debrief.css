@@ -1,0 +1,26 @@
+.results-overview.challenge-overview { grid-template-columns:204px minmax(0,1fr) 252px; gap:14px; }
+.debrief-outcomes { min-height:0; display:flex; flex-direction:column; gap:10px; }
+.debrief-outcomes .outcome-summary { gap:8px; }
+.debrief-outcomes .outcome-summary > div { padding:12px 14px; border-radius:9px; }
+.debrief-outcomes .outcome-summary dd { margin-top:4px; font-size:28px; line-height:1.1; }
+.debrief-coverage { display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:14px; padding:2px; }
+.debrief-coverage dd { font-size:20px; font-weight:650; margin-top:3px; }
+.debrief-outcomes .comparison-note { margin:0; line-height:1.35; }
+.debrief-map-side { display:grid; grid-template-rows:minmax(0,1fr) auto; gap:10px; min-height:0; }
+.debrief-map-side .panel-heading { gap:10px; flex-wrap:wrap; padding:14px; }
+.debrief-map-side .panel-heading h2 { font-size:18px; }
+.debrief-map-side .panel-heading > span { font-size:14px; }
+.debrief-resource-line { display:flex; flex-wrap:wrap; gap:8px 16px; font-size:14px; color:#5c6873; padding:0 4px; }
+.debrief-waiting { display:flex; flex-direction:column; min-height:0; padding:14px; }
+.debrief-waiting h2 { font-size:18px; line-height:1.3; }
+.debrief-waiting .comparison-note { margin-top:8px; line-height:1.35; }
+.debrief-waiting-list { list-style:none; overflow:auto; min-height:0; margin:10px -5px 0; padding:0; }
+.debrief-waiting-list button { display:flex; flex-direction:column; gap:5px; width:100%; text-align:left; padding:12px 6px; font-size:14px; line-height:1.35; border-top:1px solid #e5e8ec; }
+.debrief-waiting-list button > span { color:#5c6873; }
+.debrief-waiting-list button:hover { background:#f4f6f8; }
+.debrief-empty { margin-top:16px; color:#476a51; font-size:14px; line-height:1.4; }
+@media (max-width:1099px), (max-height:649px) {
+  .results-overview.challenge-overview { grid-template-columns:204px minmax(0,1fr); height:auto; }
+  .debrief-waiting { grid-column:1/-1; max-height:360px; }
+  .debrief-map-side { min-height:480px; }
+}
