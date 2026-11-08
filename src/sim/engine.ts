@@ -1,6 +1,7 @@
 import type { Command, CommandResult, Household, KnownFacts, Mission, Route, Scenario, SimState, Unit } from '../model';
 import { HORIZON } from '../model';
 import { isGeographicGraph, routePosition, shortestPath, validateGeographicGraph } from './routes';
+import { publicDispatchContext } from './decision-evidence';
 
 const clone = <T>(value: T): T => structuredClone(value);
 const event = (state: SimState, type: SimState['events'][number]['type'], message: string, householdId?: string, urgent?: boolean) => {
@@ -83,7 +84,8 @@ export function dispatch(state: SimState, command: Command): { state: SimState; 
   if (command.action === 'RELOCATE') { const target = next.shelters.find(s => s.id === shelter!.id)!; target.available -= progress.known!.size; target.reserved += progress.known!.size; }
   const result: CommandResult = { accepted: true, reason: `Unit committed until completion at minute ${completionAt}.`, missionId: id };
   next.commands.push({ command: clone(command), result: clone(result) });
-  event(next, 'dispatch', `${unit.id} assigned to ${command.action === 'ASSESS' ? 'assess' : command.action === 'DELIVER' ? 'deliver supplies to' : 'relocate'} ${home.id}. Completion minute ${completionAt}.`, home.id);
+  const context = publicDispatchContext({known:progress.known, communications:state.scenario.config.networkGap !== home.neighborhood}, command.action, completionAt);
+  event(next, 'dispatch', `${unit.id} assigned to ${command.action === 'ASSESS' ? 'assess' : command.action === 'DELIVER' ? 'deliver supplies to' : 'relocate'} ${home.id}. Completion minute ${completionAt}. ${context}`, home.id);
   return { state: next, result };
 }
 function positionAlong(state: SimState, unit: Unit, route: Route, elapsed: number) {

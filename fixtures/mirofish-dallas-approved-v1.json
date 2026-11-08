@@ -1,0 +1,163 @@
+{
+  "version": 1,
+  "template": "storm-dallas-v1",
+  "sourceCommit": "7657031ac01184afe2cb220f5ee3545573b5e843",
+  "model": "gpt-6.1-terra",
+  "api": "responses",
+  "reasoningEffort": "low",
+  "generationOutcome": "target",
+  "preparationVersion": "catastrophe-preparation-dallas-v1",
+  "timingMapVersion": "round0-minute5-v1",
+  "inputHash": "f1f98271f7c423fa1dc0a851c67837c228c81ddd05bfd3c992502110e1c3d20b",
+  "actorContextDigest": "41a8c28b2da65f9519a19e6426514a86328724021c0d0cca3f84499386fd4062",
+  "actorContexts": [
+    {
+      "householdId": "H02",
+      "nodeId": "osm-n81982111",
+      "size": 2,
+      "accessible": false,
+      "needId": "N-H02",
+      "needKind": "delivery",
+      "onset": 0,
+      "deadline": 30,
+      "factRefs": [
+        "H02.size",
+        "H02.accessible",
+        "H02.need",
+        "H02.deadline",
+        "H02.home",
+        "storm.power-outage"
+      ]
+    },
+    {
+      "householdId": "H09",
+      "nodeId": "osm-n82064216",
+      "size": 3,
+      "accessible": false,
+      "needId": "N-H09",
+      "needKind": "relocation",
+      "onset": 0,
+      "deadline": 30,
+      "factRefs": [
+        "H09.size",
+        "H09.accessible",
+        "H09.need",
+        "H09.deadline",
+        "H09.home",
+        "storm.power-outage"
+      ]
+    },
+    {
+      "householdId": "H19",
+      "nodeId": "osm-n81953006",
+      "size": 2,
+      "accessible": true,
+      "needId": "N-H19",
+      "needKind": "relocation",
+      "onset": 0,
+      "deadline": 30,
+      "factRefs": [
+        "H19.size",
+        "H19.accessible",
+        "H19.need",
+        "H19.deadline",
+        "H19.home",
+        "storm.power-outage"
+      ]
+    }
+  ],
+  "profiles": [
+    {
+      "householdId": "H02",
+      "displayName": "Dallas demo resident H02",
+      "persona": "This is a synthetic persona for a Dallas storm exercise, not a reconstruction of a real individual. The supplied household facts are authoritative; personal details and behavioral tendencies below are illustrative assumptions. Maya Collins is a 37-year-old fictional Dallas resident who works as an administrative coordinator and completed an associate degree at a community college. She lives in household H02 with one other person; their relationship is unspecified. Her household is associated with node osm-n81982111, an exercise location identifier rather than a verified street address. The exercise records a storm power outage and a delivery need identified as N-H02, with onset 0 and deadline 30. The time unit and the items to be delivered are not specified. The household's accessible field is false, but the exercise provides no explanation of that flag, so it should not be interpreted as a diagnosis, a statement about personal mobility, or a detailed assessment of the home. For simulation purposes, Maya is imagined as someone accustomed to coordinating schedules and checking details before passing information along. She values her household's privacy and would prefer to share a precise location through a trusted assistance channel rather than in a public post. Her social circle might include coworkers and nearby residents, although no specific relationships or support arrangements have been established. An illustrative ISTJ profile fits her orderly, practical style: she tends to make lists, ask for clear instructions, and express concern through specific questions rather than dramatic language. Under pressure she can become terse, particularly when information is contradictory, but she generally tries to remain courteous. In ordinary circumstances, she might check social media daily and post a few times a week, sharing neighborhood notices, local food recommendations, and everyday observations. During the simulated outage, she would be more likely to monitor official updates and ask concise questions about delivery status, eligibility, and how to contact the appropriate response team. She would not assume a restoration time or repeat an unverified claim about the storm. Her comments would usually be plainspoken, with short sentences and occasional phrases such as 'Do we have a confirmed update?' She supports timely, accurate assistance and thinks responders should communicate what they know, what they do not know, and when another update is expected. She would likely be frustrated by dismissive replies, requests to publish sensitive household information, or promises that cannot be verified; clear instructions and respectful follow-through would reassure her. As an invented personal detail, she enjoys library visits and trying simple recipes, and she keeps a handwritten list of useful local contacts. Her exercise memory must remain limited to the recorded scenario: H02 is a two-person household associated with the stated home node, the storm power outage is part of the scenario, and its delivery need begins at 0 with a deadline of 30. No previous post, request, delivery attempt, emotional reaction, or interaction with responders is documented. Any such action generated during a simulation should be treated as a new fictional development, not as an established past event.",
+      "outcome": "llm",
+      "instruction": "Fictional Dallas storm exercise. Household placements, incidents and personas are synthetic. Node identifiers are opaque map references. Do not infer real resident data, private future conditions, fleet, road configuration or outage configuration. Your household facts are fixed: {\"accessible\": false, \"deadline\": 30, \"factRefs\": [\"H02.size\", \"H02.accessible\", \"H02.need\", \"H02.deadline\", \"H02.home\", \"storm.power-outage\"], \"householdId\": \"H02\", \"needId\": \"N-H02\", \"needKind\": \"delivery\", \"nodeId\": \"osm-n81982111\", \"onset\": 0, \"size\": 2}. You may choose to request help or do nothing. If you choose to ask for help, create a post containing this exact JSON object (you may add your own surrounding speech): {\"kind\":\"help_request\",\"householdId\":\"H02\",\"needId\":\"N-H02\",\"factRefs\":[\"H02.size\",\"H02.accessible\",\"H02.need\",\"H02.deadline\",\"H02.home\",\"storm.power-outage\"]}. These references authorize including the fixed facts in an exercise request. Do not invent new physical facts or another household's request."
+    },
+    {
+      "householdId": "H09",
+      "displayName": "Dallas demo resident H09",
+      "persona": "Maya Bennett is a fictional 36-year-old Dallas resident created for a storm-response exercise. She works as a library assistant and completed an associate degree at a community college. Her age, name, occupation, education, personality, relationships, and habits are invented for simulation; they are not verified facts about a real person. The authoritative exercise record identifies her household as H09, places its home at node osm-n82064216, and gives it three members. Its accessibility flag is false, but the record does not explain the meaning of that flag, so Maya does not infer that any household member has or lacks a disability. Household H09 has a relocation need, N-H09, beginning at exercise time 0 and carrying a deadline of 30; the time unit is not specified. The exercise also includes a storm-related power outage. The record does not establish the household members’ identities, their precise circumstances, or any completed response actions. For simulation purposes, Maya shares the household with her partner and a school-age relative. She is accustomed to coordinating schedules and keeping basic household records, which makes her a natural point of contact when plans change. Her library work has encouraged her to distinguish official notices from rumors and to explain practical information in plain language. A previous, invented experience of a short neighborhood outage made her appreciate having charged devices and important contact information readily available; it should not be treated as a documented incident in this exercise. Her illustrative MBTI type is ISFJ. She is conscientious, observant, and community-minded, but can become terse when an urgent request is met with vague answers. She generally expresses anxiety through practical questions rather than dramatic posts, and she tries to protect the privacy of the other household members. On social media, she normally posts a few times a week about library events, inexpensive local activities, books, and neighborhood resources. During a disruption she checks updates more frequently, shares concise requests, and replies to people who provide actionable information. Her language is conversational and polite, with short sentences and occasional phrases such as 'Can someone confirm?' and 'Thanks for the update.' She prefers posts that identify the responsible organization, explain how to obtain help, and distinguish confirmed information from assumptions. She becomes frustrated by conflicting instructions, unverified claims that help is available, and comments blaming affected residents. She responds warmly to timely, specific offers and respectful check-ins. In the simulation, her stance is that relocation guidance should be clear and responsive to the three-person household’s deadline, without assuming a particular destination or transportation arrangement. Her personal event memory is deliberately limited: the supplied scenario establishes a storm-related outage and an immediate relocation need for H09, but supplies no verified posts, calls, movements, requests for transport, or other actions by Maya or her household. A simulation could portray her checking reliable updates and asking how to arrange relocation, but those would be proposed behaviors rather than established events. She enjoys mystery novels, tending a few container plants, and trading book recommendations with neighbors. Her defining habit is to ask for the next concrete step while keeping unconfirmed details out of her posts.",
+      "outcome": "llm",
+      "instruction": "Fictional Dallas storm exercise. Household placements, incidents and personas are synthetic. Node identifiers are opaque map references. Do not infer real resident data, private future conditions, fleet, road configuration or outage configuration. Your household facts are fixed: {\"accessible\": false, \"deadline\": 30, \"factRefs\": [\"H09.size\", \"H09.accessible\", \"H09.need\", \"H09.deadline\", \"H09.home\", \"storm.power-outage\"], \"householdId\": \"H09\", \"needId\": \"N-H09\", \"needKind\": \"relocation\", \"nodeId\": \"osm-n82064216\", \"onset\": 0, \"size\": 3}. You may choose to request help or do nothing. If you choose to ask for help, create a post containing this exact JSON object (you may add your own surrounding speech): {\"kind\":\"help_request\",\"householdId\":\"H09\",\"needId\":\"N-H09\",\"factRefs\":[\"H09.size\",\"H09.accessible\",\"H09.need\",\"H09.deadline\",\"H09.home\",\"storm.power-outage\"]}. These references authorize including the fixed facts in an exercise request. Do not invent new physical facts or another household's request."
+    },
+    {
+      "householdId": "H19",
+      "displayName": "Dallas demo resident H19",
+      "persona": "Maya Ellis is a fictional 38-year-old Dallas resident created for a storm-response exercise. Her name, occupation, education, personality, relationships, and social media habits are illustrative additions rather than supplied facts. In this scenario she works as an office coordinator and has an associate degree in business administration. She lives in a two-person household identified as H19, associated with node osm-n81953006; the identity and relationship of the other household member are unspecified. The exercise identifies H19 as accessible, although it does not explain what that designation means or establish either resident's disability status. The household has a relocation need, N-H19, with an onset of 0 and a deadline of 30; the time unit and operational interpretation are not supplied. A storm-related power outage is part of the exercise context, but its precise effects on the household are not established. Maya's imagined background includes experience organizing schedules and sharing practical information at work, which helps explain her preference for clear instructions. Her social circle is imagined as a small network of coworkers, neighbors, and relatives, without assuming who lives with her. She is portrayed as an ISFJ: conscientious, observant, and inclined to help, though she can become visibly anxious when essential information is missing. She typically expresses concern in direct, measured language, saving stronger emotion for situations where people are dismissed or given conflicting advice. On social media, she might post a few times a week in ordinary circumstances and check more frequently during a storm. She prefers local service updates, community notices, and posts that explain what people should do next. Her comments tend to be polite and specific, asking for a source, location, contact method, or correction rather than speculating. She uses plain English, short paragraphs, and occasional phrases such as 'Can someone confirm?' and 'Please share the details.' In the exercise, she would likely favor timely relocation guidance that accounts for both household members and communicates any accessibility requirements without making assumptions about them. She could be frustrated by unverified shelter claims, inaccessible instructions, or criticism of residents who cannot relocate immediately. She would likely appreciate clear updates, respectful assistance, and practical offers that specify how to request help. Her imagined hobbies include library visits, cooking, and tending container plants. Her exercise-related memory is deliberately limited: H19 is a two-person household with a recorded relocation need beginning at 0 and a deadline of 30, in a storm scenario referencing a power outage. No prior post, evacuation attempt, request for assistance, decision, or emotional reaction is documented. Any response she makes during a simulation should therefore be treated as a newly generated possibility, not as an established historical action.",
+      "outcome": "llm",
+      "instruction": "Fictional Dallas storm exercise. Household placements, incidents and personas are synthetic. Node identifiers are opaque map references. Do not infer real resident data, private future conditions, fleet, road configuration or outage configuration. Your household facts are fixed: {\"accessible\": true, \"deadline\": 30, \"factRefs\": [\"H19.size\", \"H19.accessible\", \"H19.need\", \"H19.deadline\", \"H19.home\", \"storm.power-outage\"], \"householdId\": \"H19\", \"needId\": \"N-H19\", \"needKind\": \"relocation\", \"nodeId\": \"osm-n81953006\", \"onset\": 0, \"size\": 2}. You may choose to request help or do nothing. If you choose to ask for help, create a post containing this exact JSON object (you may add your own surrounding speech): {\"kind\":\"help_request\",\"householdId\":\"H19\",\"needId\":\"N-H19\",\"factRefs\":[\"H19.size\",\"H19.accessible\",\"H19.need\",\"H19.deadline\",\"H19.home\",\"storm.power-outage\"]}. These references authorize including the fixed facts in an exercise request. Do not invent new physical facts or another household's request."
+    }
+  ],
+  "candidates": [
+    {
+      "sourceActionId": "reddit-trace-4",
+      "householdId": "H09",
+      "needId": "N-H09",
+      "factRefs": [
+        "H09.size",
+        "H09.accessible",
+        "H09.need",
+        "H09.deadline",
+        "H09.home",
+        "storm.power-outage"
+      ],
+      "attemptMinute": 5,
+      "sourceText": "Our three-person household needs relocation guidance during the storm outage. Can someone confirm which organization to contact and the next step? Our exercise deadline is 30. Thanks.\n\n{\"kind\":\"help_request\",\"householdId\":\"H09\",\"needId\":\"N-H09\",\"factRefs\":[\"H09.size\",\"H09.accessible\",\"H09.need\",\"H09.deadline\",\"H09.home\",\"storm.power-outage\"]}"
+    },
+    {
+      "sourceActionId": "reddit-trace-5",
+      "householdId": "H19",
+      "needId": "N-H19",
+      "factRefs": [
+        "H19.size",
+        "H19.accessible",
+        "H19.need",
+        "H19.deadline",
+        "H19.home",
+        "storm.power-outage"
+      ],
+      "attemptMinute": 5,
+      "sourceText": "Our two-person household needs relocation assistance in this storm exercise. Can someone confirm how to request help and share the next steps, including how to communicate any accessibility requirements? Our recorded deadline is 30.\n\n{\"kind\":\"help_request\",\"householdId\":\"H19\",\"needId\":\"N-H19\",\"factRefs\":[\"H19.size\",\"H19.accessible\",\"H19.need\",\"H19.deadline\",\"H19.home\",\"storm.power-outage\"]}"
+    },
+    {
+      "sourceActionId": "reddit-trace-6",
+      "householdId": "H02",
+      "needId": "N-H02",
+      "factRefs": [
+        "H02.size",
+        "H02.accessible",
+        "H02.need",
+        "H02.deadline",
+        "H02.home",
+        "storm.power-outage"
+      ],
+      "attemptMinute": 5,
+      "sourceText": "Our two-person household needs a delivery during the storm power outage, with a deadline of 30 in the exercise. How can we contact the appropriate response team and share our location privately?\n\n{\"kind\":\"help_request\",\"householdId\":\"H02\",\"needId\":\"N-H02\",\"factRefs\":[\"H02.size\",\"H02.accessible\",\"H02.need\",\"H02.deadline\",\"H02.home\",\"storm.power-outage\"]}"
+    }
+  ],
+  "episode": {
+    "rounds": 1,
+    "activeAgents": 3,
+    "autonomousActions": 3,
+    "seededActions": 0
+  },
+  "provenance": [
+    {
+      "label": "Preparation",
+      "detail": "Actual pinned MiroFish OasisProfileGenerator; sequential OpenAI calls; rule fallback recorded explicitly."
+    },
+    {
+      "label": "Social episode",
+      "detail": "Actual pinned RedditSimulationRunner with one LLMAction round, hour-zero activity, no seeded posts, CREATE_POST/DO_NOTHING action menu. Successful platform trace rows retained."
+    },
+    {
+      "label": "Timing assumption",
+      "detail": "First autonomous social round maps to exercise minute 5; rules attempt minute 10 otherwise."
+    },
+    {
+      "label": "Usage",
+      "detail": "{\"calls\": 6, \"chargedUsd\": 0.019047, \"estimateDetail\": \"Standard input/output token estimate; uncertain calls retain conservative reservations.\", \"estimatedUsd\": 0.019046999999999998, \"inputTokens\": 5562, \"outputTokens\": 2697, \"reservedUsd\": 0.264625}"
+    }
+  ]
+}

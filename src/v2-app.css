@@ -1,0 +1,29 @@
+.v2-app-shell { grid-template-rows:64px minmax(0,1fr); }
+.v2-app-shell>.app-header { height:64px; min-height:64px; gap:16px; }
+.v2-app-shell .main-content { display:flex; flex-direction:column; gap:8px; }
+.v2-app-shell .observer-v2,.v2-app-shell .results-v2 { flex:1; min-height:0; }
+.v2-header-population { display:block; margin-top:1px; font-size:14px; color:#d5dbe2; letter-spacing:0; font-weight:400; }
+.v2-header-controls { display:flex; align-items:center; justify-content:flex-end; flex:1; min-width:0; gap:16px; }
+.v2-header-controls .v2-observer-controls { display:flex; align-items:center; justify-content:flex-end; gap:16px; min-width:0; }
+.v2-header-controls .v2-clock>span,.v2-header-controls .v2-playback time span { color:#d5dbe2; }
+.v2-header-controls .v2-playback time { color:#fff; }
+.v2-header-controls .v2-playback button { color:#253644; }
+.v2-header-controls .v2-playback button[data-variant=ghost] { color:#f0f3f5; }
+.v2-header-controls nav { align-self:auto; }
+.v2-header-controls nav button { min-height:44px; border:0; border-radius:6px; padding:0 10px; color:#f0f3f5; }
+.v2-header-controls nav button:hover { background:#ffffff18; }
+.v2-header-controls select { color:#263540; }
+.v2-header-controls .v2-playback { flex-shrink:0; }
+.v2-app-status { display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:#eef2f5; font-size:14px; flex-shrink:0; border-radius:6px; }
+.v2-app-status.error { background:#fff0f1; color:#9a2230; }
+.v2-app-status > div { min-width:0; }
+.v2-app-status details { margin-top:4px; }
+.v2-app-status summary { cursor:pointer; }
+.v2-app-status pre { max-height:160px; overflow:auto; white-space:pre-wrap; overflow-wrap:anywhere; font-size:14px; }
+@media(max-width:1199px){
+  .v2-app-shell { grid-template-rows:auto minmax(0,1fr); }
+  .v2-app-shell>.app-header { height:auto; flex-wrap:wrap; padding-block:8px; gap:8px 12px; }
+  .v2-header-controls { order:3; flex:1 1 100%; flex-wrap:wrap; justify-content:flex-start; }
+  .v2-header-controls .v2-observer-controls { flex-wrap:wrap; justify-content:flex-start; gap:8px; }
+  .v2-header-controls nav { flex-wrap:wrap; }
+}

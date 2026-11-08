@@ -1,46 +1,53 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { BarChart3, ClipboardList, Map, ShieldCheck } from 'lucide-react';
 import { Button } from './components/ui/button';
-import type { AgentArtifact, CommandIntent, ScenarioConfig, SimState } from './model';
+import type { AgentArtifact, ScenarioConfig, SimState } from './model';
 import { HORIZON } from './model';
 import { createScenario, DALLAS_DEFAULT_CONFIG } from './scenario';
-import { initialize, advanceMinute, dispatch } from './sim/engine';
+import { initializeAutomatic, advanceAutomaticMinute, getAutomaticCoordinationIssue } from './sim/automatic';
 import { observe } from './sim/observe';
 import { validateArtifact } from './artifact';
 import { downloadRun, makeRunFile, parseRunFile, replay } from './run-file';
 import { Creator } from './ui/Creator';
-import { Response } from './ui/Response';
+import { Simulation } from './ui/Simulation';
 import { Results } from './ui/Results';
 import { SecondaryPanel } from './ui/SecondaryPanel';
 import { newlyDiscoveredUrgency } from './ui/controller';
+import { V2App } from './V2App';
 
 type Screen = 'create' | 'respond' | 'results';
 type Notice = { text: string; urgentId?: string } | null;
 const freshRunId = () => crypto.randomUUID();
+const initialHome = (state: SimState) => state.scenario.artifact?.profiles[0]?.householdId ?? state.households[0]?.householdId ?? null;
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>('create');
-  const [config, setConfig] = useState<ScenarioConfig>({ ...DALLAS_DEFAULT_CONFIG });
+  const [legacy,setLegacy]=useState(false);
+  const [imported,setImported]=useState<SimState|null>(null);
+  return legacy&&imported?<LegacyApp initialState={imported} compatibilityOnly onExpanded={()=>{setImported(null);setLegacy(false);}}/>:<V2App onLegacy={state=>{setImported(state??null);setLegacy(!!state);}}/>;
+}
+export function LegacyApp({initialState=null,onExpanded,compatibilityOnly=false}:{initialState?:SimState|null;onExpanded?:()=>void;compatibilityOnly?:boolean}={}) {
+  const [screen, setScreen] = useState<Screen>(initialState?(initialState.finalized?'results':'respond'):'create');
+  const [config, setConfig] = useState<ScenarioConfig>({ ...(initialState?.scenario.config??DALLAS_DEFAULT_CONFIG) });
   const [artifacts, setArtifacts] = useState<Record<ScenarioConfig['template'], AgentArtifact | null>>({ 'storm-v1':null, 'storm-dallas-v1':null });
+  const [artifactReady, setArtifactReady] = useState<Record<ScenarioConfig['template'], boolean>>({ 'storm-v1':false, 'storm-dallas-v1':false });
   const artifact = artifacts[config.template];
-  const [state, setState] = useState<SimState | null>(null);
-  const stateRef = useRef<SimState | null>(null);
+  const [state, setState] = useState<SimState | null>(initialState);
+  const stateRef = useRef<SimState | null>(initialState);
   const [running, setRunning] = useState(false);
   const runningRef = useRef(false);
   const [speed, setSpeed] = useState(1);
   const [selected, setSelected] = useState<string | null>(null);
-  const [unitId, setUnitId] = useState('');
-  const [shelterId, setShelterId] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<Notice>(null);
-  const [confirmation, setConfirmation] = useState<'edit' | 'finish' | null>(null);
+  const [confirmation, setConfirmation] = useState<'edit' | 'finish' | 'expanded' | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const generation = useRef(0);
   const view = useMemo(() => state ? observe(state) : null, [state]);
+  const coordinationIssue = state ? getAutomaticCoordinationIssue(state) : null;
   const pause = () => { runningRef.current = false; setRunning(false); };
   const run = () => { if (!document.hidden && stateRef.current && !stateRef.current.finalized) { runningRef.current = true; setRunning(true); } };
   const install = (next: SimState) => { stateRef.current = next; setState(next); };
-  const clearSelections = () => { setSelected(null); setUnitId(''); setShelterId(''); setNotice(null); setConfirmation(null); setError(null); };
+  const clearSelections = () => { setSelected(null); setNotice(null); setConfirmation(null); setError(null); };
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
@@ -57,7 +64,7 @@ export default function App() {
           const prepared = validateArtifact(json);
           if (prepared.template !== template) throw new Error('Prepared location differs.');
           if (!controller.signal.aborted) setArtifacts(current => ({ ...current, [template]:prepared }));
-        }).catch(() => {});
+        }).catch(() => {}).finally(() => { if (!controller.signal.aborted) setArtifactReady(current => ({ ...current, [template]:true })); });
     }
     return () => controller.abort();
   }, []);
@@ -65,10 +72,10 @@ export default function App() {
   const step = () => {
     const current = stateRef.current;
     if (!current || current.finalized) return;
-    const next = advanceMinute(current);
+    const next = advanceAutomaticMinute(current);
     const urgentId = newlyDiscoveredUrgency(observe(current), observe(next));
     install(next);
-    if (urgentId) { pause(); setNotice({ text: `Urgent need at ${urgentId}. Paused.`, urgentId }); }
+    if (urgentId) setNotice({ text: `Urgent request · ${urgentId}`, urgentId });
     if (next.finalized) { pause(); generation.current++; setScreen('results'); setSelected(null); setNotice(null); }
   };
 
@@ -77,7 +84,7 @@ export default function App() {
     let lastTime = performance.now();
     const interval = window.setInterval(() => {
       const now = performance.now();
-      if (now - lastTime > 2000 / speed * 1.8) { runningRef.current = false; setRunning(false); setNotice({ text: 'Playback paused. Press Run to continue.' }); lastTime = now; return; }
+      if (now - lastTime > 2000 / speed * 1.8) { runningRef.current = false; setRunning(false); setNotice({ text: 'Playback paused. Resume to continue.' }); lastTime = now; return; }
       lastTime = now;
       if (runningRef.current && !document.hidden) step();
     }, 2000 / speed);
@@ -98,28 +105,18 @@ export default function App() {
   const start = (override?: ScenarioConfig) => {
     try {
       const chosen = override ?? config;
-      const next = initialize(createScenario(chosen, artifacts[chosen.template]), freshRunId());
+      const next = initializeAutomatic(createScenario(chosen, artifacts[chosen.template]), freshRunId());
       if (override) setConfig({ ...override });
-      generation.current++; pause(); clearSelections(); install(next); setScreen('respond');
+      generation.current++; clearSelections(); install(next); setSelected(initialHome(next)); setScreen('respond'); run();
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Check the exercise settings.'); }
   };
   const select = (id: string | null) => {
-    pause(); if (id !== selected) { setUnitId(''); setShelterId(''); } setSelected(id); if (id) setNotice(null);
-  };
-  const command = (intent: CommandIntent) => {
-    const current = stateRef.current; if (!current) return;
-    pause();
-    if (current.commands.length >= 500) { setNotice({ text: 'Command limit reached. Export or start again.' }); return; }
-    const sequence = (current.commands.at(-1)?.command.sequence ?? 0) + 1;
-    const outcome = dispatch(current, { ...intent, runId: current.runId, commandId: freshRunId(), sequence, minute: current.minute });
-    install(outcome.state);
-    if (outcome.result.accepted) { setNotice(null); run(); }
-    else setNotice({ text: outcome.result.reason });
+    setSelected(id); if (id) setNotice(null);
   };
   const finish = () => {
     let current = stateRef.current; if (!current) return;
     pause(); generation.current++;
-    while (!current.finalized && current.minute < HORIZON) current = advanceMinute(current);
+    while (!current.finalized && current.minute < HORIZON) current = advanceAutomaticMinute(current);
     install(current); clearSelections(); setScreen('results');
   };
   const edit = () => {
@@ -129,7 +126,7 @@ export default function App() {
   };
   const restart = () => {
     const current = stateRef.current; if (!current) return;
-    generation.current++; pause(); clearSelections(); install(initialize(structuredClone(current.scenario), freshRunId())); setScreen('respond');
+    generation.current++; clearSelections(); install(initializeAutomatic(structuredClone(current.scenario), freshRunId())); setScreen('respond'); run();
   };
   const replayCurrent = () => {
     const current = stateRef.current; if (!current) return;
@@ -154,7 +151,7 @@ export default function App() {
       setNotice({ text: `Run restored at ${next.minute} min. Paused.` });
     } catch (cause) { if (marker === generation.current) setError(cause instanceof Error ? cause.message : 'Unable to import.'); }
   };
-  const requestEdit = () => { generation.current++; pause(); setConfirmation('edit'); };
+  const requestEdit = () => { generation.current++; pause(); setConfirmation(compatibilityOnly?'expanded':'edit'); };
   const requestFinish = () => { generation.current++; pause(); setConfirmation('finish'); };
   const navigate = (target: Screen) => {
     generation.current++; pause();
@@ -165,21 +162,22 @@ export default function App() {
 
   return <div className="app-shell">
     <header className="app-header"><div className="brand"><span className="brand-mark"><ShieldCheck /></span><strong>Response Simulator</strong></div>
-      <nav aria-label="Main navigation">{([{ id: 'create', label: 'Setup', Icon: ClipboardList }, { id: 'respond', label: 'Respond', Icon: Map }, { id: 'results', label: 'Results', Icon: BarChart3 }] as const).map(({ id, label, Icon }) => <button key={id} onClick={() => navigate(id)} aria-current={screen === id ? 'page' : undefined} disabled={id === 'respond' ? !state || state.finalized : id === 'results' ? !state?.finalized : false}><Icon />{label}</button>)}</nav>
-      <span className="training-label">Fictional training</span>
+      <nav aria-label="Main navigation">{([{ id: 'create', label: 'Conditions', Icon: ClipboardList }, { id: 'respond', label: 'Simulation', Icon: Map }, { id: 'results', label: 'Results', Icon: BarChart3 }] as const).filter(item=>!compatibilityOnly||item.id!=='create').map(({ id, label, Icon }) => <button key={id} onClick={() => navigate(id)} aria-current={screen === id ? 'page' : undefined} disabled={id === 'respond' ? !state || state.finalized : id === 'results' ? !state?.finalized : false}><Icon />{label}</button>)}</nav>
+      <span className="training-label">{compatibilityOnly?'Imported earlier run':'Fictional training'}</span>
+      {onExpanded&&<Button variant="ghost" onClick={()=>{pause();if(state)setConfirmation('expanded');else onExpanded();}}>Dallas simulation</Button>}
     </header>
     <main className={`main-content screen-${screen}`}>
       {error && screen !== 'create' && <div className="global-error" role="alert"><span>{error}</span><Button variant="ghost" onClick={() => setError(null)}>Dismiss</Button></div>}
-      {screen === 'create' && <Creator config={config} artifact={artifact} error={error} onChange={setConfig} onStart={start} onDefault={() => { setConfig({ ...DALLAS_DEFAULT_CONFIG }); setError(null); }} onImport={importClick} />}
-      {screen === 'respond' && view && <Response view={view} selected={selected} unitId={unitId} shelterId={shelterId} artifact={state!.scenario.artifact}
-        running={running} speed={speed} notice={notice} onSelect={select} onUnit={setUnitId} onShelter={setShelterId}
-        onToggle={() => runningRef.current ? pause() : run()} onStep={() => { pause(); step(); }} onSpeed={setSpeed} onPause={pause} onDispatch={command}
-        onExport={exportCurrent} onImport={importClick} onFinish={requestFinish} onEdit={requestEdit} onDismiss={() => setNotice(null)} />}
+      {screen === 'create' && <Creator config={config} artifact={artifact} loadingResidents={!artifactReady[config.template]} loadingDefaultResidents={!artifactReady['storm-dallas-v1']} error={error} onChange={setConfig} onStart={start} onDefault={() => { setConfig({ ...DALLAS_DEFAULT_CONFIG }); setError(null); }} onImport={importClick} />}
+      {screen === 'respond' && view && <Simulation key={view.runId} view={view} selected={selected} artifact={state!.scenario.artifact}
+        running={running} speed={speed} notice={coordinationIssue ? { text: coordinationIssue } : notice} onSelect={select}
+        onToggle={() => runningRef.current ? pause() : run()} onStep={() => { pause(); step(); }} onSpeed={setSpeed} onPause={pause}
+        onExport={exportCurrent} onImport={importClick} onRestart={restart} onFinish={requestFinish} onEdit={requestEdit} />}
       {screen === 'results' && state?.finalized && <Results key={state.runId} state={state} onExport={exportCurrent} onReplay={replayCurrent} onRestart={restart} onEdit={requestEdit} />}
     </main>
-    {confirmation && <SecondaryPanel title={confirmation === 'edit' ? 'New exercise' : 'Finish exercise'} variant="confirmation" fallbackFocusId="panel-exercise" onClose={() => setConfirmation(null)}>
-      <p>{confirmation === 'edit' ? 'Discard this run and return to setup?' : 'Advance to minute 60 without more assignments?'}</p>
-      <div className="confirmation-actions"><Button variant="outline" onClick={() => setConfirmation(null)}>Cancel</Button><Button onClick={confirmation === 'edit' ? edit : finish}>{confirmation === 'edit' ? 'Start over' : 'Finish now'}</Button></div>
+    {confirmation && <SecondaryPanel title={confirmation === 'expanded' ? 'Open Dallas simulation?' : confirmation === 'edit' ? 'New exercise' : 'Finish exercise'} variant="confirmation" fallbackFocusId="observation-panel-exercise" onClose={() => setConfirmation(null)}>
+      <p>{confirmation === 'expanded' ? 'Leave this run? Export first to keep your progress.' : confirmation === 'edit' ? 'Discard this run and return to setup?' : 'Complete the automatic simulation to minute 60?'}</p>
+      <div className="confirmation-actions"><Button variant="outline" onClick={() => setConfirmation(null)}>Cancel</Button><Button onClick={confirmation === 'expanded' ? onExpanded : confirmation === 'edit' ? edit : finish}>{confirmation === 'expanded' ? 'Open Dallas simulation' : confirmation === 'edit' ? 'Start over' : 'Finish now'}</Button></div>
     </SecondaryPanel>}
     <input ref={fileInput} className="sr-only" type="file" accept="application/json,.json" aria-label="Choose saved run file" onChange={event => { const file = event.currentTarget.files?.[0]; event.currentTarget.value = ''; void importFile(file); }} />
   </div>;

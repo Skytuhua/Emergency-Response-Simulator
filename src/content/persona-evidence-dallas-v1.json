@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "artifact": {
+    "template": "storm-dallas-v1",
+    "model": "gpt-6.1-terra",
+    "api": "responses",
+    "reasoningEffort": "low",
+    "inputHash": "f1f98271f7c423fa1dc0a851c67837c228c81ddd05bfd3c992502110e1c3d20b",
+    "sourceCommit": "7657031ac01184afe2cb220f5ee3545573b5e843",
+    "actorContextDigest": "41a8c28b2da65f9519a19e6426514a86328724021c0d0cca3f84499386fd4062",
+    "preparationVersion": "catastrophe-preparation-dallas-v1"
+  },
+  "manifestHash": "f1f98271f7c423fa1dc0a851c67837c228c81ddd05bfd3c992502110e1c3d20b",
+  "artifactSha256": "793ac3a0ece9cd64e6eb4aaf1a918523ab8598f640eeab7363f7feeab7a0a2ed",
+  "profilesEvidenceSha256": "e9da4f93d7cc2b389e4e23a79b59262dbe5ce8a37b4e8f7be8b122c27fa4a313",
+  "traceSha256": "0fbc6b35d53a2b1475831a0a8849c4565112375533c6e2be763d40499b39fcae",
+  "records": [
+    {
+      "householdId": "H02",
+      "fields": {
+        "age": 37,
+        "mbti": "ISTJ",
+        "profession": "Administrative coordinator",
+        "bio": "Fictional Dallas storm-exercise resident in a two-person household. Following a power outage, the household has a delivery need due by exercise time 30. Interested in practical updates, reliable assistance, and neighbor-to-neighbor support."
+      },
+      "personaExcerpt": "This is a synthetic persona for a Dallas storm exercise, not a reconstruction of a real individual. The supplied household facts are authoritative; personal details and behavioral tendencies below are illustrative assumptions. Maya Collins is a 37-year-old fictional Dallas resident who works as an administrative coordinator and completed an associate degree ",
+      "personaSha256": "011546717286d45f5b47df830457b335897a03401b911803b237b4cae525c647",
+      "sourceActionId": "reddit-trace-6",
+      "requestSha256": "40d54d2c6527594b3f7093273ffd8015594a038181f23cb5c3740dae206477a7",
+      "profileResponseSha256": "7bb825d0d4ca607c471e3ac6898d09d4bb480e3500cbba987e8d9ed699407a63",
+      "postResponseSha256": "0a245a59b964476b7d0a751d56a9d4e4cec5fc891e78231373843fea61968262"
+    },
+    {
+      "householdId": "H09",
+      "fields": {
+        "age": 36,
+        "mbti": "ISFJ",
+        "profession": "Library assistant",
+        "bio": "Dallas-based fictional resident and library assistant. Part of a three-person household in a storm exercise, sharing practical information and looking for a timely relocation option during a power outage."
+      },
+      "personaExcerpt": "Maya Bennett is a fictional 36-year-old Dallas resident created for a storm-response exercise. She works as a library assistant and completed an associate degree at a community college. Her age, name, occupation, education, personality, relationships, and habits are invented for simulation; they are not verified facts about a real person. The authoritative e",
+      "personaSha256": "fc8c3598691c68c415e26ce422cfe1cbf48b424d130f84ca28bc3ca011ae7e12",
+      "sourceActionId": "reddit-trace-4",
+      "requestSha256": "3768fa4da1db40d371c8036088c7f5d7b6828fee644dce6fb0e4abd6445c7221",
+      "profileResponseSha256": "879dc261ef4ad54e006b6ea422893bea8ec118375b892604497f7d62e7e8b920",
+      "postResponseSha256": "23b8bac425987d04c18395ea88bbc4552e110de2f159ac61580e3674bcd612ef"
+    },
+    {
+      "householdId": "H19",
+      "fields": {
+        "age": 38,
+        "mbti": "ISFJ",
+        "profession": "Office coordinator",
+        "bio": "Fictional Dallas storm-exercise resident in a two-person household. Interested in accessible emergency communication, power-outage updates, and practical relocation support. Personal details are illustrative, not verified facts."
+      },
+      "personaExcerpt": "Maya Ellis is a fictional 38-year-old Dallas resident created for a storm-response exercise. Her name, occupation, education, personality, relationships, and social media habits are illustrative additions rather than supplied facts. In this scenario she works as an office coordinator and has an associate degree in business administration. She lives in a two-",
+      "personaSha256": "411f4cfc0fc43668202307be2726188e288cf4e71b6473fdb50573ef4b65ffb1",
+      "sourceActionId": "reddit-trace-5",
+      "requestSha256": "61f6009013e6e415191063a151bea229438ae64549759147c13b066795851a1c",
+      "profileResponseSha256": "4e3dd7cfb0adafca452554bef50b65b42f87645ae59ef1e1ff5dd91c06e3320e",
+      "postResponseSha256": "e8071704fc0717567b5c8c17f3be8f03a555d922adf7815686db4bc96b1aead4"
+    }
+  ]
+}

@@ -89,7 +89,9 @@ def main() -> int:
     actual = subprocess.check_output(["git", "-C", str(ROOT / "vendor/MiroFish"), "rev-parse", "HEAD"], text=True).strip()
     if actual != SOURCE_COMMIT:
         parser.error("MiroFish source revision does not match the supported pinned commit.")
-    private = ROOT / ".private"
+    # Worktrees must not create independent $10 allowances for the same project.
+    from v2.project_budget import canonical_private_root
+    private = canonical_private_root()
     private.mkdir(exist_ok=True)
     try:
         with budget_lock(private):

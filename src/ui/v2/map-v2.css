@@ -1,0 +1,16 @@
+/* Each group is a house with its exact household count inside the walls. */
+.v2-map-wrap .map-house-group { width:48px; height:48px; border:0; border-radius:4px; background:transparent; color:#3d5e4e; box-shadow:none; }
+.v2-map-wrap .map-house-group:hover { background:transparent; }
+.v2-map-wrap .map-house-group .map-house-group-icon { width:48px; height:48px; filter:drop-shadow(0 1px 2px #233b4230); }
+.v2-map-wrap .map-house-group-icon path { fill:#f8fcf9; stroke:currentColor; stroke-width:1.8; stroke-linejoin:round; }
+.v2-map-wrap .map-house-count { fill:currentColor; stroke:none; font-size:14px; font-weight:750; font-variant-numeric:tabular-nums; }
+.v2-map-wrap .map-house-group:hover path { fill:#e7f0eb; }
+.v2-map-wrap .map-house-group:focus-visible { outline:3px solid #c92332; outline-offset:2px; }
+.v2-map-wrap .map-house-group.reported { color:#8a5613; }
+.v2-map-wrap .map-house-group.reported path { fill:#fff4d9; }
+.v2-map-wrap .map-house-group.assisted { color:#287650; }
+.v2-map-wrap .map-house-group.assisted path { fill:#e4f3e9; }
+.v2-map-wrap .map-house:not(.selected):not(:hover):not(:focus-visible) .map-house-label { display:none; }
+.v2-map-wrap .map-house-label { font-size:14px; white-space:nowrap; }
+.v2-group-search { display:flex; flex-direction:column; gap:5px; color:#425466; }
+.v2-group-search input { min-height:40px; padding:7px 10px; border:1px solid #cbd5dd; border-radius:6px; font:inherit; background:#fff; color:#263847; }

@@ -10,7 +10,7 @@ import { TownMap } from './TownMap';
 import { integrationLabel } from './Provenance';
 
 interface CreatorProps {
-  config: ScenarioConfig; artifact: AgentArtifact | null; error: string | null;
+  config: ScenarioConfig; artifact: AgentArtifact | null; error: string | null; loadingResidents?: boolean; loadingDefaultResidents?: boolean;
   onChange: (config: ScenarioConfig) => void; onStart: (config?: ScenarioConfig) => void; onDefault: () => void; onImport: () => void;
 }
 type FieldErrors = Partial<Record<keyof ScenarioConfig, string>>;
@@ -34,7 +34,7 @@ function validate(config: ScenarioConfig, fields: (keyof ScenarioConfig)[]): Fie
   return errors;
 }
 
-export function Creator({ config, artifact, error, onChange, onStart, onDefault, onImport }: CreatorProps) {
+export function Creator({ config, artifact, error, loadingResidents = false, loadingDefaultResidents = loadingResidents, onChange, onStart, onDefault, onImport }: CreatorProps) {
   const [customizing, setCustomizing] = useState(false);
   const [step, setStep] = useState(0);
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -70,7 +70,7 @@ export function Creator({ config, artifact, error, onChange, onStart, onDefault,
       return;
     }
     if (step < 2) setStep(step + 1);
-    else onStart();
+    else if (!loadingResidents) onStart();
   };
   const fieldError = (key: keyof ScenarioConfig) => errors[key] ? <p id={`config-${key}-error`} className="field-error" role="alert">{errors[key]}</p> : null;
   const numberField = (key: 'seed' | 'additionalNeeds' | 'kits' | 'shelterA' | 'shelterB', label: string, hint?: string) => <div className="field">
@@ -80,16 +80,16 @@ export function Creator({ config, artifact, error, onChange, onStart, onDefault,
   </div>;
 
   return <div className="wizard-screen">
-    <div className="workspace-toolbar"><h1>{customizing ? 'Set up exercise' : 'Storm response demo'}</h1><div className="toolbar-actions">{customizing && <Button type="button" variant="ghost" size="sm" onClick={() => { onDefault(); setErrors({}); }}><RotateCcw size={15} /> Reset defaults</Button>}<Button variant="outline" size="sm" onClick={onImport}><FileUp size={15} /> Open run</Button></div></div>
+    <div className="workspace-toolbar"><h1>{customizing ? 'Simulation conditions' : 'Dallas storm simulation'}</h1><div className="toolbar-actions">{customizing && <Button type="button" variant="ghost" size="sm" onClick={() => { onDefault(); setErrors({}); }}><RotateCcw size={15} /> Reset defaults</Button>}<Button variant="outline" size="sm" onClick={onImport}><FileUp size={15} /> Open run</Button></div></div>
     <div className="wizard-layout">
       {!customizing ? <section className="panel welcome-panel" aria-labelledby="welcome-heading">
-        <h2 id="welcome-heading" ref={heading} tabIndex={-1}>A storm has hit Dallas.</h2>
-        <p className="welcome-situation">Some people need help. Others cannot call.</p>
-        <p>Find who needs help, send a team, and see help arrive.</p>
-        <p className="welcome-consequence">Phones and internet are down in the southeast. Teams need to check those homes in person.</p>
+        <h2 id="welcome-heading" ref={heading} tabIndex={-1}>Observe a Dallas storm response.</h2>
+        <p className="welcome-situation">Residents report needs. Teams respond automatically.</p>
+        <p>Follow requests, coordination and assistance as they unfold.</p>
+        <p className="welcome-consequence">Some homes cannot call. On-site checks reveal their needs.</p>
         {error && <div className="alert-box error" role="alert"><TriangleAlert size={16} />{error}</div>}
-        <div className="welcome-actions"><Button type="button" onClick={() => onStart({ ...DALLAS_DEFAULT_CONFIG })}>Start the demo <ArrowRight size={15} /></Button><Button type="button" variant="outline" onClick={() => setCustomizing(true)}>Customize the scenario</Button></div>
-        <p className="welcome-context">Real Dallas streets · 24 fictional homes · Starts paused</p>
+        <div className="welcome-actions"><Button type="button" disabled={loadingDefaultResidents} onClick={() => onStart({ ...DALLAS_DEFAULT_CONFIG })}>{loadingDefaultResidents ? 'Loading residents…' : 'Start simulation'}<ArrowRight size={15} /></Button><Button type="button" variant="outline" onClick={() => setCustomizing(true)}>Customize conditions</Button></div>
+        <p className="welcome-context">Real Dallas streets · 24 fictional homes · Automatic response</p>
       </section> : <form ref={form} className="panel wizard-panel" noValidate onSubmit={event => { event.preventDefault(); advance(); }}>
         <ol className="wizard-steps" aria-label="Setup progress">{steps.map((label, index) => <li key={label} className={index === step ? 'active' : index < step ? 'complete' : ''} aria-current={index === step ? 'step' : undefined}><span aria-hidden="true">{index < step ? <Check size={14} /> : index + 1}</span>{label}</li>)}</ol>
         <div className="wizard-step-content">
@@ -107,11 +107,11 @@ export function Creator({ config, artifact, error, onChange, onStart, onDefault,
           </>}
           {step === 2 && <>
             <dl className="review-list"><div><dt>Phones &amp; internet</dt><dd>{outageLabels[config.networkGap]}</dd></div><div><dt>Roads</dt><dd>{config.roadPreset === 'open' ? 'All roads open' : 'One road closed'}</dd></div><div><dt>Homes needing help</dt><dd>3 + {config.additionalNeeds} extra</dd></div><div><dt>Teams</dt><dd>1 crew · {config.vans} van{config.vans === 1 ? '' : 's'}</dd></div><div><dt>Supply kits</dt><dd>{config.kits}</dd></div><div><dt>Shelter places</dt><dd>{config.template === 'storm-dallas-v1' ? 'A' : 'East'} {config.shelterA} · {config.template === 'storm-dallas-v1' ? 'B' : 'West'} {config.shelterB}</dd></div></dl>
-            <div className="review-start"><Badge variant="secondary">Starts paused</Badge><span>60-minute exercise</span></div>
+            <div className="review-start"><Badge variant="secondary">Automatic response</Badge><span>60-minute exercise</span></div>
             <details className="simulation-disclosure"><summary>Advanced <ChevronDown size={15} /></summary><div><p>{config.template === 'storm-dallas-v1' ? 'Dallas streets, fictional homes' : 'Fictional Riverdale'} · seed {config.seed}. Travel and service times are exercise assumptions.</p><p>{integrationLabel(artifact)}. Prepared requests are reused; no model runs during the exercise.</p><p>{isDefault ? 'Default completion verified by a scripted response.' : 'Custom conditions: completion feasibility unverified.'}</p></div></details>
           </>}
         </div>
-        <footer className="wizard-footer"><span>Step {step + 1} of 3</span><div><Button type="button" variant="outline" onClick={() => { setErrors({}); if (step > 0) setStep(step - 1); else setCustomizing(false); }}><ArrowLeft size={15} /> Back</Button><Button type="submit">{step === 2 ? 'Start exercise' : 'Continue'}<ArrowRight size={15} /></Button></div></footer>
+        <footer className="wizard-footer"><span>Step {step + 1} of 3</span><div><Button type="button" variant="outline" onClick={() => { setErrors({}); if (step > 0) setStep(step - 1); else setCustomizing(false); }}><ArrowLeft size={15} /> Back</Button><Button type="submit" disabled={step === 2 && loadingResidents}>{step === 2 ? loadingResidents ? 'Loading residents…' : 'Start simulation' : 'Continue'}<ArrowRight size={15} /></Button></div></footer>
       </form>}
       <aside className="panel wizard-preview" aria-label="Exercise preview"><div className="panel-heading"><div className="preview-title"><CloudRain size={20} /><h2>{previewConfig.template === 'storm-dallas-v1' ? 'Dallas demo' : 'Riverdale storm'}</h2></div><Badge variant="secondary">60 minutes</Badge></div><div className="wizard-map">{preview ? <TownMap view={preview} /> : <div className="empty-inspector"><p>Enter valid conditions to preview the town.</p></div>}</div><div className="preview-summary"><div><House size={21} /><div><strong>24 homes</strong><span>Four neighborhoods</span></div></div><div><Truck size={21} /><div><strong>{previewConfig.vans + 1} teams</strong><span>1 crew · {previewConfig.vans} van{previewConfig.vans === 1 ? '' : 's'}</span></div></div><div><Users size={21} /><div><strong>{Number.isFinite(previewConfig.shelterA + previewConfig.shelterB) ? previewConfig.shelterA + previewConfig.shelterB : '—'} places</strong><span>Two powered shelters</span></div></div></div></aside>
     </div>

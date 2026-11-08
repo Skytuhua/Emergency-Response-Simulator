@@ -1,0 +1,247 @@
+{
+  "kind": "dallas-prepared-behavior",
+  "version": 2,
+  "manifestHash": "0c89f37178de6e41ccd6f1655e73f4c5786e8448b917b910abc0d491d4a9f99f",
+  "populationHash": "1111111111111111111111111111111111111111111111111111111111111111",
+  "mapHash": "2222222222222222222222222222222222222222222222222222222222222222",
+  "eventTapeHash": "3333333333333333333333333333333333333333333333333333333333333333",
+  "supportHash": "4444444444444444444444444444444444444444444444444444444444444444",
+  "personas": [
+    {
+      "householdId": "synthetic-H1",
+      "persona": "AUTHORED TEST PERSONA. Fictional household representative.",
+      "age": 44,
+      "profession": "Authored fixture occupation",
+      "sourceResponseHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "model": "gpt-6.1-terra",
+      "reasoningEffort": "low",
+      "origin": "llm-direct"
+    }
+  ],
+  "contexts": [
+    {
+      "householdId": "synthetic-H1",
+      "opportunityId": "report:synthetic-need-1:0",
+      "atMs": 1200000,
+      "populationHash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "mapHash": "2222222222222222222222222222222222222222222222222222222222222222",
+      "eventTapeHash": "3333333333333333333333333333333333333333333333333333333333333333",
+      "supportHash": "4444444444444444444444444444444444444444444444444444444444444444",
+      "size": 2,
+      "accessiblePlacesRequired": 1,
+      "communicationsAvailable": false,
+      "need": {
+        "id": "synthetic-need-1",
+        "householdId": "synthetic-H1",
+        "kind": "relocation",
+        "urgent": true,
+        "onsetMs": 0,
+        "deadlineMs": 7200000
+      }
+    }
+  ],
+  "actions": [
+    {
+      "id": "authored-action-1",
+      "householdId": "synthetic-H1",
+      "opportunityId": "report:synthetic-need-1:0",
+      "atMs": 1200000,
+      "contextHash": "cd9be2c8982cf3ae0c6497de30ab3085719c6d325d363262013cfeea6d5e3259",
+      "action": "report",
+      "text": "{\"contextHash\":\"cd9be2c8982cf3ae0c6497de30ab3085719c6d325d363262013cfeea6d5e3259\",\"householdId\":\"synthetic-H1\",\"kind\":\"help_request_v2\",\"needId\":\"synthetic-need-1\",\"opportunityId\":\"report:synthetic-need-1:0\"}",
+      "sourceResponseHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sourceActionId": "authored-trace-1",
+      "origin": "llm-direct",
+      "model": "gpt-6.1-terra",
+      "reasoningEffort": "low"
+    }
+  ],
+  "sourceCommit": "7657031ac01184afe2cb220f5ee3545573b5e843",
+  "adapterVersion": "dallas-behavior-v2.1",
+  "sourceReceipts": [
+    {
+      "id": "response:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "url": "urn:dallas-v2:authored-unit-test",
+      "retrievedAt": "2026-11-08T00:00:00Z",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "bytes": 1,
+      "vintage": "AUTHORED-FIXTURE",
+      "license": "project-test-fixture",
+      "status": "retained",
+      "notes": [
+        "AUTHORED TEST CHAIN. No provider calls or genuine upstream trace; only parser regression input."
+      ]
+    },
+    {
+      "id": "response:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "url": "urn:dallas-v2:authored-unit-test",
+      "retrievedAt": "2026-11-08T00:00:00Z",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "bytes": 1,
+      "vintage": "AUTHORED-FIXTURE",
+      "license": "project-test-fixture",
+      "status": "retained",
+      "notes": [
+        "AUTHORED TEST CHAIN. No provider calls or genuine upstream trace; only parser regression input."
+      ]
+    },
+    {
+      "id": "trace:authored-trace-1",
+      "url": "urn:dallas-v2:authored-unit-test",
+      "retrievedAt": "2026-11-08T00:00:00Z",
+      "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "bytes": 1,
+      "vintage": "AUTHORED-FIXTURE",
+      "license": "project-test-fixture",
+      "status": "retained",
+      "notes": [
+        "AUTHORED TEST CHAIN. No provider calls or genuine upstream trace; only parser regression input."
+      ]
+    }
+  ],
+  "preparationManifest": {
+    "kind": "dallas-behavior-preparation",
+    "version": 2,
+    "sourceCommit": "7657031ac01184afe2cb220f5ee3545573b5e843",
+    "adapterVersion": "dallas-behavior-v2.1",
+    "populationHash": "1111111111111111111111111111111111111111111111111111111111111111",
+    "mapHash": "2222222222222222222222222222222222222222222222222222222222222222",
+    "eventTapeHash": "3333333333333333333333333333333333333333333333333333333333333333",
+    "supportHash": "4444444444444444444444444444444444444444444444444444444444444444",
+    "api": "responses",
+    "reasoningEffort": "low",
+    "profiles": {
+      "model": "gpt-6.1-terra",
+      "sdkRetries": 0,
+      "upstreamPaidRetries": 0,
+      "maxOutputTokens": 4096,
+      "requestBytesLimit": 50000
+    },
+    "social": {
+      "actions": [
+        "CREATE_POST",
+        "DO_NOTHING"
+      ],
+      "roundsPerOpportunity": 1,
+      "seededActions": 0,
+      "maxCallsPerOpportunity": 2,
+      "platformObservation": "no-other-household-posts"
+    },
+    "actors": [
+      {
+        "householdId": "synthetic-H1",
+        "cohortId": "authored-test-cohort"
+      }
+    ],
+    "contexts": [
+      {
+        "householdId": "synthetic-H1",
+        "opportunityId": "report:synthetic-need-1:0",
+        "atMs": 1200000,
+        "populationHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "mapHash": "2222222222222222222222222222222222222222222222222222222222222222",
+        "eventTapeHash": "3333333333333333333333333333333333333333333333333333333333333333",
+        "supportHash": "4444444444444444444444444444444444444444444444444444444444444444",
+        "size": 2,
+        "accessiblePlacesRequired": 1,
+        "communicationsAvailable": false,
+        "need": {
+          "id": "synthetic-need-1",
+          "householdId": "synthetic-H1",
+          "kind": "relocation",
+          "urgent": true,
+          "onsetMs": 0,
+          "deadlineMs": 7200000
+        }
+      }
+    ],
+    "prompts": [
+      {
+        "id": "persona:synthetic-H1",
+        "kind": "persona",
+        "householdId": "synthetic-H1",
+        "opportunityId": null,
+        "contextHash": null,
+        "text": "Create an illustrative fictional Dallas household representative, not an actual resident. Local household facts: {\"accessiblePlacesRequired\":1,\"householdId\":\"synthetic-H1\",\"size\":2}. Return persona, age and profession as synthetic background. Do not infer a disability, medical priority, real identity or physical outcome. Background is never a triage feature.",
+        "sha256": "0129cef61c3098876e975b74120e6126c0e0e0e66207a3ece48b93447ac6abcc"
+      },
+      {
+        "id": "report:synthetic-need-1:0",
+        "kind": "action",
+        "householdId": "synthetic-H1",
+        "opportunityId": "report:synthetic-need-1:0",
+        "contextHash": "cd9be2c8982cf3ae0c6497de30ab3085719c6d325d363262013cfeea6d5e3259",
+        "text": "Fictional Dallas exercise. You represent one synthetic household. Actor-local observations: {\"accessiblePlacesRequired\":1,\"atMs\":1200000,\"communicationsAvailable\":false,\"eventTapeHash\":\"3333333333333333333333333333333333333333333333333333333333333333\",\"householdId\":\"synthetic-H1\",\"mapHash\":\"2222222222222222222222222222222222222222222222222222222222222222\",\"need\":{\"deadlineMs\":7200000,\"householdId\":\"synthetic-H1\",\"id\":\"synthetic-need-1\",\"kind\":\"relocation\",\"onsetMs\":0,\"urgent\":true},\"opportunityId\":\"report:synthetic-need-1:0\",\"populationHash\":\"1111111111111111111111111111111111111111111111111111111111111111\",\"size\":2,\"supportHash\":\"4444444444444444444444444444444444444444444444444444444444444444\"}. Choose CREATE_POST to attempt reporting your current need, or DO_NOTHING to wait. A failed network still permits an attempted report. CREATE_POST is allowed only with a current need, and its content must contain exactly this JSON object, with optional surrounding speech: {\"contextHash\":\"cd9be2c8982cf3ae0c6497de30ab3085719c6d325d363262013cfeea6d5e3259\",\"householdId\":\"synthetic-H1\",\"kind\":\"help_request_v2\",\"needId\":\"synthetic-need-1\",\"opportunityId\":\"report:synthetic-need-1:0\"}. Do not add physical facts, medical outcomes, global conditions, capacities, or completed assistance. Other households are not observable.",
+        "sha256": "ad19d70ea6fab027b40cd94093cc1e6bfbbe22bd92df171d8d35e687b0011859"
+      }
+    ],
+    "logicalOpportunities": [
+      "persona:synthetic-H1",
+      "report:synthetic-need-1:0"
+    ]
+  },
+  "evidence": [
+    {
+      "id": "response:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "kind": "persona-response",
+      "payload": {
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "low",
+        "api": "responses",
+        "status": "completed",
+        "sourceResponseHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requestHash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "promptHash": "0129cef61c3098876e975b74120e6126c0e0e0e66207a3ece48b93447ac6abcc",
+        "householdId": "synthetic-H1",
+        "opportunityId": null,
+        "contextHash": null,
+        "outputText": "{\"age\":44,\"persona\":\"AUTHORED TEST PERSONA. Fictional household representative.\",\"profession\":\"Authored fixture occupation\"}",
+        "toolCalls": []
+      },
+      "sha256": "e3d5976388cc812415b2d12a187dee3b6f0af27ca5fb1be53c98bf3a93866209"
+    },
+    {
+      "id": "response:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "kind": "action-response",
+      "payload": {
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "low",
+        "api": "responses",
+        "status": "completed",
+        "sourceResponseHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "requestHash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "promptHash": "ad19d70ea6fab027b40cd94093cc1e6bfbbe22bd92df171d8d35e687b0011859",
+        "householdId": "synthetic-H1",
+        "opportunityId": "report:synthetic-need-1:0",
+        "contextHash": "cd9be2c8982cf3ae0c6497de30ab3085719c6d325d363262013cfeea6d5e3259",
+        "outputText": "",
+        "toolCalls": [
+          {
+            "name": "create_post",
+            "arguments": "{\"content\":\"{\\\"contextHash\\\":\\\"cd9be2c8982cf3ae0c6497de30ab3085719c6d325d363262013cfeea6d5e3259\\\",\\\"householdId\\\":\\\"synthetic-H1\\\",\\\"kind\\\":\\\"help_request_v2\\\",\\\"needId\\\":\\\"synthetic-need-1\\\",\\\"opportunityId\\\":\\\"report:synthetic-need-1:0\\\"}\"}",
+            "callId": "authored-tool-call"
+          }
+        ]
+      },
+      "sha256": "9abf5841ec733c52d7505753a3490059ae8888df2ae2da3239028cf04a6e1653"
+    },
+    {
+      "id": "upstream:authored-trace-1",
+      "kind": "upstream-action",
+      "payload": {
+        "householdId": "synthetic-H1",
+        "opportunityId": "report:synthetic-need-1:0",
+        "agentId": 0,
+        "actionType": "create_post",
+        "content": "{\"contextHash\":\"cd9be2c8982cf3ae0c6497de30ab3085719c6d325d363262013cfeea6d5e3259\",\"householdId\":\"synthetic-H1\",\"kind\":\"help_request_v2\",\"needId\":\"synthetic-need-1\",\"opportunityId\":\"report:synthetic-need-1:0\"}",
+        "sourceActionId": "authored-trace-1",
+        "sourceResponseHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "responseEvidenceId": "response:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "autonomous": true,
+        "successful": true,
+        "sourceTraceHash": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+      },
+      "sha256": "5a877fa45b94926f217615ed7a02f37806101e2a167d94fbf4aaa40baf1839c3"
+    }
+  ]
+}
