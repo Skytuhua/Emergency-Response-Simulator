@@ -4,14 +4,43 @@ export type Neighborhood = 'northwest' | 'northeast' | 'southwest' | 'southeast'
 export type Action = 'ASSESS' | 'DELIVER' | 'RELOCATE';
 export type NeedKind = 'delivery' | 'relocation';
 export interface ScenarioConfig {
-  version: 1; template: 'storm-v1'; seed: number; additionalNeeds: number;
+  version: 1; template: 'storm-v1' | 'storm-dallas-v1'; seed: number; additionalNeeds: number;
   vans: number; kits: number; shelterA: number; shelterB: number;
   networkGap: Neighborhood | 'none'; roadPreset: 'open' | 'detour';
 }
-export interface MapNode { id: string; x: number; y: number }
-export interface RoadEdge { id: string; from: string; to: string; minutes: number; closed?: boolean }
-export interface RoadGraph { nodes: MapNode[]; edges: RoadEdge[]; width: number; height: number }
-export interface Route { nodes: string[]; legs: { from: string; to: string; minutes: number }[]; minutes: number }
+export interface MapNode { id: string; x: number; y: number; osmNodeId?: number; lat?: number; lon?: number }
+export interface GeographicPoint { x: number; y: number; lat: number; lon: number; osmNodeId: number }
+export interface RoadEdge {
+  id: string; from: string; to: string; minutes: number; closed?: boolean;
+  durationMs?: number; lengthMeters?: number; geometry?: GeographicPoint[];
+  direction?: 'both' | 'forward' | 'reverse'; osmWayId?: number; name?: string; highway?: string;
+}
+export interface TurnRestriction {
+  id: string; fromWayId: number; toWayId: number; viaNodeId: string;
+  kind: 'no' | 'only'; maneuver: string;
+}
+export interface GeographicMapMetadata {
+  datasetId: string; datasetHash: string; displayName: string;
+  bounds: { south: number; west: number; north: number; east: number };
+  projection: { id: string; originLat: number; originLon: number; earthRadiusMeters: number; metersPerUnit: number; padding: number };
+  source: { name: string; url: string; timestamp: string; rawSha256: string; license: string; licenseUrl: string };
+  attribution: string; travelPolicy: { id: string; assumedSpeedKph: number; description: string };
+  profile: string; limitations: string[]; baseNodeId: string;
+  quadrantLabels: { neighborhood: Neighborhood; x: number; y: number }[];
+}
+export interface RoadGraph {
+  nodes: MapNode[]; edges: RoadEdge[]; width: number; height: number;
+  kind?: 'osm-driving'; metadata?: GeographicMapMetadata; restrictions?: TurnRestriction[];
+}
+export interface GeographicRoadEdge extends RoadEdge {
+  durationMs: number; lengthMeters: number; geometry: GeographicPoint[];
+  direction: 'both' | 'forward' | 'reverse'; osmWayId: number; name: string; highway: string;
+}
+export interface GeographicRoadGraph extends RoadGraph {
+  kind: 'osm-driving'; metadata: GeographicMapMetadata; edges: GeographicRoadEdge[]; restrictions: TurnRestriction[];
+}
+export interface RouteLeg { from: string; to: string; minutes: number; edgeId?: string; durationMs?: number }
+export interface Route { nodes: string[]; legs: RouteLeg[]; minutes: number; durationMs?: number; lengthMeters?: number }
 export interface Need { id: string; kind: NeedKind; urgent: boolean; onset: number; deadline: number }
 export interface Household {
   id: string; name: string; address: string; nodeId: string; x: number; y: number;
@@ -23,7 +52,7 @@ export interface ReportCandidate {
   attemptMinute: 5; sourceText: string;
 }
 export interface AgentArtifact {
-  version: 1; template: 'storm-v1'; sourceCommit: string; model: string;
+  version: 1; template: 'storm-v1' | 'storm-dallas-v1'; sourceCommit: string; model: string;
   api?: 'responses'; reasoningEffort?: 'low';
   generationOutcome: 'target' | 'profiles-only' | 'blocked' | 'synthetic-test';
   preparationVersion: string; timingMapVersion: string;

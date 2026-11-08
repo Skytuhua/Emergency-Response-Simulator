@@ -2,7 +2,17 @@
 
 MiroFish source: https://github.com/666ghj/MiroFish at immutable commit `7657031ac01184afe2cb220f5ee3545573b5e843`. The ignored `vendor/MiroFish` checkout is unchanged. `tools/setup_mirofish.ps1` reconstructs the pinned source and isolated dependencies. The upstream AGPL license is retained in `docs/MIROFISH-AGPL-3.0.txt`; local adaptation is in `tools/`.
 
-## Current prepared output: Terra low
+## Dallas prepared output: Terra low
+
+`public/data/mirofish-dallas-v1.json` contains a separate genuine Dallas preparation, bound to `storm-dallas-v1`, the frozen Dallas street dataset and its three synthetic representative home nodes. Six completed OpenAI Responses calls identify exact `gpt-6.1-terra` with low reasoning. Actual pinned MiroFish/OASIS produced three exact-response-verified personas and three successful autonomous posts, all accepted by the strict fact-reference normalizer. The first-round-to-minute-5 mapping remains an explicit exercise assumption.
+
+Dallas usage: 5,562 input / 2,697 output tokens, six calls, estimated **$0.019047**. All preparation now totals **24 calls and estimated $0.0472764 / $10** (including both Terra episodes and original gpt-4.1-mini preparation). The Dallas episode had a separate $1 allowance. No additional provider calls are needed for automatic playback or visualization.
+
+Dallas complete input hash: `f1f98271f7c423fa1dc0a851c67837c228c81ddd05bfd3c992502110e1c3d20b`; actor digest: `41a8c28b2da65f9519a19e6426514a86328724021c0d0cca3f84499386fd4062`; map dataset digest: `ba2017a31c639b4f26060bdd41ca575a536c3ae7080a8fa8a8ec9340c01e8ed6`. Artifact SHA-256: Windows preparation bytes `793ac3a0ece9cd64e6eb4aaf1a918523ab8598f640eeab7363f7feeab7a0a2ed`; repository LF bytes `a8dd374398ed77c0c997004e54fff09f0f3e5861c3bd4691e15af06dc0b716bd`.
+
+Private raw receipts remain in `.private/mirofish-hoyvt38t/`. Only the approved synthetic artifact is public. Riverdale artifacts cannot be injected into Dallas; all original artifacts and saved runs remain replayable under their original identities. The separately named `default-dallas-run.json` is an authored engine-regression witness, not an automatic coordination result or operational validation.
+
+## Riverdale prepared output: Terra low
 
 `public/data/mirofish-v1.json` now contains actual OpenAI **gpt-6.1-terra**, with **reasoning.effort=low**, generated through the **Responses API**. Official model ID, supported reasoning option, tool transport, and standard short-context price were verified against https://developers.openai.com/api/docs/models/gpt-6.1-terra on 8 November 2026. The authorized account's exact model GET returned 200 before generation; all six retained generation responses identify the exact model and low effort. This is API evidence, not an inference from a T3/Codex display label.
 

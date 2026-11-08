@@ -1,4 +1,5 @@
 import type { ObservationView, Unit } from './model';
+import { routeLegGeometry, routePosition } from './sim/routes';
 
 export const neighborhoodName = (value: string) => value === 'none' ? 'No outage' : value.charAt(0).toUpperCase() + value.slice(1);
 
@@ -9,6 +10,7 @@ export function publicUnitPosition(view: ObservationView, unit: Unit): { x: numb
   const route = transporting ? mission.shelterRoute : mission.route;
   if (!route) return unit;
   let elapsed = view.minute - (transporting ? mission.pickupAt! : mission.dispatchedAt);
+  if (view.map.kind === 'osm-driving') return routePosition(view.map, route, elapsed);
   const nodes = new Map(view.map.nodes.map(node => [node.id, node]));
   for (const leg of route.legs) {
     const from = nodes.get(leg.from), to = nodes.get(leg.to);
@@ -31,6 +33,14 @@ export function drawTown(canvas: HTMLCanvasElement, view: ObservationView, selec
   const rect = canvas.getBoundingClientRect();
   canvas.width = Math.max(1, Math.round(rect.width * ratio));
   canvas.height = Math.max(1, Math.round(rect.height * ratio));
+  if (view.map.kind === 'osm-driving') {
+    const scale = Math.min(rect.width / width, rect.height / height);
+    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    ctx.fillStyle = '#eef0ed'; ctx.fillRect(0, 0, rect.width, rect.height);
+    ctx.setTransform(scale * ratio, 0, 0, scale * ratio, (rect.width - width * scale) / 2 * ratio, (rect.height - height * scale) / 2 * ratio);
+    drawDallas(ctx, view, selected, scale || 1);
+    return;
+  }
   ctx.setTransform(canvas.width / width, 0, 0, canvas.height / height, 0, 0);
   ctx.fillStyle = '#e4ecde'; ctx.fillRect(0, 0, width, height);
 
@@ -96,5 +106,57 @@ export function drawTown(canvas: HTMLCanvasElement, view: ObservationView, selec
     ctx.beginPath(); routeNodes.forEach((id, index) => { const point = nodes.get(id); if (point) index === 0 ? ctx.moveTo(point.x, point.y) : ctx.lineTo(point.x, point.y); });
     ctx.strokeStyle = '#fff'; ctx.lineWidth = 7; ctx.stroke();
     ctx.strokeStyle = '#bf2d3d'; ctx.lineWidth = 3; ctx.setLineDash([7, 5]); ctx.stroke(); ctx.setLineDash([]);
+  }
+}
+
+/** Real retained street geometry; no decorative roads or invented land use. */
+function drawDallas(ctx: CanvasRenderingContext2D, view: ObservationView, selected: string | null, scale: number): void {
+  const { map } = view;
+  ctx.fillStyle = '#eef0ed'; ctx.fillRect(0, 0, map.width, map.height);
+  if (view.networkGap !== 'none') {
+    const x = view.networkGap.endsWith('east') ? map.width / 2 : 0;
+    const y = view.networkGap.startsWith('south') ? map.height / 2 : 0;
+    ctx.save(); ctx.beginPath(); ctx.rect(x, y, map.width / 2, map.height / 2); ctx.clip();
+    ctx.fillStyle = '#f6e5b8'; ctx.fillRect(x, y, map.width / 2, map.height / 2);
+    ctx.strokeStyle = '#c6ac7160'; ctx.lineWidth = 1 / scale;
+    for (let d = -map.height; d < map.width; d += 18 / scale) { ctx.beginPath(); ctx.moveTo(x + d, y); ctx.lineTo(x + d + map.height / 2, y + map.height / 2); ctx.stroke(); }
+    ctx.restore();
+  }
+  const stroke = (points: { x: number; y: number }[]) => {
+    ctx.beginPath(); points.forEach((point, i) => i ? ctx.lineTo(point.x, point.y) : ctx.moveTo(point.x, point.y));
+  };
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  for (const edge of map.edges) {
+    if (!edge.geometry?.length) continue;
+    const width = ['primary', 'secondary', 'tertiary'].includes(edge.highway ?? '') ? 7 : 4.5;
+    stroke(edge.geometry); ctx.strokeStyle = '#c7ceca'; ctx.lineWidth = (width + 2) / scale; ctx.stroke();
+    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = width / scale; ctx.stroke();
+    if (edge.closed) {
+      const middle = edge.geometry[Math.floor(edge.geometry.length / 2)];
+      ctx.strokeStyle = '#bd2638'; ctx.lineWidth = 3 / scale;
+      ctx.beginPath(); ctx.moveTo(middle.x - 7 / scale, middle.y - 7 / scale); ctx.lineTo(middle.x + 7 / scale, middle.y + 7 / scale);
+      ctx.moveTo(middle.x + 7 / scale, middle.y - 7 / scale); ctx.lineTo(middle.x - 7 / scale, middle.y + 7 / scale); ctx.stroke();
+    }
+  }
+  // Label long segments once per street, outside home/facility marker bounds.
+  const labels: { x: number; y: number }[] = [];
+  const named = new Set<string>();
+  const occupied = [...view.households, ...view.shelters];
+  ctx.font = `500 ${12 / scale}px system-ui`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  for (const edge of [...map.edges].sort((a, b) => (b.lengthMeters ?? 0) - (a.lengthMeters ?? 0))) {
+    if (!edge.name || named.has(edge.name) || (edge.lengthMeters ?? 0) < 110 || !edge.geometry?.length) continue;
+    const p = edge.geometry[Math.floor(edge.geometry.length / 2)];
+    if (occupied.some(home => Math.abs(home.x - p.x) * scale < 70 && Math.abs(home.y - p.y) * scale < 34)
+      || labels.some(label => Math.abs(label.x - p.x) * scale < 125 && Math.abs(label.y - p.y) * scale < 24)) continue;
+    named.add(edge.name); labels.push(p);
+    ctx.lineWidth = 4 / scale; ctx.strokeStyle = '#ffffff'; ctx.strokeText(edge.name, p.x, p.y);
+    ctx.fillStyle = '#5b625f'; ctx.fillText(edge.name, p.x, p.y);
+    if (labels.length >= 12) break;
+  }
+  for (const mission of view.missions.filter(item => item.status !== 'completed' && (!selected || item.householdId === selected))) {
+    const points = [...mission.route.legs.flatMap(leg => routeLegGeometry(map, leg)), ...(mission.shelterRoute?.legs.flatMap(leg => routeLegGeometry(map, leg)) ?? [])];
+    if (!points.length) continue;
+    stroke(points); ctx.strokeStyle = '#fff'; ctx.lineWidth = 7 / scale; ctx.stroke();
+    ctx.strokeStyle = '#bf2535'; ctx.lineWidth = 3 / scale; ctx.setLineDash([7 / scale, 5 / scale]); ctx.stroke(); ctx.setLineDash([]);
   }
 }
