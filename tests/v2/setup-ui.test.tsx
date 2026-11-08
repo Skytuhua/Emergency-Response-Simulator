@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { useState } from 'react';
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { mechanicsFixture } from '../../fixtures/v2/mechanics/fixture';
@@ -24,6 +24,18 @@ describe('expanded onboarding and guided setup',()=>{
     expect(callbacks.onStart).toHaveBeenCalledWith(initial);
     fireEvent.click(screen.getByRole('button',{name:'Open saved run'}));
     expect(callbacks.onImport).toHaveBeenCalledTimes(1);
+  });
+  it('offers an accessible welcome-map retry without enabling map editing',async()=>{
+    let mounts=0;
+    function UnavailableMap(){const [failed]=useState(()=>++mounts===1);return failed?<div className="geographic-tile-status">Map failed<button>Inert retry</button></div>:<div>Map recovered</div>;}
+    show({map:<UnavailableMap/>});
+    const status=await screen.findByRole('status');expect(status.textContent).toContain('Map incomplete or unavailable');
+    fireEvent.click(screen.getByRole('button',{name:'Reload map'}));
+    await waitFor(()=>expect(screen.queryByRole('status')).toBeNull());
+    expect(mounts).toBe(2);expect(document.activeElement).toBe(screen.getByRole('link',{name:/OpenStreetMap contributors/}));
+    fireEvent.click(screen.getByRole('button',{name:'Customize setup'}));
+    fireEvent.click(screen.getByRole('button',{name:'Back'}));
+    expect(screen.queryByRole('status')).toBeNull();
   });
   it('preserves resource choices when going Back and submits the full reviewed settings',()=>{
     const callbacks=show();resources();

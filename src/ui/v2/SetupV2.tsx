@@ -1,4 +1,4 @@
-import { useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { ChevronLeft, ChevronRight, ClipboardCheck, House, MapPin, Package, Route, Truck, Users } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import type { ScenarioBundleV2, SetupOverlayV2 } from '../../v2/contracts';
@@ -30,6 +30,14 @@ function numberValue(value:number):number|'' {return Number.isFinite(value)?valu
 export function SetupV2({bundle,setup,onChange,onStart,onImport,map,editMode,onEditMode,baseLabel,errors={},busy=false,initialScreen='welcome'}:SetupV2Props) {
   const [screen,setScreen]=useState(initialScreen),[step,setStep]=useState<Step>(0),[attempted,setAttempted]=useState(false);
   const title=useRef<HTMLHeadingElement>(null),focusRequested=useRef(false),id=useId();
+  const preview=useRef<HTMLDivElement>(null),credit=useRef<HTMLAnchorElement>(null);
+  const [mapAttempt,setMapAttempt]=useState(0),[mapUnavailable,setMapUnavailable]=useState(false);
+  useEffect(()=>{
+    if(screen!=='welcome'||!preview.current){setMapUnavailable(false);return;}
+    const node=preview.current,update=()=>setMapUnavailable(!!node.querySelector('.geographic-tile-status'));
+    const observer=new MutationObserver(update);observer.observe(node,{childList:true,subtree:true});update();
+    return()=>observer.disconnect();
+  },[screen,mapAttempt]);
   useLayoutEffect(()=>{if(focusRequested.current){title.current?.focus();focusRequested.current=false;}},[screen,step]);
   const localErrors=resourceErrors(setup,bundle.assets.population.persons.length);
   const fieldError=(key:string)=>errors[key]??errors[`resources.${key}`]??(attempted?localErrors[key]:undefined);
@@ -69,7 +77,7 @@ export function SetupV2({bundle,setup,onChange,onStart,onImport,map,editMode,onE
       <div className="setup-v2-welcome-actions"><Button onClick={start} disabled={busy}>Start simulation<ChevronRight size={17}/></Button><Button variant="outline" onClick={()=>{setScreen('customize');move(0);}} disabled={busy}>Customize setup</Button><Button variant="ghost" onClick={onImport} disabled={busy}>Open saved run</Button></div>
       <p className="setup-v2-muted">Teams respond automatically. You can pause and inspect any home.</p>
       {generalError&&<p className="setup-v2-error" role="alert">{generalError}</p>}
-    </div><div className="setup-v2-welcome-map" inert aria-hidden="true">{map}</div>
+    </div><div className="setup-v2-welcome-map"><div className="setup-v2-welcome-map-heading">Dallas simulation area</div><div key={mapAttempt} ref={preview} className="setup-v2-welcome-preview" inert aria-hidden="true">{map}</div>{mapUnavailable&&<div className="setup-v2-welcome-map-status"><span role="status">Map incomplete or unavailable. Roads are still shown.</span><Button variant="outline" onClick={()=>{credit.current?.focus();setMapUnavailable(false);setMapAttempt(value=>value+1);}}>Reload map</Button></div>}<a ref={credit} className="setup-v2-welcome-attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">&copy; OpenStreetMap contributors</a></div>
   </section>;
 
   return <section className={`setup-v2 setup-v2-wizard setup-v2-step-${step}`} aria-label="Simulation setup">

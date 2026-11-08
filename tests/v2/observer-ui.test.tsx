@@ -404,13 +404,22 @@ describe('v2 descriptive debrief',()=>{
     fireEvent.click(screen.getByRole('tab',{name:'Homes'}));
     expect(screen.getByRole('searchbox',{name:'Search homes'})).toBeTruthy();
   });
+  it('pairs each outcome label with its count and keeps unchecked homes distinct from unmet needs',()=>{
+    const value=observeSnapshot(advanceWorld(initializeWorld(mechanicsFixture(),'result-rows'),360*M));
+    Object.assign(value.summary!,{peopleHelped:104,timelyUrgent:16,urgentNeeds:92,peopleWaiting:445,uncheckedHomes:2948,cannotCallUncheckedHomes:0,undiscoveredNeeds:61,unmetNeedMinutes:85629});
+    render(<ResultsV2 snapshot={value} policy="urgency-plus-coverage-v2" onExport={vi.fn()} onReplay={vi.fn()} onRestart={vi.fn()} onNew={vi.fn()}/>);
+    for(const [label,count] of [['People in homes that received some help','104'],['Urgent needs helped on time','16 / 92'],['People in homes with unmet needs','445'],['Homes not checked','2,948'],['Unchecked homes unable to call at the end','0'],['Needs teams did not find','61'],['Total waiting time across needs (minutes)','85,629']]) {
+      expect(screen.getByText(label).parentElement?.querySelector('dd')?.textContent).toBe(count);
+    }
+    expect(screen.getByText('Unchecked homes may or may not need help.')).toBeTruthy();
+  });
   it('explains results in plain language and keeps raw rule reasons and evidence behind a source choice',()=>{
     const bundle=mechanicsFixture();bundle.assets.events=[needEvent('H1')];
     const value=observeSnapshot(advanceWorld(initializeWorld(bundle,'plain-results'),360*M));
     value.personas=[persona];value.preparedActions=[{...action,text:'{"contextHash":"'+'b'.repeat(64)+'"}'}];
     value.summary!.behavior.fallbackReasons={'context-mismatch':2,'unknown-technical-key':1};
     render(<ResultsV2 snapshot={value} policy="urgency-plus-coverage-v2" onExport={vi.fn()} onReplay={vi.fn()} onRestart={vi.fn()} onNew={vi.fn()}/>);
-    expect(screen.getByText('Needs teams did not find')).toBeTruthy();expect(screen.getByText('Total waiting time for needs (minutes)')).toBeTruthy();
+    expect(screen.getByText('Needs teams did not find')).toBeTruthy();expect(screen.getByText('Total waiting time across needs (minutes)')).toBeTruthy();
     fireEvent.click(screen.getByRole('tab',{name:'Details'}));
     expect(screen.getByText('The resident’s situation differed from the plan: 2')).toBeTruthy();
     expect(screen.queryByText(/context-mismatch|unknown-technical-key/)).toBeNull();
