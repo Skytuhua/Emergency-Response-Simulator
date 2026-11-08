@@ -4,6 +4,7 @@ import { admitDataV2 } from './data-admission';
 import { admitBehaviorV2 } from './behavior-admission';
 import approvedData from '../../fixtures/v2/sources/data-assets-v2.json';
 import type { GeographicRoadGraph } from '../model';
+import { validateSetupV2 } from './setup';
 
 export function admitMapV2(map:GeographicRoadGraph):string[]{
   const errors:string[]=[],nodes=new Map(map.nodes.map(node=>[node.id,node])),edgeIds=new Set<string>(),ways=new Set<number>();
@@ -44,6 +45,7 @@ export function admitScenarioV2(input: unknown): string[] {
     const b=input as ScenarioBundleV2;
     if(!b||b.kind!=='catastrophe-scenario'||b.version!==2||b.engineVersion!==ENGINE_V2||b.recipeVersion!==RECIPE_V2||b.horizonMs!==HORIZON_MS)return ['Unsupported v2 scenario/engine/recipe/horizon.'];
     canonical(b);
+    if(Object.hasOwn(b,'setup'))errors.push(...validateSetupV2(b,b.setup));
     if(!Number.isSafeInteger(b.seed)||b.seed<0)errors.push('Invalid scenario seed.');
     errors.push(...admitDataV2(b.assets.population,b.assets.geography,b.assets.map));
     errors.push(...admitMapV2(b.assets.map));

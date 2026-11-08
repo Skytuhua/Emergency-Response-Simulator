@@ -4,7 +4,28 @@ import type { ObservationView, RunSummary } from '../model';
 import { drawTown, neighborhoodName, publicUnitPosition } from '../map';
 import { GeographicTownMap } from './GeographicTownMap';
 
-export interface TownMapProps { view: ObservationView; selected?: string | null; onSelect?: (id: string) => void; compact?: boolean; debrief?: RunSummary; }
+export interface MapViewport {
+  zoom: number;
+  bounds: { south: number; north: number; west: number; east: number };
+}
+export interface ResponseBaseMarker { nodeId:string; x:number; y:number; label:string }
+export interface TownMapProps {
+  view: ObservationView; selected?: string | null; onSelect?: (id: string) => void; compact?: boolean; debrief?: RunSummary;
+  unitStates?: Record<string,{x:number;y:number;label:string}>;
+  boundaryRings?: [number,number][][];
+  householdLabels?: Record<string,string>;
+  householdTitles?: Record<string,string>;
+  householdCounts?: Record<string,number>;
+  mapTitle?: string;
+  onViewportChange?: (viewport: MapViewport) => void;
+  mapLabel?:string;
+  responseBase?:ResponseBaseMarker|null;
+  requestedBase?:{lat:number;lon:number}|null;
+  onMapPoint?:(point:{lat:number;lon:number})=>void;
+  onRoadSelect?:(edgeId:string)=>void;
+  roadOverrides?:Readonly<Record<string,boolean>>;
+  selectedRoadId?:string|null;
+}
 export function TownMap(props: TownMapProps) {
   return props.view.map.kind === 'osm-driving' ? <GeographicTownMap {...props} /> : <SchematicTownMap {...props} />;
 }
@@ -34,7 +55,7 @@ function SchematicTownMap({ view, selected = null, onSelect, compact = false, de
         const undiscovered = view.finalized && debrief?.households.find(summary => summary.householdId === h.id)?.undiscovered;
         const urgent = h.known?.need?.urgent && h.completedAt === null;
         const className = `map-house ${h.status} ${urgent ? 'urgent' : ''} ${undiscovered ? 'undiscovered' : ''} ${selected === h.id ? 'selected' : ''}`;
-        const label = `${h.id}, ${neighborhoodName(h.neighborhood)}, ${undiscovered ? 'undiscovered need (debrief)' : h.status}${urgent ? ', urgent need' : ''}`;
+        const label = `${h.id}, ${neighborhoodName(h.neighborhood)}, ${undiscovered ? 'need not found (results)' : h.status}${urgent ? ', urgent need' : ''}`;
         const content = <><House aria-hidden="true" />{urgent && <TriangleAlert className="house-flag" aria-hidden="true" />}{h.status === 'assisted' && <Check className="house-flag" aria-hidden="true" />}<span className="map-house-label">{h.id}</span></>;
         return onSelect ? <button id={`map-home-${h.id}`} key={h.id} type="button" title={label} aria-label={label} aria-pressed={selected === h.id} className={className} style={position(h.x, h.y)} onClick={() => onSelect(h.id)}>{content}</button> : <span key={h.id} title={label} className={className} style={position(h.x, h.y)}>{content}</span>;
       })}
@@ -47,6 +68,6 @@ function SchematicTownMap({ view, selected = null, onSelect, compact = false, de
       })}
     </div>
     </div>
-    <div className="map-legend"><div className="legend-items"><span><i className="legend-dot" /> Not checked</span><span><i className="legend-dot reported" /> Needs help</span><span><i className="legend-dot assisted" /> Helped</span>{debrief && view.finalized && <span><i className="legend-dot undiscovered" /> Undiscovered need</span>}{!compact && view.networkGap !== 'none' && <span><i className="legend-dot outage" /> Cannot call</span>}</div><span className="map-scale">Schematic · exercise travel</span></div>
+    <div className="map-legend"><div className="legend-items"><span><i className="legend-dot" /> Not checked</span><span><i className="legend-dot reported" /> Needs help</span><span><i className="legend-dot assisted" /> Helped</span>{debrief && view.finalized && <span><i className="legend-dot undiscovered" /> Need not found</span>}{!compact && view.networkGap !== 'none' && <span><i className="legend-dot outage" /> Cannot call</span>}</div><span className="map-scale">Schematic · exercise travel</span></div>
   </div>;
 }

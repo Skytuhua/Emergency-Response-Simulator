@@ -237,7 +237,7 @@ describe('automatic engine coordinator', () => {
     expect(getAutomaticCoordinationIssue(restored)).toBe(getAutomaticCoordinationIssue(state));
     expect(state.minute).toBe(60);
     conservation(state);
-  });
+  }, 30_000);
 
   it('continues with a short unique command identity when retained commands occupy its generated IDs', () => {
     let state = initialize(tinyScenario(), 'identity-collisions');

@@ -33,6 +33,6 @@ it('renders completed Dallas vehicles at their actual street arrival position', 
 
 it('keeps the Dallas welcome preview valid when editing a retained legacy run', () => {
   render(<Creator config={DEFAULT_CONFIG} artifact={validateArtifact(legacyArtifact)} error={null} onChange={vi.fn()} onStart={vi.fn()} onDefault={vi.fn()} onImport={vi.fn()} />);
-  expect(screen.getByLabelText('Real Dallas streets with fictional homes and incidents')).toBeTruthy();
+  expect(screen.getByLabelText('Dallas streets with simulated homes and incidents')).toBeTruthy();
   expect(screen.queryByText('Enter valid conditions to preview the town.')).toBeNull();
 });

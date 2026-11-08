@@ -1,0 +1,90 @@
+// @vitest-environment jsdom
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { mechanicsFixture } from '../../fixtures/v2/mechanics/fixture';
+import { V2App } from '../../src/V2App';
+import { finishSessionV2 } from '../../src/v2/coordinate';
+import { replayV2 } from '../../src/v2/run-file';
+import type { SessionV2 } from '../../src/v2/session';
+vi.mock('../../src/v2/coordinate',async original=>{const real=await original<typeof import('../../src/v2/coordinate')>();return {...real,finishSessionV2:vi.fn(async (session:SessionV2)=>({...session,world:{...session.world,finalized:true}}))};});
+vi.mock('../../src/v2/run-file',async original=>({...await original<typeof import('../../src/v2/run-file')>(),makeRunFileV2:vi.fn(()=>({})),replayV2:vi.fn(async()=>({}))}));
+vi.mock('../../src/v2/admission', async original => ({ ...await original<typeof import('../../src/v2/admission')>(), parseScenarioV2: vi.fn(text => JSON.parse(text)) }));
+vi.mock('../../src/ui/TownMap',()=>({TownMap:()=> <div>Authored test map</div>}));
+vi.mock('../../src/ui/v2/SetupMapV2',()=>({SetupMapV2:(props:{onBasePick:(point:{lat:number;lon:number})=>void;onRoadToggle:(id:string)=>void})=><div><button onClick={()=>props.onBasePick({lat:1,lon:1})}>Valid point</button><button onClick={()=>props.onBasePick({lat:2,lon:2})}>Invalid point</button><button onClick={()=>props.onRoadToggle('BH')}>Toggle road</button></div>}));
+vi.mock('../../src/v2/setup-topology',async original=>({...await original<typeof import('../../src/v2/setup-topology')>(),resolveBaseV2:vi.fn(async (_bundle,point)=>point.lat===1?{ok:true,base:{requested:point,nodeId:'B'},actual:{lat:32.79,lon:-96.78,x:0,y:0},snapDistanceMeters:0}:{ok:false,code:'outside',message:'Choose a point inside the boundary.'})}));
+beforeEach(()=>{
+  vi.clearAllMocks();
+  Object.defineProperty(document,'hidden',{configurable:true,value:false});
+  vi.stubGlobal('fetch',vi.fn(async()=>({ok:true,text:async()=>{const bundle=mechanicsFixture();bundle.assets.facilities.forEach(facility=>{if(facility.kind==='shelter')facility.capacity=16;});return JSON.stringify(bundle);}})));
+  HTMLDialogElement.prototype.showModal=function(){this.open=true;};
+  HTMLDialogElement.prototype.close=function(){this.open=false;};
+});
+afterEach(()=>{cleanup();vi.unstubAllGlobals();});
+describe('actual observer panel lifecycle',()=>{
+  it('requires confirmation to restart from results and keeps comparisons running while verifying',async()=>{
+    let release!:()=>void;
+    vi.mocked(finishSessionV2).mockImplementationOnce(async session=>({...session,world:{...session.world,finalized:true}}))
+      .mockImplementationOnce(session=>new Promise(resolve=>{release=()=>resolve({...session,world:{...session.world,finalized:true}});}));
+    render(<V2App onLegacy={vi.fn()}/>);
+    await act(async()=>{await Promise.resolve();await Promise.resolve();});
+    fireEvent.click(screen.getByRole('button',{name:'Start simulation'}));
+    fireEvent.click(screen.getByRole('button',{name:'Run options'}));
+    fireEvent.click(within(screen.getByRole('dialog',{name:'Run options'})).getByRole('button',{name:'Skip to the end'}));
+    await act(async()=>{fireEvent.click(within(screen.getByRole('dialog',{name:'Skip to the end?'})).getByRole('button',{name:'Skip to the end'}));});
+    expect(screen.getByRole('heading',{name:'Results & analysis'})).toBeTruthy();
+    fireEvent.click(screen.getByRole('tab',{name:'Compare'}));
+    expect(screen.getByText(/Computing policy comparisons/)).toBeTruthy();
+    await act(async()=>{fireEvent.click(screen.getByRole('button',{name:'Verify this run'}));});
+    expect(replayV2).toHaveBeenCalled();
+    expect(screen.getByText('Run verified.')).toBeTruthy();
+    await act(async()=>{release();await Promise.resolve();await Promise.resolve();});
+    await waitFor(()=>expect(screen.queryByText(/Computing policy comparisons/)).toBeNull());
+    expect(screen.getByRole('columnheader',{name:'Earlier updates first'})).toBeTruthy();
+    fireEvent.click(screen.getByRole('button',{name:'Restart'}));
+    const dialog=screen.getByRole('dialog',{name:'Restart simulation?'});
+    fireEvent.click(within(dialog).getByRole('button',{name:'Cancel'}));
+    expect(screen.getByRole('heading',{name:'Results & analysis'})).toBeTruthy();
+  });
+  it('keeps a rejected base warning after a road edit until a new valid pick',async()=>{
+    render(<V2App onLegacy={vi.fn()}/>);
+    await act(async()=>{await Promise.resolve();await Promise.resolve();});
+    fireEvent.click(screen.getByRole('button',{name:'Customize setup'}));
+    await act(async()=>{fireEvent.click(screen.getByRole('button',{name:'Valid point'}));});
+    await act(async()=>{fireEvent.click(screen.getByRole('button',{name:'Invalid point'}));});
+    expect(screen.getByRole('alert').textContent).toContain('inside the boundary');
+    await act(async()=>{fireEvent.click(screen.getByRole('button',{name:'Toggle road'}));});
+    expect(screen.getByRole('alert').textContent).toContain('inside the boundary');
+    fireEvent.click(screen.getByRole('button',{name:'Continue'}));
+    expect(screen.getByRole('heading',{name:'Base & roads'})).toBeTruthy();
+    await act(async()=>{fireEvent.click(screen.getByRole('button',{name:'Valid point'}));});
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+  it('confirms before choosing another run and keeps progress on cancel or invalid input',async()=>{
+    render(<V2App onLegacy={vi.fn()}/>);
+    await act(async()=>{await Promise.resolve();await Promise.resolve();});
+    fireEvent.click(screen.getByRole('button',{name:'Start simulation'}));
+    fireEvent.click(screen.getByRole('button',{name:'Advance one minute'}));
+    const clock=screen.getByLabelText(/Time elapsed/).textContent;
+    fireEvent.click(screen.getByRole('button',{name:'Run options'}));
+    fireEvent.click(within(screen.getByRole('dialog',{name:'Run options'})).getByRole('button',{name:'Open saved run'}));
+    const confirmation=screen.getByRole('dialog',{name:'Open a saved run?'});
+    expect(confirmation.textContent).toContain('Save first');
+    fireEvent.click(within(confirmation).getByRole('button',{name:'Cancel'}));
+    expect(screen.getByLabelText(/Time elapsed/).textContent).toBe(clock);
+    fireEvent.click(within(screen.getByRole('dialog',{name:'Run options'})).getByRole('button',{name:'Open saved run'}));
+    fireEvent.click(within(screen.getByRole('dialog',{name:'Open a saved run?'})).getByRole('button',{name:'Choose file'}));
+    await act(async()=>{fireEvent.change(screen.getByLabelText('Choose a saved run'),{target:{files:[{size:1,text:async()=> 'invalid json'}]}});});
+    expect(screen.getByLabelText(/Time elapsed/).textContent).toBe(clock);
+    expect(screen.getByRole('alert').textContent).toContain("couldn't be opened");
+  });
+  it('closes the old Run options after restart before resuming the new run',async()=>{
+    render(<V2App onLegacy={vi.fn()}/>);
+    await act(async()=>{await Promise.resolve();await Promise.resolve();});
+    fireEvent.click(screen.getByRole('button',{name:'Start simulation'}));
+    fireEvent.click(screen.getByRole('button',{name:'Run options'}));
+    fireEvent.click(within(screen.getByRole('dialog',{name:'Run options'})).getByRole('button',{name:'Restart with the same conditions'}));
+    fireEvent.click(within(screen.getByRole('dialog',{name:'Restart simulation?'})).getByRole('button',{name:'Restart'}));
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(screen.getByRole('button',{name:'Pause'})).toBeTruthy();
+  });
+});

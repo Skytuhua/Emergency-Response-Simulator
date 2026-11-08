@@ -13,6 +13,7 @@ import { Simulation } from './ui/Simulation';
 import { Results } from './ui/Results';
 import { SecondaryPanel } from './ui/SecondaryPanel';
 import { newlyDiscoveredUrgency } from './ui/controller';
+import { V2App } from './V2App';
 
 type Screen = 'create' | 'respond' | 'results';
 type Notice = { text: string; urgentId?: string } | null;
@@ -20,20 +21,25 @@ const freshRunId = () => crypto.randomUUID();
 const initialHome = (state: SimState) => state.scenario.artifact?.profiles[0]?.householdId ?? state.households[0]?.householdId ?? null;
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>('create');
-  const [config, setConfig] = useState<ScenarioConfig>({ ...DALLAS_DEFAULT_CONFIG });
+  const [legacy,setLegacy]=useState(false);
+  const [imported,setImported]=useState<SimState|null>(null);
+  return legacy&&imported?<LegacyApp initialState={imported} compatibilityOnly onExpanded={()=>{setImported(null);setLegacy(false);}}/>:<V2App onLegacy={state=>{setImported(state??null);setLegacy(!!state);}}/>;
+}
+export function LegacyApp({initialState=null,onExpanded,compatibilityOnly=false}:{initialState?:SimState|null;onExpanded?:()=>void;compatibilityOnly?:boolean}={}) {
+  const [screen, setScreen] = useState<Screen>(initialState?(initialState.finalized?'results':'respond'):'create');
+  const [config, setConfig] = useState<ScenarioConfig>({ ...(initialState?.scenario.config??DALLAS_DEFAULT_CONFIG) });
   const [artifacts, setArtifacts] = useState<Record<ScenarioConfig['template'], AgentArtifact | null>>({ 'storm-v1':null, 'storm-dallas-v1':null });
   const [artifactReady, setArtifactReady] = useState<Record<ScenarioConfig['template'], boolean>>({ 'storm-v1':false, 'storm-dallas-v1':false });
   const artifact = artifacts[config.template];
-  const [state, setState] = useState<SimState | null>(null);
-  const stateRef = useRef<SimState | null>(null);
+  const [state, setState] = useState<SimState | null>(initialState);
+  const stateRef = useRef<SimState | null>(initialState);
   const [running, setRunning] = useState(false);
   const runningRef = useRef(false);
   const [speed, setSpeed] = useState(1);
   const [selected, setSelected] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<Notice>(null);
-  const [confirmation, setConfirmation] = useState<'edit' | 'finish' | null>(null);
+  const [confirmation, setConfirmation] = useState<'edit' | 'finish' | 'expanded' | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const generation = useRef(0);
   const view = useMemo(() => state ? observe(state) : null, [state]);
@@ -145,7 +151,7 @@ export default function App() {
       setNotice({ text: `Run restored at ${next.minute} min. Paused.` });
     } catch (cause) { if (marker === generation.current) setError(cause instanceof Error ? cause.message : 'Unable to import.'); }
   };
-  const requestEdit = () => { generation.current++; pause(); setConfirmation('edit'); };
+  const requestEdit = () => { generation.current++; pause(); setConfirmation(compatibilityOnly?'expanded':'edit'); };
   const requestFinish = () => { generation.current++; pause(); setConfirmation('finish'); };
   const navigate = (target: Screen) => {
     generation.current++; pause();
@@ -156,8 +162,9 @@ export default function App() {
 
   return <div className="app-shell">
     <header className="app-header"><div className="brand"><span className="brand-mark"><ShieldCheck /></span><strong>Response Simulator</strong></div>
-      <nav aria-label="Main navigation">{([{ id: 'create', label: 'Conditions', Icon: ClipboardList }, { id: 'respond', label: 'Simulation', Icon: Map }, { id: 'results', label: 'Results', Icon: BarChart3 }] as const).map(({ id, label, Icon }) => <button key={id} onClick={() => navigate(id)} aria-current={screen === id ? 'page' : undefined} disabled={id === 'respond' ? !state || state.finalized : id === 'results' ? !state?.finalized : false}><Icon />{label}</button>)}</nav>
-      <span className="training-label">Fictional training</span>
+      <nav aria-label="Main navigation">{([{ id: 'create', label: 'Conditions', Icon: ClipboardList }, { id: 'respond', label: 'Simulation', Icon: Map }, { id: 'results', label: 'Results', Icon: BarChart3 }] as const).filter(item=>!compatibilityOnly||item.id!=='create').map(({ id, label, Icon }) => <button key={id} onClick={() => navigate(id)} aria-current={screen === id ? 'page' : undefined} disabled={id === 'respond' ? !state || state.finalized : id === 'results' ? !state?.finalized : false}><Icon />{label}</button>)}</nav>
+      <span className="training-label">{compatibilityOnly?'Imported earlier run':'Fictional training'}</span>
+      {onExpanded&&<Button variant="ghost" onClick={()=>{pause();if(state)setConfirmation('expanded');else onExpanded();}}>Dallas simulation</Button>}
     </header>
     <main className={`main-content screen-${screen}`}>
       {error && screen !== 'create' && <div className="global-error" role="alert"><span>{error}</span><Button variant="ghost" onClick={() => setError(null)}>Dismiss</Button></div>}
@@ -168,9 +175,9 @@ export default function App() {
         onExport={exportCurrent} onImport={importClick} onRestart={restart} onFinish={requestFinish} onEdit={requestEdit} />}
       {screen === 'results' && state?.finalized && <Results key={state.runId} state={state} onExport={exportCurrent} onReplay={replayCurrent} onRestart={restart} onEdit={requestEdit} />}
     </main>
-    {confirmation && <SecondaryPanel title={confirmation === 'edit' ? 'New exercise' : 'Finish exercise'} variant="confirmation" fallbackFocusId="observation-panel-exercise" onClose={() => setConfirmation(null)}>
-      <p>{confirmation === 'edit' ? 'Discard this run and return to setup?' : 'Complete the automatic simulation to minute 60?'}</p>
-      <div className="confirmation-actions"><Button variant="outline" onClick={() => setConfirmation(null)}>Cancel</Button><Button onClick={confirmation === 'edit' ? edit : finish}>{confirmation === 'edit' ? 'Start over' : 'Finish now'}</Button></div>
+    {confirmation && <SecondaryPanel title={confirmation === 'expanded' ? 'Open Dallas simulation?' : confirmation === 'edit' ? 'New exercise' : 'Finish exercise'} variant="confirmation" fallbackFocusId="observation-panel-exercise" onClose={() => setConfirmation(null)}>
+      <p>{confirmation === 'expanded' ? 'Leave this run? Export first to keep your progress.' : confirmation === 'edit' ? 'Discard this run and return to setup?' : 'Complete the automatic simulation to minute 60?'}</p>
+      <div className="confirmation-actions"><Button variant="outline" onClick={() => setConfirmation(null)}>Cancel</Button><Button onClick={confirmation === 'expanded' ? onExpanded : confirmation === 'edit' ? edit : finish}>{confirmation === 'expanded' ? 'Open Dallas simulation' : confirmation === 'edit' ? 'Start over' : 'Finish now'}</Button></div>
     </SecondaryPanel>}
     <input ref={fileInput} className="sr-only" type="file" accept="application/json,.json" aria-label="Choose saved run file" onChange={event => { const file = event.currentTarget.files?.[0]; event.currentTarget.value = ''; void importFile(file); }} />
   </div>;

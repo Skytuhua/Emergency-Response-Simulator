@@ -1,3 +1,4 @@
+import { effectiveScenarioV2 } from './setup';
 import type { GeographicRoadGraph } from '../model';
 import type { CoordinatorObservationV2, ObserverSnapshotV2, PublicMissionV2 } from './contracts';
 import type { WorldStateV2 } from './world';
@@ -36,7 +37,7 @@ export function observeCoordinator(state: WorldStateV2): CoordinatorObservationV
     units: state.units.map(unit => ({ id: unit.id, kind: unit.kind, capabilities: [...unit.capabilities], seats: unit.seats,
       accessiblePlaces: unit.accessiblePlaces, baseNodeId: unit.baseNodeId, cursor: structuredClone(unit.cursor), position: { ...unit.position },
       missionId: unit.missionId, passengers: unit.passengers, carriedBundles: unit.carriedBundles, busyMs: unit.busyMs, status: unit.status })),
-    facilities: state.bundle.assets.facilities.map(facility => ({ id: facility.id, name: facility.name, kind: facility.kind, nodeId: facility.nodeId,
+    facilities: effectiveScenarioV2(state.bundle).facilities.map(facility => ({ id: facility.id, name: facility.name, kind: facility.kind, nodeId: facility.nodeId,
       position: { ...facility.position }, synthetic: true, capacity: facility.capacity, accessible: facility.accessible, opensAtMs: facility.opensAtMs,
       open: state.facilities.find(item => item.id === facility.id)!.knownOpen, ...facilityTotalsV2(state, facility.id) })),
     missions, supply: supplyTotalsV2(state), events: state.events.filter(event => event.visibility === 'coordinator').map(event => structuredClone(event)) };
@@ -47,6 +48,6 @@ export function observeSnapshot(state: WorldStateV2): ObserverSnapshotV2 {
     population: { households: state.bundle.assets.population.households.length, persons: state.bundle.assets.population.persons.length, mode: state.bundle.populationMode },
     coordinator: observeCoordinator(state), residentEvents: state.events.filter(event => event.visibility === 'resident').map(event => structuredClone(event)),
     observedEvents: state.events.filter(event=>event.visibility!=='debrief').map(event=>structuredClone(event)),
-    personas: structuredClone(state.bundle.assets.behavior?.personas ?? []),
-    preparedActions: structuredClone(state.bundle.assets.behavior?.actions ?? []), summary: state.finalized ? summarizeWorld(state) : null };
+    personas: structuredClone(effectiveScenarioV2(state.bundle).behavior?.personas ?? []),
+    preparedActions: structuredClone(effectiveScenarioV2(state.bundle).behavior?.actions ?? []), summary: state.finalized ? summarizeWorld(state) : null };
 }

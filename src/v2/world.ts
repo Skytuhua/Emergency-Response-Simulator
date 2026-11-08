@@ -1,3 +1,4 @@
+import { effectiveScenarioV2,validateSetupV2 } from './setup';
 import { HORIZON_MS, MINUTE_MS, type CommandOutcomeV2, type CommandV2, type KnownHouseholdV2, type NeedDefinitionV2, type PublicMissionV2, type PublicUnitV2, type ScenarioBundleV2, type SummaryV2, type TraceEventV2 } from './contracts';
 import { compareIdsV2, planRouteV2 } from './routes';
 import { positionAtCursorV2 } from './movement';
@@ -38,29 +39,30 @@ function cloneWorld(state: WorldStateV2): WorldStateV2 {
 
 export function initializeWorld(bundle: ScenarioBundleV2, runId: string): WorldStateV2 {
   if (bundle.horizonMs !== HORIZON_MS) throw new Error('V2 worlds require the 360-minute horizon.');
+  if(bundle.setup){const errors=validateSetupV2(bundle,bundle.setup);if(errors.length)throw new Error(errors.join(' '));}
   const supports = new Map(bundle.assets.support.map(item => [item.householdId, item.accessiblePlacesRequired]));
   for (const home of bundle.assets.population.households) if (!supports.has(home.id)) throw new Error(`Missing support requirement for ${home.id}.`);
   const state: WorldStateV2 = {
     runId, bundle, nowMs: 0, finalized: false,
     households: bundle.assets.population.households.map(home => ({ id: home.id, communicationsAvailable: true, knownCommunicationsAvailable: null,
       lastContactAtMs: null, lastCheckAtMs: null, known: null, missionId: null })),
-    needs: [], units: bundle.resources.units.map(unit => ({ ...unit, capabilities: [...unit.capabilities], cursor: { kind: 'node', nodeId: unit.baseNodeId, incoming: null },
+    needs: [], units: effectiveScenarioV2(bundle).resources.units.map(unit => ({ ...unit, capabilities: [...unit.capabilities], cursor: { kind: 'node', nodeId: unit.baseNodeId, incoming: null },
       position: positionAtCursorV2(bundle.assets.map, { kind: 'node', nodeId: unit.baseNodeId, incoming: null }), missionId: null, passengers: 0, carriedBundles: 0, busyMs: 0, status: 'available' })),
-    facilities: bundle.assets.facilities.map(facility => ({ id: facility.id, open: facility.opensAtMs <= 0, knownOpen: facility.opensAtMs <= 0 })),
+    facilities: effectiveScenarioV2(bundle).facilities.map(facility => ({ id: facility.id, open: facility.opensAtMs <= 0, knownOpen: facility.opensAtMs <= 0 })),
     missions: [], closedEdgeIds: [], knownClosedEdgeIds: [], effectiveEventIndex: 0, observedEventIndex: 0,
-    openedFacilityIds: bundle.assets.facilities.filter(item => item.opensAtMs <= 0).map(item => item.id),
+    openedFacilityIds: effectiveScenarioV2(bundle).facilities.filter(item => item.opensAtMs <= 0).map(item => item.id),
     bundleReservations: [], seatReservations: [], commands: [], events: [], consumedOpportunityIds: [], directEligibleHouseholdIds: [], traceSequence: {coordinator:0,resident:0,debrief:0},
-    behavior: { directPersonaActors: bundle.assets.behavior?.personas.length ?? 0, eligibleActors: 0, directActions: 0, suppressed: 0, fallback: 0, fallbackReasons: {} },
+    behavior: { directPersonaActors: effectiveScenarioV2(bundle).behavior?.personas.length ?? 0, eligibleActors: 0, directActions: 0, suppressed: 0, fallback: 0, fallbackReasons: {} },
   };
   settleBoundary(state); assertWorldInvariants(state); return state;
 }
 
 function missionWaypoints(state: WorldStateV2, mission: MissionStateV2): string[] {
   const home = state.bundle.assets.population.households.find(item => item.id === mission.householdId)!;
-  const shelter = mission.shelterId ? state.bundle.assets.facilities.find(item => item.id === mission.shelterId) : null;
+  const shelter = mission.shelterId ? effectiveScenarioV2(state.bundle).facilities.find(item => item.id === mission.shelterId) : null;
   if (mission.destination === 'shelter') return [shelter!.nodeId];
   const destinations = [home.homeNodeId, ...(mission.action === 'transport' ? [shelter!.nodeId] : [])];
-  return mission.destination === 'depot' ? [state.bundle.resources.depotNodeId, ...destinations] : destinations;
+  return mission.destination === 'depot' ? [effectiveScenarioV2(state.bundle).resources.depotNodeId, ...destinations] : destinations;
 }
 
 function estimateRemaining(state: WorldStateV2, mission: MissionStateV2): number | null {
@@ -69,7 +71,7 @@ function estimateRemaining(state: WorldStateV2, mission: MissionStateV2): number
   const unit = state.units.find(item => item.id === mission.unitId)!;
   let remaining = mission.route.legs.slice(mission.routeLegIndex).reduce((sum, leg) => sum + leg.durationMs, 0);
   if (unit.cursor.kind === 'edge') remaining -= unit.cursor.elapsedMs;
-  const r = state.bundle.resources;
+  const r = effectiveScenarioV2(state.bundle).resources;
   if (mission.action === 'check') remaining += mission.status === 'checking' ? mission.stageRemainingMs : r.assessmentMs;
   if (mission.action === 'deliver') {
     const loaded = state.bundleReservations.find(item => item.missionId === mission.id)?.status === 'loaded';
@@ -149,8 +151,8 @@ function reconcileMission(state: WorldStateV2, mission: MissionStateV2): void {
     if (['loading', 'checking', 'delivering', 'boarding', 'dropoff'].includes(mission.status)) {
       if (mission.status === 'loading' || mission.status === 'dropoff') {
         const facility = mission.status === 'loading'
-          ? state.bundle.assets.facilities.find(item => item.kind === 'base' && item.nodeId === state.bundle.resources.depotNodeId)
-          : state.bundle.assets.facilities.find(item => item.id === mission.shelterId);
+          ? effectiveScenarioV2(state.bundle).facilities.find(item => item.kind === 'base' && item.nodeId === effectiveScenarioV2(state.bundle).resources.depotNodeId)
+          : effectiveScenarioV2(state.bundle).facilities.find(item => item.id === mission.shelterId);
         const physical = facility ? state.facilities.find(item => item.id === facility.id)! : null;
         if (physical && !physical.open) {
           physical.knownOpen = false;
@@ -186,10 +188,10 @@ function reconcileMission(state: WorldStateV2, mission: MissionStateV2): void {
     }
     const destinations = missionWaypoints(state, mission), nextTarget = destinations[0];
     if (unit.cursor.nodeId === nextTarget) {
-      if (mission.destination === 'depot') { mission.status = 'loading'; mission.stageRemainingMs = state.bundle.resources.loadMs; }
-      else if (mission.destination === 'shelter') { mission.status = 'dropoff'; mission.stageRemainingMs = state.bundle.resources.dropoffMs; }
+      if (mission.destination === 'depot') { mission.status = 'loading'; mission.stageRemainingMs = effectiveScenarioV2(state.bundle).resources.loadMs; }
+      else if (mission.destination === 'shelter') { mission.status = 'dropoff'; mission.stageRemainingMs = effectiveScenarioV2(state.bundle).resources.dropoffMs; }
       else { mission.status = mission.action === 'check' ? 'checking' : mission.action === 'deliver' ? 'delivering' : 'boarding';
-        mission.stageRemainingMs = mission.action === 'check' ? state.bundle.resources.assessmentMs : mission.action === 'deliver' ? state.bundle.resources.deliveryMs : state.bundle.resources.boardingMs; }
+        mission.stageRemainingMs = mission.action === 'check' ? effectiveScenarioV2(state.bundle).resources.assessmentMs : mission.action === 'deliver' ? effectiveScenarioV2(state.bundle).resources.deliveryMs : effectiveScenarioV2(state.bundle).resources.boardingMs; }
       appendTraceV2(state, { type: 'stage-started', householdId: mission.householdId, missionId: mission.id, unitId: unit.id,
         message: `Started ${mission.status} at the actual destination.`, visibility: 'coordinator', source: 'world-rule' });
       continue;
@@ -252,7 +254,7 @@ function deliverResidentActions(state: WorldStateV2): void {
     processOpportunity(state, need.householdId, opportunityId, need);
     if (need.completedAtMs !== null) need.nextReportAtMs = null;
   }
-  for (const context of state.bundle.assets.behavior?.contexts ?? []) {
+  for (const context of effectiveScenarioV2(state.bundle).behavior?.contexts ?? []) {
     if (context.atMs !== state.nowMs || state.consumedOpportunityIds.includes(context.opportunityId)) continue;
     const localNeeds = state.needs.filter(need => need.householdId === context.householdId && need.onsetMs <= state.nowMs).sort((a, b) => b.onsetMs - a.onsetMs || compareIdsV2(a.id, b.id));
     processOpportunity(state, context.householdId, context.opportunityId, localNeeds[0] ?? null);
@@ -281,9 +283,9 @@ export function nextWorldBoundaryMs(state: WorldStateV2, targetMs: number): numb
   const observed = schedule.observed[state.observedEventIndex]?.observedAtMs;
   if (effective !== undefined && effective > state.nowMs) next = Math.min(next, effective);
   if (observed !== undefined && observed !== null && observed > state.nowMs) next = Math.min(next, observed);
-  for (const facility of state.bundle.assets.facilities) if (!state.openedFacilityIds.includes(facility.id) && facility.opensAtMs > state.nowMs) next = Math.min(next, facility.opensAtMs);
+  for (const facility of effectiveScenarioV2(state.bundle).facilities) if (!state.openedFacilityIds.includes(facility.id) && facility.opensAtMs > state.nowMs) next = Math.min(next, facility.opensAtMs);
   for (const need of state.needs) if (need.nextReportAtMs !== null && need.nextReportAtMs > state.nowMs) next = Math.min(next, need.nextReportAtMs);
-  for (const context of state.bundle.assets.behavior?.contexts ?? []) if (context.atMs > state.nowMs && !state.consumedOpportunityIds.includes(context.opportunityId)) next = Math.min(next, context.atMs);
+  for (const context of effectiveScenarioV2(state.bundle).behavior?.contexts ?? []) if (context.atMs > state.nowMs && !state.consumedOpportunityIds.includes(context.opportunityId)) next = Math.min(next, context.atMs);
   for (const unit of state.units) {
     if (unit.status !== 'working') continue;
     const mission = state.missions.find(item => item.id === unit.missionId)!;
@@ -337,10 +339,10 @@ export function dispatchWorld(state: WorldStateV2, command: CommandV2): { state:
   let shelter: ScenarioBundleV2['assets']['facilities'][number] | undefined;
   if (command.action === 'transport') {
     const requirement = home.known!.accessiblePlacesRequired;
-    const transportUnits = next.bundle.resources.units.filter(item => item.capabilities.includes('transport'));
+    const transportUnits = effectiveScenarioV2(next.bundle).resources.units.filter(item => item.capabilities.includes('transport'));
     if (!transportUnits.some(item => item.seats >= home.known!.size && item.accessiblePlaces >= requirement)) return reject('Household transport is unsupported by the modeled whole-household vehicles.');
     if (unit.seats < home.known!.size || unit.accessiblePlaces < requirement) return reject('The vehicle lacks the required included passenger/accessibility places.');
-    shelter = next.bundle.assets.facilities.find(item => item.id === command.shelterId && item.kind === 'shelter');
+    shelter = effectiveScenarioV2(next.bundle).facilities.find(item => item.id === command.shelterId && item.kind === 'shelter');
     if (!shelter || !next.facilities.find(item => item.id === shelter!.id)!.knownOpen) return reject('The destination shelter is not publicly open.');
     if (requirement > 0 && !shelter.accessible) return reject('The destination shelter does not accept this support requirement.');
     if (facilityTotalsV2(next, shelter.id).available < home.known!.size) return reject('The shelter has insufficient unreserved places.');
@@ -348,10 +350,10 @@ export function dispatchWorld(state: WorldStateV2, command: CommandV2): { state:
   const needsLoad = command.action === 'deliver' && unit.carriedBundles === 0;
   if (command.action === 'deliver' && supplyTotalsV2(next).depotAvailable < 1) return reject('No unreserved household bundles remain at the depot.');
   if (needsLoad) {
-    const depot = next.bundle.assets.facilities.find(item => item.kind === 'base' && item.nodeId === next.bundle.resources.depotNodeId);
+    const depot = effectiveScenarioV2(next.bundle).facilities.find(item => item.kind === 'base' && item.nodeId === effectiveScenarioV2(next.bundle).resources.depotNodeId);
     if (depot && !next.facilities.find(item => item.id === depot.id)!.knownOpen) return reject('The depot is not publicly open.');
   }
-  const waypoints = [...(needsLoad ? [next.bundle.resources.depotNodeId] : []), household.homeNodeId, ...(shelter ? [shelter.nodeId] : [])];
+  const waypoints = [...(needsLoad ? [effectiveScenarioV2(next.bundle).resources.depotNodeId] : []), household.homeNodeId, ...(shelter ? [shelter.nodeId] : [])];
   const route = planRouteV2(next.bundle.assets.map, unit.cursor, waypoints, next.knownClosedEdgeIds);
   if (!route) return reject('No legal route exists in the public routing view.');
   const id = `mission:${command.id}`;
@@ -375,7 +377,7 @@ export function assertWorldInvariants(state: WorldStateV2): void {
   if (Object.values(supply).some(value => !Number.isSafeInteger(value) || value < 0) || supply.initial !== supply.depotAvailable + supply.reserved + supply.loaded + supply.delivered) fail('supply conservation');
   if (new Set(state.bundleReservations.map(item => item.missionId)).size !== state.bundleReservations.length) fail('duplicate bundle reservation');
   if (new Set(state.seatReservations.map(item => item.missionId)).size !== state.seatReservations.length) fail('duplicate shelter reservation');
-  for (const facility of state.bundle.assets.facilities) {
+  for (const facility of effectiveScenarioV2(state.bundle).facilities) {
     const totals = facilityTotalsV2(state, facility.id);
     if (totals.available < 0 || totals.occupied < 0 || totals.reserved < 0 || totals.available + totals.occupied + totals.reserved !== facility.capacity) fail('shelter conservation');
   }

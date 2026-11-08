@@ -1,3 +1,4 @@
+import { effectiveScenarioV2 } from './setup';
 import { ENGINE_V2, HORIZON_MS, MINUTE_MS, type CommandOutcomeV2, type CoordinatorObservationV2, type DecisionEvidenceV2, type PolicyIdV2, type ScenarioBundleV2 } from './contracts';
 import { admitScenarioV2, boundedJson } from './admission';
 import { canonical, hashValue } from './hash';
@@ -64,10 +65,10 @@ function appendAncestry(ancestry: RunLineageV2[], edge: RunLineageV2): RunLineag
 function checkCommands(file: RunFileV2): void {
   if (!Array.isArray(file.commands) || file.commands.length > V2_LIMITS.commands) throw new Error('V2 run files support at most 20000 commands.');
   if (!Array.isArray(file.decisions) || file.decisions.length !== file.commands.length) throw new Error('Every V2 command requires exactly one decision evidence record.');
-  const units = new Set(file.bundle.resources.units.map(unit => unit.id));
+  const units = new Set(effectiveScenarioV2(file.bundle).resources.units.map(unit => unit.id));
   const homes = new Set(file.bundle.assets.population.households.map(home => home.id));
-  const shelters = new Set(file.bundle.assets.facilities.filter(facility => facility.kind === 'shelter').map(facility => facility.id));
-  const needs = new Map(file.bundle.assets.events.flatMap(event => event.payload.type === 'need-onset' ? [[event.payload.need.id, event.payload.need] as const] : []));
+  const shelters = new Set(effectiveScenarioV2(file.bundle).facilities.filter(facility => facility.kind === 'shelter').map(facility => facility.id));
+  const needs = new Map(effectiveScenarioV2(file.bundle).events.flatMap(event => event.payload.type === 'need-onset' ? [[event.payload.need.id, event.payload.need] as const] : []));
   const ids = new Set<string>(); let sequence = 0, atMs = 0;
   file.commands.forEach((input, index) => {
     const row = object(input, 'Command outcome'); keys(row, ['command', 'accepted', 'reason', 'missionId'], ['command', 'accepted', 'reason']);

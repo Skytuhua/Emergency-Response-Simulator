@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
-import App from '../src/App';
+import { LegacyApp as App } from '../src/App';
 import { DALLAS_DEFAULT_CONFIG } from '../src/scenario';
 import type { ScenarioConfig } from '../src/model';
 import prepared from '../public/data/mirofish-dallas-v1.json';

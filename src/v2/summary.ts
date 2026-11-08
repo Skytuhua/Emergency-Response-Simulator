@@ -1,10 +1,11 @@
+import { effectiveScenarioV2 } from './setup';
 import { MINUTE_MS, type SummaryV2 } from './contracts';
 import type { WorldStateV2 } from './world';
 
 /** Ground truth is intentionally a debrief projection, never a coordinator input. */
 export function summarizeWorld(state: WorldStateV2): SummaryV2 {
   const population = state.bundle.assets.population;
-  const transports = state.bundle.resources.units.filter(unit => unit.capabilities.includes('transport'));
+  const transports = effectiveScenarioV2(state.bundle).resources.units.filter(unit => unit.capabilities.includes('transport'));
   const unsupported = new Set<string>();
   const outcomes = population.households.map(home => {
     const progress = state.households.find(item => item.id === home.id)!;

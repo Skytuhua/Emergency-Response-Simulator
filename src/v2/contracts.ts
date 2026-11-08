@@ -58,6 +58,12 @@ export interface ResourceSpecificationV2 {
   units: UnitSpecificationV2[]; supplyBundles: number; depotNodeId: string;
   loadMs: number; assessmentMs: number; deliveryMs: number; boardingMs: number; dropoffMs: number;
 }
+export interface SetupOverlayV2 {
+  kind:'dallas-user-setup'; version:1;
+  base:null|{requested:{lat:number;lon:number};nodeId:string};
+  roads:{edgeId:string;closed:boolean}[];
+  resources:{crews:number;vans:number;accessibleVans:number;supplyBundles:number;shelterPlaces:{facilityId:string;places:number}[]};
+}
 export interface ResidentContextV2 {
   householdId: string; opportunityId: string; atMs: number; populationHash: Sha256; mapHash: Sha256; eventTapeHash: Sha256; supportHash: Sha256;
   size: number; accessiblePlacesRequired: number; communicationsAvailable: boolean; need: NeedDefinitionV2 | null;
@@ -90,6 +96,7 @@ export interface ScenarioBundleV2 {
   resources: ResourceSpecificationV2;
   behaviorRules: { reportDelayMs: number; retryMs: number; reportingHouseholdIds: string[] };
   assumptions: string[];
+  setup?:SetupOverlayV2;
 }
 export interface DirectedArcV2 { edgeId: string; fromNodeId: string; toNodeId: string }
 export type CursorV2 =

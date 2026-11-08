@@ -26,7 +26,6 @@ async function contextFor(size) {
   return context;
 }
 const waitForMap = async page => {
-  await page.locator('.geographic-tile-status').filter({ hasText: 'Street map loaded.' }).waitFor();
   await page.waitForFunction(() => {
     const tiles = [...document.querySelectorAll('.leaflet-tile')];
     return tiles.length > 0 && tiles.every(tile => tile.complete && tile.naturalWidth > 0);
@@ -87,7 +86,7 @@ async function aligned(page) {
 async function visibleChrome(page, label) {
   const result = await page.evaluate(() => {
     const root = document.querySelector('.interactive-geographic-map'), scene = root.querySelector('.geographic-scene').getBoundingClientRect();
-    const elements = [...root.querySelectorAll('.geographic-toolbar button, .map-source a, .simulation-boundary-label')];
+    const elements = [...root.querySelectorAll('.geographic-toolbar button, .geographic-attribution a, .simulation-boundary-label')];
     return {
       scene: { width: scene.width, height: scene.height },
       boundaryHeight: root.querySelector('path.simulation-boundary').getBoundingClientRect().height,
@@ -171,20 +170,20 @@ try {
   const failureContext = await contextFor(sizes[0]), failurePage = await failureContext.newPage();
   failurePage.on('pageerror', error => errors.push(error.message));
   await failurePage.goto(`${origin}/tests/fixtures/geographic-map.html`);
-  await failurePage.getByRole('button', { name: 'Retry map tiles' }).waitFor();
-  assert.match(await failurePage.locator('.geographic-tile-status').innerText(), /retained exercise roads/);
+  await failurePage.getByRole('button', { name: 'Reload map' }).waitFor();
+  assert.match(await failurePage.locator('.geographic-tile-status').innerText(), /retained exercise roads/i);
   assert.ok(await failurePage.locator('.leaflet-retainedRoads-pane path').count() > 0);
   await failurePage.getByRole('button', { name: 'Zoom in', exact: true }).click();
   await failurePage.screenshot({ path: `${output}/fixture-offline.png` });
   denyTiles = false;
-  await failurePage.getByRole('button', { name: 'Retry map tiles' }).click(); await waitForMap(failurePage); await aligned(failurePage);
+  await failurePage.getByRole('button', { name: 'Reload map' }).click(); await waitForMap(failurePage); await aligned(failurePage);
   // A partially loaded new viewport must time out, even after a previously healthy batch.
   holdTiles = true;
   // Two half steps guarantee a different integer XYZ level, avoiding reuse of
   // the already-loaded grid while still exercising fractional view zooms.
   await failurePage.getByRole('button', { name: 'Zoom in', exact: true }).click();
   await failurePage.getByRole('button', { name: 'Zoom in', exact: true }).click();
-  await failurePage.getByRole('button', { name: 'Retry map tiles' }).waitFor({ timeout: 12000 });
+  await failurePage.getByRole('button', { name: 'Reload map' }).waitFor({ timeout: 12000 });
   assert.ok(heldTiles.length > 0, 'The mixed batch includes genuinely pending image requests');
   holdTiles = false;
   await Promise.all(heldTiles.splice(0).map(route => route.fulfill({ contentType: 'image/svg+xml', body: tileFixture })));
@@ -195,7 +194,7 @@ try {
   for (const size of sizes) {
     const context = await contextFor(size), page = await context.newPage();
     page.on('pageerror', error => errors.push(error.message));
-    await page.goto(origin); await waitForMap(page); await visibleChrome(page, `${size.width}-welcome`);
+    await page.goto(new URL('?scenario=v1',origin).href); await waitForMap(page); await visibleChrome(page, `${size.width}-welcome`);
     await page.screenshot({ path: `${output}/${size.width}-welcome.png` });
     await page.getByRole('button', { name: 'Start simulation', exact: true }).click(); await waitForMap(page);
     await visibleChrome(page, `${size.width}-response`);

@@ -1,3 +1,4 @@
+import { effectiveScenarioV2 } from './setup';
 import type { ScenarioBundleV2, TraceEventV2, WorldEventV2 } from './contracts';
 import type { WorldStateV2 } from './world';
 import { compareIdsV2 } from './routes';
@@ -5,8 +6,8 @@ import { compareIdsV2 } from './routes';
 const schedules = new WeakMap<ScenarioBundleV2, { effective: WorldEventV2[]; observed: WorldEventV2[] }>();
 export function worldSchedulesV2(bundle: ScenarioBundleV2) {
   let schedule = schedules.get(bundle);
-  if (!schedule) { schedule = { effective: [...bundle.assets.events].sort((a, b) => a.effectiveAtMs - b.effectiveAtMs || compareIdsV2(a.id, b.id)),
-    observed: bundle.assets.events.filter(event => event.observedAtMs !== null).sort((a, b) => a.observedAtMs! - b.observedAtMs! || compareIdsV2(a.id, b.id)) };
+  if (!schedule) { schedule = { effective: [...effectiveScenarioV2(bundle).events].sort((a, b) => a.effectiveAtMs - b.effectiveAtMs || compareIdsV2(a.id, b.id)),
+    observed: effectiveScenarioV2(bundle).events.filter(event => event.observedAtMs !== null).sort((a, b) => a.observedAtMs! - b.observedAtMs! || compareIdsV2(a.id, b.id)) };
     schedules.set(bundle, schedule); }
   return schedule;
 }
@@ -42,7 +43,7 @@ export function revealHouseholdV2(state: WorldStateV2, householdId: string, sour
 
 export function applyWorldChangesV2(state: WorldStateV2): void {
   const schedule = worldSchedulesV2(state.bundle);
-  for (const facility of state.bundle.assets.facilities) {
+  for (const facility of effectiveScenarioV2(state.bundle).facilities) {
     if (facility.opensAtMs <= state.nowMs && !state.openedFacilityIds.includes(facility.id)) {
       state.openedFacilityIds.push(facility.id);
       const physical = state.facilities.find(item => item.id === facility.id)!; physical.open = true; physical.knownOpen = true;

@@ -1,49 +1,60 @@
 # Interactive Dallas map
 
-Dallas uses Leaflet 1.9.4 to display a detailed tiled basemap. Drag to pan, use the wheel or double click to zoom, or use the keyboard and labeled zoom buttons. **Fit simulation area** restores the supported area. The blue dashed rectangle and permanent label use `map.metadata.bounds`; the amber communications outage is a separate overlay. Looking outside the boundary does not add households, roads or simulation activity.
+Last updated: 2026-11-08.
 
-Map tiles supply visual context. The engine still routes on the frozen Dallas street graph, with its retained direction/access restrictions and synthetic travel policy. Homes, incidents, response units, shelters and the base remain exercise data. The view consumes only `ObservationView`; urgent flags require known facts, and undiscovered needs appear only in the finalized debrief.
+The expanded observer uses Leaflet 1.9.4 for a real OpenStreetMap basemap. Drag to pan; use the wheel, double click, labeled buttons or keyboard to zoom. **Fit simulation area** fits the actual tract boundary. High-contrast tract outlines identify the expanded simulation's resident area. The surrounding 500 m routing buffer adds street context, not households. The earlier Dallas v1 view uses its rectangular supported boundary; Riverdale retains the schematic canvas.
 
-The coordinate conversion in `src/ui/geographic.ts` inverts the importer's local equirectangular projection. It uses the map centre, origin latitude/longitude, earth radius and metres per unit. Import padding affects the original scale; it is not an extra x/y translation. Roads, routes and synthetic placements use the same inverse conversion before Leaflet's Web Mercator projection.
+The engine routes on the separately frozen Dallas street graph. Tiles supply visual context. The expanded database retains 1,313 nodes, 1,828 edges and 68 turn restrictions, with its source profile and a synthetic 12 km/h travel assumption. Simulated closures change routes or interrupt travel. The basemap can change independently of the frozen dataset. Home locations, residents, incidents, facilities and response resources are simulated. [Expanded runtime evidence](evidence/dallas-expanded-runtime.md) explains their source support and limits.
 
-The Leaflet instance survives minute, selection, mission and cloned snapshot updates. A changed run ID, dataset/hash, bounds, projection or dimensions creates and fits a fresh map. ResizeObserver invalidates the map after layout changes without fitting or changing zoom. Layers, handlers, scheduled frames, tile timers and the map are removed during unmount and StrictMode remount. Dragging from a home pans without also selecting the home; keyboard activation remains available. Map keyboard events stay within the map instead of reaching the simulation's global Escape handler.
+## Homes and map space
+
+Counted groups use house-shaped markers with the household count inside. Zooming closer allows finer groups and reveals individual homes as their markers become readable. Screen-space aggregation merges overlapping neighboring groups to keep counts readable; off-screen markers are not rendered. The full population remains fixed when zooming or panning. Selecting a group opens a named, keyboard-accessible member list. The selected home retains its exact simulated position and original ID. Coincident placements remain available through the group or **Find a home** list.
+
+Clustering consumes public observations only. Unknown homes retain unknown needs; a count is not a count of people known to need help. Color and labels use received information and completed assistance. The selected-home outline, accessible labels and group member list support inspection without relying on color alone.
+
+The loaded-map status row, long supported-area strip and dashboard footer have been removed to give the map more room. The legend has its own row and keeps linked **© OpenStreetMap contributors** visible. Technical source details remain under **Sources**. A failure message appears only when tiles are unavailable or incomplete.
+
+Setup also allows choosing a base inside the tract boundary and editing road segments. The selected base is snapped to a reachable street node and its actual location is shown. User-selected road overrides last for the run and affect engine routes; they do not alter the frozen source database.
+
+## Coordinates and view state
+
+The coordinate conversion in `src/ui/geographic.ts` inverts the importer's local equirectangular projection using its origin latitude/longitude, earth radius and metres per unit. Import padding affects the original scale; it is not an added x/y translation. Roads, route positions and simulated homes use this same inverse conversion before Leaflet's Web Mercator projection.
+
+The Leaflet instance survives ordinary time, selection, mission and cloned-observation updates. Geographic identity or boundary changes recreate it. V2 uses a stable map identity across state updates, while viewport callbacks report actual zoom and bounds for aggregation. ResizeObserver invalidates map size without fitting or changing the user's view. Unmount removes layers, handlers, scheduled frames and tile timers. Dragging from a home pans without selecting it; keyboard activation remains available. Map keyboard handling prevents a map Escape event from clearing a household selection behind the map.
 
 ## Tile service and fallback
 
-The default layer is `https://tile.openstreetmap.org/{z}/{x}/{y}.png`, for modest human interactive demo use under the [OSM tile usage policy](https://operations.osmfoundation.org/policies/tiles/). It uses normal browser image requests, Referer and caching. There is no cache bypass, prefetch, bulk download, offline tile download or automated live-service pan/zoom. Linked OpenStreetMap attribution stays visible below the map. The surrounding basemap may change independently of the frozen simulation dataset.
+The default tile template is `https://tile.openstreetmap.org/{z}/{x}/{y}.png`. It needs no API key and is intended here for modest human interactive demo use under the [OSM tile usage policy](https://operations.osmfoundation.org/policies/tiles/). It uses ordinary browser image requests, Referer and caching. The application does not bypass caches, prefetch, bulk-download or archive tiles offline. Automated tests intercept tile requests instead of using the live service. Higher-traffic deployment needs an appropriate provider and its terms reviewed.
 
-To use an appropriate alternative service, set `VITE_MAP_TILE_URL` to its HTTPS XYZ template before building and optionally `VITE_MAP_TILE_ATTRIBUTION` to the provider's required credit text. Attribution text is rendered as text, not HTML. Use a provider whose terms and zoom range support your deployment (the map currently uses zooms 10–19). These Vite settings are public client configuration; never put private credentials in them. No key is needed for the default service. For higher traffic or a controlled deployment, select a suitable tile provider.
+An alternative provider can be configured with an HTTPS XYZ `VITE_MAP_TILE_URL` before building and optional `VITE_MAP_TILE_ATTRIBUTION`. Attribution is rendered as text. The current map zoom range is 10 through 19. These Vite settings are public client configuration; private credentials do not belong in them. Retain the provider's required credit and the OSM data notice where applicable.
 
-If any tile fails, or a batch remains incomplete for eight seconds, a concise status explains that street tiles are unavailable or incomplete. The local retained-road vectors, household/facility/unit markers, routes, outage and simulation boundary remain interactive. The **Retry map tiles** action is explicit, with ordinary browser caching preserved. An actual completed tile-load batch restores the loaded status; a single successful tile cannot hide failed or hung siblings. Normal state ticks do not recreate or reload the tile layer.
+If a tile fails or a batch remains incomplete for eight seconds, a compact status offers **Reload map**. Local retained roads, homes, facilities, team positions, routes and the boundary remain interactive. The earlier v1 outage overlay also remains available. Recovery requires a completed tile-load batch; one successful tile cannot hide failed or hung siblings. Ordinary simulation ticks do not recreate or reload the tile layer. Reload uses the public Leaflet API and preserves normal browser caching.
 
 ## Verification
 
-Run from this isolated checkout:
+With dependencies installed and a local dev preview running:
 
-```text
-npm ci
+```powershell
 npm run typecheck
-npm test
+npm test -- --maxWorkers=1
 npm run build
-npm run dev -- --port 4186 --strictPort
-```
-
-With the dev server running, in a second terminal:
-
-```text
+$env:APP_URL = 'http://127.0.0.1:43183'
 node tests/geographic-browser.mjs
+npm run test:browser
 ```
 
-`APP_URL` can select another local dev-server origin. The browser runner intercepts every OSM tile request with `tests/fixtures/map-tile.svg`, aborts requests for the offline case, and holds part of a later batch to verify the timeout/recovery case. Other external requests are denied and reported. **Do not remove interception to run automated tests against live OSM.**
+`tests/geographic-browser.mjs` covers the geographic renderer. The expanded browser check is the default `npm run test:browser` flow. Both use the existing local preview selected by `APP_URL`; neither starts an external map service. Legacy scripts remain for historical testing, not as an alternate main application entry point.
 
-The browser suite checks rendered DOM geometry against independently computed Web Mercator positions, including fit, dragging, zoom, resize, state persistence, home selection, keyboard isolation, mission movement and failure recovery. It also checks the real application's welcome and response maps at 1696×1020, 1366×768 and 1440×900, retaining control text size. Screenshots and a network receipt go to ignored `.private/map-browser/`.
+Every OSM tile request is intercepted with `tests/fixtures/map-tile.svg`, aborted for offline cases, or held for timeout/recovery cases. Other external requests are denied and reported. Keep this interception in automated runs.
 
-The initial regression run on the parent canvas implementation failed three checks: missing tiled-map controls/lifecycle, and Escape reaching the global handler. Riverdale's legacy test remained green. The focused tests also compare every frozen node and road geometry vertex to its original latitude/longitude and distinguish the simulation bounds from the outage bounds.
+Historical expanded-map fixture checks at 1696?1020, 1366?768 and 1440?900 covered house-shaped counts, zoom detail, home membership, group activation, focus return, viewport preservation and document overflow before the current setup integration. [Interface evidence](evidence/expanded-interface.md) records the evidence scope.
 
-Final local verification for this leaf: 109 tests across 19 files, typecheck, and production build passed. The build retains a large-chunk warning (about 765.5 kB uncompressed for the application JavaScript). The browser run intercepted 505 tile requests with zero live tile requests and no uncaught browser errors. Its six welcome/response layout receipts show no clipped map controls, no text below the checked 14px control size and no document overflow. Visual inspection also prompted a regression for fitting the simulation area at fractional zoom, avoiding an unnecessarily tiny supported area at shorter viewport heights. Tile retry re-adds the tile layer using the public API, avoiding Leaflet 1.9.4's fractional-zoom `redraw()` XYZ-level issue.
+The original PR #7 map leaf separately passed 109 local tests, typecheck and build, with 505 intercepted tile requests and zero live tile requests. Those counts describe that historical leaf, not the current expanded integration. Its regression for fitting at fractional zoom and its explicit tile-layer reload remain preserved.
 
-These tests establish local fixture behavior. They do not establish live-provider availability, live basemap cartographic appearance, hosted deployment behavior or user visual acceptance. A manual human live-map check remains useful before a public demo.
+Fixture tests establish local geometry, interaction and failure behavior. They do not establish live-provider availability, hosted behavior, current street access or user visual acceptance. The parent has separately observed a native live OSM render; a real user review remains distinct. No mobile-integration completion is claimed.
 
-## Integration
+## Integration and licenses
 
-This leaf is based on Dallas PR #5 (`feat/dallas-street-network`, prepared commit `8bfa4fa2bde8666c93c5ef0345e560fe6e4b5d60`). `TownMap` keeps its existing props and dispatches to the geographic view only for `osm-driving`; Riverdale keeps its schematic canvas. No engine, other frontend module, shared stylesheet or shared checkout is changed. The dependency manifests add only Leaflet and its types. Concurrent dependency edits may require regenerating `package-lock.json` after merging the manifest entries.
+`TownMap` keeps schematic mode and dispatches `osm-driving` maps to the geographic renderer. Optional viewport, boundary-ring, household-count, label and summary props support v2 without widening the legacy engine's observation API. `MapV2` adapts its explicit public coordinator view to those display props; hidden incident truth does not enter clustering.
+
+The approved map leaf was based on Dallas PR #5 at `8bfa4fa2bde8666c93c5ef0345e560fe6e4b5d60` and integrated into the current release work. Leaflet and its types are additive dependencies. See the [Leaflet license](LEAFLET-LICENSE.txt), [earlier OSM data notice](../fixtures/maps/LICENSE.md), [expanded data notice](../fixtures/v2/sources/LICENSE.md) and [third-party notices](../THIRD_PARTY_NOTICES.md).

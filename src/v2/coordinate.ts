@@ -1,3 +1,4 @@
+import { effectiveScenarioV2 } from './setup';
 import { HORIZON_MS, MINUTE_MS, type PolicyIdV2, type ScenarioBundleV2 } from './contracts';
 import type { SessionV2 } from './session';
 import { advanceWorld, dispatchWorld, initializeWorld, nextWorldBoundaryMs } from './world';
@@ -14,7 +15,7 @@ export function coordinateSessionV2(session:SessionV2):SessionV2{
   const rejectedUnits=new Set<string>();
   for(let i=0;i<world.units.length;i++){
     if(!world.units.some(unit=>unit.status==='available'&&!unit.missionId))break;
-    const view=observeCoordinator(world),choice=chooseCommandV2(view,session.policy,world.bundle.resources,session.coverageFraction,rejectedUnits);
+    const view=observeCoordinator(world),choice=chooseCommandV2(view,session.policy,effectiveScenarioV2(world.bundle).resources,session.coverageFraction,rejectedUnits);
     if(!choice)break;
     if(world.commands.length>=20_000)throw new Error('V2 command bound reached.');
     const sequence=(world.commands.at(-1)?.command.sequence??0)+1;
