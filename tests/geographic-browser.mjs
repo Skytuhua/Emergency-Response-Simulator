@@ -197,7 +197,7 @@ try {
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(origin); await waitForMap(page); await visibleChrome(page, `${size.width}-welcome`);
     await page.screenshot({ path: `${output}/${size.width}-welcome.png` });
-    await page.getByRole('button', { name: 'Start the demo', exact: true }).click(); await waitForMap(page);
+    await page.getByRole('button', { name: 'Start simulation', exact: true }).click(); await waitForMap(page);
     await visibleChrome(page, `${size.width}-response`);
     await page.screenshot({ path: `${output}/${size.width}-response.png` });
     await context.close();

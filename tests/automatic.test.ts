@@ -230,7 +230,8 @@ describe('automatic engine coordinator', () => {
     }).state;
     state = untilAutomatic(state, 60);
     expect(state.commands).toHaveLength(500);
-    const restored = replay(parseRunFile(JSON.stringify(makeRunFile(state))));
+    // replay validates the serialized export itself; avoid validating 500 commands twice.
+    const restored = replay(makeRunFile(state));
     expect(restored.events).toEqual(state.events);
     expect(getAutomaticCoordinationIssue(state)).toMatch(/command limit/i);
     expect(getAutomaticCoordinationIssue(restored)).toBe(getAutomaticCoordinationIssue(state));

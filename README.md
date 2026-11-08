@@ -55,7 +55,7 @@ The bundled [Dallas artifact](public/data/mirofish-dallas-v1.json) contains thre
 
 Total preparation across Dallas, Riverdale Terra and the original `gpt-4.1-mini` episodes is **estimated $0.0472764 / $10**; this is a token-price estimate, not an invoice. Original [4.1-mini output](public/data/mirofish-4.1-mini-v1.json), its [saved run](public/data/default-run-4.1-mini-v1.json), and the separate [Riverdale Terra artifact](public/data/mirofish-v1.json) remain preserved. [UPSTREAM.md](UPSTREAM.md) records source pins, provenance, budget controls and preparation commands.
 
-The current map uses frozen real OpenStreetMap streets and driving routes, with fictional residents, incidents, shelters and capacities. The separate interactive map with pan and zoom has not landed. Further mobile integration is deferred.
+The interactive Dallas map uses OpenStreetMap tiles, drag/pan, zoom and a labeled simulation boundary. The engine routes on its separately frozen real street network; residents, incidents, shelters and capacities are fictional. Tile failures retain the local street/response overlays. See [interactive map behavior and terms](docs/INTERACTIVE-MAP.md). Further mobile integration is deferred.
 
 PR #6's population-grounded, six-hour Dallas design is the intended release specification; its runtime integration is **planned, not implemented** in this 24-home application. The four files under [the v2 scenario design](docs/scenarios/dallas-synthetic-v2/README.md) remain design records, not implemented population fit or calibration. Follow the [integrated Dallas implementation plan](docs/superpowers/plans/2026-11-08-integrated-dallas-v2.md) for the remaining work. A real four-of-five uncoached comprehension study has not been performed.
 
