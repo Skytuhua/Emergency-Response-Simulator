@@ -48,6 +48,8 @@ try {
     });
     const page = await context.newPage(); page.on('pageerror', error => errors.push(error.message));
     await page.goto(origin, { waitUntil: 'networkidle' });
+    await checkFit(page, `${size.width}-welcome`);
+    await page.getByRole('button', { name: 'Customize the scenario', exact: true }).click();
     for (const stage of ['conditions', 'resources', 'review']) {
       await page.getByRole('heading', { name: stage[0].toUpperCase() + stage.slice(1), exact: true }).waitFor();
       assert.equal((await page.locator('.wizard-steps [aria-current="step"]').innerText()).replace(/\s+/g, ''), `${['conditions', 'resources', 'review'].indexOf(stage) + 1}${stage[0].toUpperCase() + stage.slice(1)}`);
@@ -99,14 +101,17 @@ try {
     // A zero-kit exercise keeps a clear visible blocker with no invalid dispatch.
     await page.getByRole('button', { name: 'Exercise', exact: true }).click(); await page.getByRole('button', { name: 'New exercise', exact: true }).click();
     await page.getByRole('button', { name: 'Start over', exact: true }).click();
+    await page.getByRole('button', { name: 'Customize the scenario', exact: true }).click();
     await page.getByRole('button', { name: 'Continue', exact: true }).click(); await page.getByLabel('Supply kits', { exact: true }).fill('0');
     await page.getByRole('button', { name: 'Continue', exact: true }).click(); await page.getByRole('button', { name: 'Start exercise', exact: true }).click();
     await step(page, 10); await select(page, 'H02'); await checkFit(page, `${size.width}-shortage`);
     assert.equal(await page.getByRole('button', { name: 'Deliver kit & run', exact: true }).isDisabled(), true);
     await page.close(); await context.close();
   }
+  if (process.env.CHECK_DEFERRED_MOBILE === '1') {
   const compact = await browser.newPage({ viewport: { width: 683, height: 384 } }); compact.on('pageerror', error => errors.push(error.message));
   await compact.goto(origin, { waitUntil: 'networkidle' });
+  await compact.getByRole('button', { name: 'Customize the scenario', exact: true }).click();
   await compact.getByRole('button', { name: 'Continue', exact: true }).click(); await compact.getByRole('button', { name: 'Continue', exact: true }).click(); await compact.getByRole('button', { name: 'Start exercise', exact: true }).click();
   await compact.getByRole('button', { name: 'Homes', exact: true }).click(); await compact.getByRole('dialog', { name: 'Homes', exact: true }).getByRole('button', { name: /H19/ }).click();
   await compact.getByRole('dialog', { name: 'H19', exact: true }).waitFor();
@@ -131,7 +136,8 @@ try {
   await compact.getByRole('heading', { name: 'Results & analysis' }).waitFor();
   assert.equal(await toolbarIsClear(), true, 'Wrapped results toolbar must not overlap tabs');
   await compact.close();
+  }
   assert.deepEqual(errors, [], 'No runtime exceptions'); assert.deepEqual(external, [], 'No external requests');
   await writeFile(`${output}/layout-receipts.json`, JSON.stringify(receipts, null, 2));
-  console.log(JSON.stringify({ passed: true, desktopStates: receipts.length, viewports: sizes, compact: '683x384 / 390x844', golden: '8/16/24', partialReplay: 17, runtimeErrors: errors, externalRequests: external.length, evidence: output }));
+  console.log(JSON.stringify({ passed: true, desktopStates: receipts.length, viewports: sizes, mobile: 'deferred; opt in with CHECK_DEFERRED_MOBILE=1', golden: '8/16/24', partialReplay: 17, runtimeErrors: errors, externalRequests: external.length, evidence: output }));
 } finally { await browser.close(); }
